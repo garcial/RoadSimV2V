@@ -25,6 +25,7 @@ public class CarSendingDataBehaviour extends Behaviour {
 		step = 0;
 	}
 
+	// two steps behaviour
 	@Override
 	public void action() {
 		switch (step) {
