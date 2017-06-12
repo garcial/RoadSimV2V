@@ -148,7 +148,8 @@ public class CarAgent extends Agent {
 		msg.setOntology("carToSegmentOntology");
 		msg.setConversationId("register");
 		msg.addReceiver(next.getSegment().getSegmentAgent().getAID());
-		msg.setContent(getId() + "#" + Float.toString(getX()) + "#" + Float.toString(getY()) + "#" + getSpecialColor() + "#");
+		msg.setContent(getId() + "#" + Float.toString(getX()) + "#" + Float.toString(getY()) + 
+				       "#" + getSpecialColor() + "#" + getRatio()+"#");
 		send(msg);
 		// Receive the current traffic density from the current segment
 		msg = blockingReceive(MessageTemplate.MatchOntology("trafficDensityOntology"));

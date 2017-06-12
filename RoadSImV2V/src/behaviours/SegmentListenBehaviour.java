@@ -50,6 +50,7 @@ public class SegmentListenBehaviour extends Behaviour {
 			if (msg.getOntology().equals("carToSegmentOntology")) {
 
 				String car = msg.getContent();
+				System.out.println("coche recibido: " + car);
 				String parts[] = car.split("#");
 
 				//Register
