@@ -1,4 +1,4 @@
-El pryecto está formado por varias ramas. Las más importantes son master, develop y realise.
+El proyecto está formado por varias ramas. Las más importantes son master, develop y realise.
 
 master - Es la rama madre de la que parten las demás y solo se utilizará para unir las versiones finalizadas del proyecto.
 
@@ -8,4 +8,8 @@ Estas ramas secundarias se unirán a develop una vez han cumplido su objetivo y 
 
 realise - Se utilizará para testear versiones finales del proyecto una vez de ha terminado su desarrollo. Si cumplen con los requisitos que se piden y no hay ningún error se podrán unir a master.
 
-Además de esto, se insta a utilizar descripciones de commit extensas y explicativas. En el caso de ocurrir conflictos es necesario poner las corracciones que se han realizado en la descripción del commit además de dejar constancia que ha habido un conflicto.
+Además de esto, se insta a utilizar descripciones de commit extensas y explicativas. En el caso de ocurrir conflictos, es beneficioso poner las correcciones que se han realizado en la descripción del commit además de dejar constancia que ha habido un conflicto.
+
+DEPENDENCIAS
+
+Las principales dependencias del proyecto son JADE (http://jade.tilab.com/download/jade/) y JGraphT (http://jgrapht.org/). Para poder ejecutar el proyecto es necesario añadir las librerias de ambas dependencias.
