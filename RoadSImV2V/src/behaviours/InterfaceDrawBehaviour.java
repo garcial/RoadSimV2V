@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 import javax.swing.SwingUtilities;
 
+import org.json.JSONObject;
+
 import agents.InterfaceAgent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
@@ -102,8 +104,9 @@ public class InterfaceDrawBehaviour extends Behaviour {
 
 					@Override
 					public void run() {
-
-						agent.getMap().setNumberOfCars(Integer.parseInt(msg.getContent()));	
+						JSONObject numberOfCarsData = new JSONObject(msg.getContent());
+						int numberOfCars = (int) numberOfCarsData.get("numberOfCars");
+						agent.getMap().setNumberOfCars(numberOfCars);	
 					}
 				}); 
 			}

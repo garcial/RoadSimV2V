@@ -10,6 +10,9 @@ import jade.lang.acl.MessageTemplate;
 import searchAlgorithms.Algorithm;
 import searchAlgorithms.AlgorithmFactory;
 import searchAlgorithms.Method;
+
+import org.json.JSONObject;
+
 import behaviours.CarBehaviour;
 import environment.Map;
 import environment.Path;
@@ -135,7 +138,12 @@ public class CarAgent extends Agent {
 		//We notify the interface about the new car
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		msg.addReceiver(interfaceAgent.getName());
-		msg.setContent("x="+this.x+"y="+this.y+"id="+this.id+"algorithmType="+this.algorithmType);
+		JSONObject carData = new JSONObject();
+		carData.put("x", this.x);
+		carData.put("y", this.y);
+		carData.put("id", this.id);
+		carData.put("algorithmType", this.algorithmType);
+		msg.setContent(carData.toString());
 		msg.setOntology("newCarOntology");
 		send(msg);
 
@@ -148,12 +156,23 @@ public class CarAgent extends Agent {
 		msg.setOntology("carToSegmentOntology");
 		msg.setConversationId("register");
 		msg.addReceiver(next.getSegment().getSegmentAgent().getAID());
-		msg.setContent(getId() + "#" + Float.toString(getX()) + "#" + Float.toString(getY()) + 
-				       "#" + getSpecialColor() + "#" + getRatio()+"#");
+		
+		JSONObject carDataRegister = new JSONObject();
+		carDataRegister.put("id", getId());
+		carDataRegister.put("x", getX());
+		carDataRegister.put("y", getY());
+		carDataRegister.put("specialColor", getSpecialColor());
+		carDataRegister.put("radio", getRatio());
+		
+		msg.setContent(carDataRegister.toString());
+		
 		send(msg);
 		// Receive the current traffic density from the current segment
 		msg = blockingReceive(MessageTemplate.MatchOntology("trafficDensityOntology"));
-		setCurrentTrafficDensity(Double.parseDouble(msg.getContent()));
+		
+		JSONObject densityData = new JSONObject(msg.getContent());
+		
+		setCurrentTrafficDensity(densityData.getDouble("density"));
 		//Change my speed according to the maximum allowed speed
 	    setCurrentSpeed(Math.min(getMaxSpeed(), getCurrentSegment().getCurrentAllowedSpeed()));
 			

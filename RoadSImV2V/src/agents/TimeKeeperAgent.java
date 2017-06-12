@@ -3,6 +3,8 @@ package agents;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
@@ -115,6 +117,7 @@ public class TimeKeeperAgent extends Agent {
 
 				timeKeeperAgent.currentTick++;
 
+				//Aquí hay una comunicación que no sé donde va
 				ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 				msg.addUserDefinedParameter(ACLMessage.IGNORE_FAILURE, "true");
 				msg.addUserDefinedParameter(ACLMessage.DONT_NOTIFY_FAILURE, "true");
@@ -144,7 +147,10 @@ public class TimeKeeperAgent extends Agent {
 					msg = new ACLMessage(ACLMessage.INFORM);
 					msg.addReceiver(interfaceAgent.getName());
 					msg.setOntology("numberOfCarsOntology");
-					msg.setContent(Integer.toString(cars.length));
+					JSONObject numberOfCars = new JSONObject();
+					numberOfCars.put("numberOfCars", cars.length);
+					
+					msg.setContent(numberOfCars.toString());
 					myAgent.send(msg);
 				}
 			}
@@ -174,8 +180,10 @@ public class TimeKeeperAgent extends Agent {
 				ACLMessage msg = myAgent.receive(mt);
 
 				if (msg != null) {
-
-					((TimeKeeperAgent)this.myAgent).setTickLength(Long.parseLong(msg.getContent()));
+					JSONObject messageData = new JSONObject(msg.getContent()); 
+					Long tickLength = (long) (messageData.getInt("idTick"));
+					System.out.println(tickLength);
+					((TimeKeeperAgent)this.myAgent).setTickLength(tickLength);
 				} else block();
 			}
 

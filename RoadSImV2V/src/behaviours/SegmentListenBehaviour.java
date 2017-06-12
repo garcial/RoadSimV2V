@@ -2,6 +2,8 @@ package behaviours;
 
 import java.util.Iterator;
 
+import org.json.JSONObject;
+
 import agents.SegmentAgent;
 import environment.Segment;
 import jade.core.AID;
@@ -49,21 +51,20 @@ public class SegmentListenBehaviour extends Behaviour {
 			
 			if (msg.getOntology().equals("carToSegmentOntology")) {
 
-				String car = msg.getContent();
-				System.out.println("coche recibido: " + car);
-				String parts[] = car.split("#");
+				JSONObject car = new JSONObject(msg.getContent());
+				//System.out.println("coche recibido: " + car);
 
 				//Register
 				if (msg.getConversationId().equals("update")) { //Update position
-					this.agent.updateCar(parts[0], Float.parseFloat(parts[1]), 
-							  Float.parseFloat(parts[2]), Boolean.valueOf(parts[3]));
+					this.agent.updateCar(car.getString("id"), (float) car.getDouble("x"), 
+							(float) car.getDouble("y"), car.getBoolean("specialColor"));
 				} else {
 					if (msg.getConversationId().equals("register")) { // Register
-						this.agent.addCar(parts[0], Float.parseFloat(parts[1]), 
-								Float.parseFloat(parts[2]), Boolean.valueOf(parts[3]),
-										Integer.parseInt(parts[4]));						
+						this.agent.addCar(car.getString("id"), (float) car.getDouble("x"), 
+								(float) car.getDouble("y"), car.getBoolean("specialColor"),
+										car.getInt("radio"));						
 					} else             // msg.getConversationId().equals("deregister"
-						this.agent.removeCar(parts[0]);
+						this.agent.removeCar(car.getString("id"));
 					
 					Segment segment = this.agent.getSegment();
 					int numCars = this.agent.getCars().size();
@@ -93,7 +94,11 @@ public class SegmentListenBehaviour extends Behaviour {
 					
 					msg = new ACLMessage(ACLMessage.INFORM);
 					msg.setOntology("trafficDensityOntology");
-					msg.setContent(""+density);
+					
+					JSONObject densityData = new JSONObject();
+					densityData.put("density", density);
+					msg.setContent(densityData.toString());
+					
 					for (String id:agent.getCars().keySet()) {
 						msg.addReceiver(new AID(id, true));;			
 					}
