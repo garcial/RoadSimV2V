@@ -72,3 +72,7 @@ local.properties
 .cache-main
 .scala_dependencies
 .worksheet
+
+#Project Files
+APDescription.txt
+MTPs-Main container.txt
