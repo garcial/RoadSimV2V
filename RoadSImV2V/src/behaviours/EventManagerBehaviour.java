@@ -3,6 +3,7 @@ package behaviours;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.ToJSON;
 
 import agents.EventManagerAgent;
 import jade.core.AID;
@@ -59,8 +60,7 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 				ACLMessage timeMsg = new ACLMessage(ACLMessage.INFORM);
 				timeMsg.setOntology("updateTimeOntology");
 				timeMsg.addReceiver(this.agent.getInterfaceAgent().getName());
-				timeMsg.setContent(String.format("%02d", hours) + ":" + String.format("%02d", minutes));
-
+				timeMsg.setContent(ToJSON.toJSon("hora", String.format("%02d", hours), "minutos", String.format("%02d", minutes)));
 				myAgent.send(timeMsg);
 			}
 
