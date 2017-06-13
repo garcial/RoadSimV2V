@@ -1,58 +1,58 @@
-{"id": "S-CV10-01",      "origin": "I-CV10-01",        "destination": "I-CV10-02",        "length": "2.03",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-02",      "origin": "I-CV10-02",        "destination": "I-CV10-01",        "length": "2.03",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-03",      "origin": "I-CV10-02",        "destination": "I-CV10-03",        "length": "4.2",   "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-04",      "origin": "I-CV10-03",        "destination": "I-CV10-02",        "length": "4.2",   "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-05",      "origin": "I-CV10-03",        "destination": "I-CV10-04",        "length": "4.77",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-06",      "origin": "I-CV10-04",        "destination": "I-CV10-03",        "length": "4.77",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-07",      "origin": "I-CV10-04",        "destination": "I-CV10-05",        "length": "2.26",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-08",      "origin": "I-CV10-05",        "destination": "I-CV10-04",        "length": "2.26",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-09",      "origin": "I-CV10-05",        "destination": "I-CV10-06",        "length": "4.58",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-10",      "origin": "I-CV10-06",        "destination": "I-CV10-05",        "length": "4.58",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-11",      "origin": "I-CV10-06",        "destination": "I-CV10-07",        "length": "2.17",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-12",      "origin": "I-CV10-07",        "destination": "I-CV10-06",        "length": "2.17",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-13",      "origin": "I-CV10-07",        "destination": "I-CV10-08",        "length": "1.89",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-14",      "origin": "I-CV10-08",        "destination": "I-CV10-07",        "length": "1.89",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-15",      "origin": "I-CV10-08",        "destination": "I-CV10-09",        "length": "2.09",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-16",      "origin": "I-CV10-09",        "destination": "I-CV10-08",        "length": "2.09",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-17",      "origin": "I-CV10-09",        "destination": "I-CV10-10",        "length": "1.69",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-18",      "origin": "I-CV10-10",        "destination": "I-CV10-09",        "length": "1.69",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-01",      "origin": "I-N340-01",        "destination": "I-N340-02-AP7-02", "length": "2.66",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-02",      "origin": "I-N340-02-AP7-02", "destination": "I-N340-01",        "length": "2.66",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-03",      "origin": "I-N340-02-AP7-02", "destination": "I-N340-03",        "length": "1.54",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-04",      "origin": "I-N340-03",        "destination": "I-N340-02-AP7-02", "length": "1.54",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-05",      "origin": "I-N340-03",        "destination": "I-N340-04",        "length": "6.59",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-06",      "origin": "I-N340-04",        "destination": "I-N340-03",        "length": "6.59",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-07",      "origin": "I-N340-04",        "destination": "I-N340-05",        "length": "2.32",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-08",      "origin": "I-N340-05",        "destination": "I-N340-04",        "length": "2.32",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-09",      "origin": "I-N340-05",        "destination": "I-N340-06",        "length": "1.52",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-10",      "origin": "I-N340-06",        "destination": "I-N340-05",        "length": "1.52",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-11",      "origin": "I-N340-06",        "destination": "I-N340-07",        "length": "1.04",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-12",      "origin": "I-N340-07",        "destination": "I-N340-06",        "length": "1.04",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-13",      "origin": "I-N340-07",        "destination": "I-N340-08",        "length": "1.55",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-14",      "origin": "I-N340-08",        "destination": "I-N340-07",        "length": "1.55",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-15",      "origin": "I-N340-08",        "destination": "I-N340-09",        "length": "4.87",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-16",      "origin": "I-N340-09",        "destination": "I-N340-08",        "length": "4.87",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-AP7-01",       "origin": "I-AP7-01",         "destination": "I-N340-02-AP7-02", "length": "4.76",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-AP7-02",       "origin": "I-N340-02-AP7-02", "destination": "I-AP7-01",         "length": "4.76",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-AP7-03",       "origin": "I-N340-02-AP7-02", "destination": "I-AP7-03",         "length": "12.16", "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-AP7-04",       "origin": "I-AP7-03",         "destination": "I-N340-02-AP7-02", "length": "12.16", "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-AP7-05",       "origin": "I-AP7-03",         "destination": "I-AP7-04",         "length": "7.09",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-AP7-06",       "origin": "I-AP7-04",         "destination": "I-AP7-03",         "length": "7.09",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CS22-01",      "origin": "I-CS22-01",        "destination": "I-CS22-02",        "length": "3.85",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CS22-02",      "origin": "I-CS22-02",        "destination": "I-CS22-01",        "length": "3.85",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CS22-03",      "origin": "I-CS22-02",        "destination": "I-CS22-03",        "length": "1.59",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CS22-04",      "origin": "I-CS22-03",        "destination": "I-CS22-02",        "length": "1.59",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CS22-05",      "origin": "I-CS22-03",        "destination": "I-CS22-04",        "length": "3.83",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CS22-06",      "origin": "I-CS22-04",        "destination": "I-CS22-03",        "length": "3.83",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-N340-01", "origin": "I-CV10-02",        "destination": "I-N340-01",        "length": "2.24",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-N340-02", "origin": "I-N340-01",        "destination": "I-CV10-02",        "length": "2.24",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-N340-03", "origin": "I-CV10-08",        "destination": "I-N340-07",        "length": "2.58",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-N340-04", "origin": "I-N340-07",        "destination": "I-CV10-08",        "length": "2.58",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-N340-05", "origin": "I-CV10-09",        "destination": "I-N340-08",        "length": "1.91",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-CV10-N340-06", "origin": "I-N340-08",        "destination": "I-CV10-09",        "length": "1.91",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-AP7-03",  "origin": "I-AP7-03",         "destination": "I-N340-06",        "length": "0.95",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-AP7-04",  "origin": "I-N340-06",        "destination": "I-AP7-03",         "length": "0.95",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-CS22-01", "origin": "I-N340-04",        "destination": "I-CS22-01",        "length": "2.59",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-CS22-02", "origin": "I-CS22-01",        "destination": "I-N340-04",        "length": "2.59",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-CS22-03", "origin": "I-N340-05",        "destination": "I-CS22-01",        "length": "1.65",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}
-{"id": "S-N340-CS22-04", "origin": "I-CS22-01",        "destination": "I-N340-05",        "length": "1.65",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2"}       
+{"id": "S-CV10-01",      "origin": "I-CV10-01",        "destination": "I-CV10-02",        "length": "2.03",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-02"]}
+{"id": "S-CV10-02",      "origin": "I-CV10-02",        "destination": "I-CV10-01",        "length": "2.03",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-01"]}
+{"id": "S-CV10-03",      "origin": "I-CV10-02",        "destination": "I-CV10-03",        "length": "4.2",   "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-04"]}
+{"id": "S-CV10-04",      "origin": "I-CV10-03",        "destination": "I-CV10-02",        "length": "4.2",   "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-03"]}
+{"id": "S-CV10-05",      "origin": "I-CV10-03",        "destination": "I-CV10-04",        "length": "4.77",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-06"]}
+{"id": "S-CV10-06",      "origin": "I-CV10-04",        "destination": "I-CV10-03",        "length": "4.77",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-05"]}
+{"id": "S-CV10-07",      "origin": "I-CV10-04",        "destination": "I-CV10-05",        "length": "2.26",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-08"]}
+{"id": "S-CV10-08",      "origin": "I-CV10-05",        "destination": "I-CV10-04",        "length": "2.26",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-07"]}
+{"id": "S-CV10-09",      "origin": "I-CV10-05",        "destination": "I-CV10-06",        "length": "4.58",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-10"]}
+{"id": "S-CV10-10",      "origin": "I-CV10-06",        "destination": "I-CV10-05",        "length": "4.58",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-09"]}
+{"id": "S-CV10-11",      "origin": "I-CV10-06",        "destination": "I-CV10-07",        "length": "2.17",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-12"]}
+{"id": "S-CV10-12",      "origin": "I-CV10-07",        "destination": "I-CV10-06",        "length": "2.17",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-11"]}
+{"id": "S-CV10-13",      "origin": "I-CV10-07",        "destination": "I-CV10-08",        "length": "1.89",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-14"]}
+{"id": "S-CV10-14",      "origin": "I-CV10-08",        "destination": "I-CV10-07",        "length": "1.89",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-13"]}
+{"id": "S-CV10-15",      "origin": "I-CV10-08",        "destination": "I-CV10-09",        "length": "2.09",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-16"]}
+{"id": "S-CV10-16",      "origin": "I-CV10-09",        "destination": "I-CV10-08",        "length": "2.09",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-15"]}
+{"id": "S-CV10-17",      "origin": "I-CV10-09",        "destination": "I-CV10-10",        "length": "1.69",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-18"]}
+{"id": "S-CV10-18",      "origin": "I-CV10-10",        "destination": "I-CV10-09",        "length": "1.69",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-17"]}
+{"id": "S-N340-01",      "origin": "I-N340-01",        "destination": "I-N340-02-AP7-02", "length": "2.66",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-02"]}
+{"id": "S-N340-02",      "origin": "I-N340-02-AP7-02", "destination": "I-N340-01",        "length": "2.66",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-01"]}
+{"id": "S-N340-03",      "origin": "I-N340-02-AP7-02", "destination": "I-N340-03",        "length": "1.54",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-04"]}
+{"id": "S-N340-04",      "origin": "I-N340-03",        "destination": "I-N340-02-AP7-02", "length": "1.54",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-03"]}
+{"id": "S-N340-05",      "origin": "I-N340-03",        "destination": "I-N340-04",        "length": "6.59",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-06"]}
+{"id": "S-N340-06",      "origin": "I-N340-04",        "destination": "I-N340-03",        "length": "6.59",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-05"]}
+{"id": "S-N340-07",      "origin": "I-N340-04",        "destination": "I-N340-05",        "length": "2.32",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-08"]}
+{"id": "S-N340-08",      "origin": "I-N340-05",        "destination": "I-N340-04",        "length": "2.32",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-07"]}
+{"id": "S-N340-09",      "origin": "I-N340-05",        "destination": "I-N340-06",        "length": "1.52",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-10"]}
+{"id": "S-N340-10",      "origin": "I-N340-06",        "destination": "I-N340-05",        "length": "1.52",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-09"]}
+{"id": "S-N340-11",      "origin": "I-N340-06",        "destination": "I-N340-07",        "length": "1.04",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-12"]}
+{"id": "S-N340-12",      "origin": "I-N340-07",        "destination": "I-N340-06",        "length": "1.04",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-11"]}
+{"id": "S-N340-13",      "origin": "I-N340-07",        "destination": "I-N340-08",        "length": "1.55",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-14"]}
+{"id": "S-N340-14",      "origin": "I-N340-08",        "destination": "I-N340-07",        "length": "1.55",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-13"]}
+{"id": "S-N340-15",      "origin": "I-N340-08",        "destination": "I-N340-09",        "length": "4.87",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-16"]}
+{"id": "S-N340-16",      "origin": "I-N340-09",        "destination": "I-N340-08",        "length": "4.87",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-15"]}
+{"id": "S-AP7-01",       "origin": "I-AP7-01",         "destination": "I-N340-02-AP7-02", "length": "4.76",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-AP7-02"]}
+{"id": "S-AP7-02",       "origin": "I-N340-02-AP7-02", "destination": "I-AP7-01",         "length": "4.76",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-AP7-01"]}
+{"id": "S-AP7-03",       "origin": "I-N340-02-AP7-02", "destination": "I-AP7-03",         "length": "12.16", "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-AP7-04"]}
+{"id": "S-AP7-04",       "origin": "I-AP7-03",         "destination": "I-N340-02-AP7-02", "length": "12.16", "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-AP7-03"]}
+{"id": "S-AP7-05",       "origin": "I-AP7-03",         "destination": "I-AP7-04",         "length": "7.09",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-AP7-06"]}
+{"id": "S-AP7-06",       "origin": "I-AP7-04",         "destination": "I-AP7-03",         "length": "7.09",  "maxSpeed": "120", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-AP7-05"]}
+{"id": "S-CS22-01",      "origin": "I-CS22-01",        "destination": "I-CS22-02",        "length": "3.85",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CS22-02"]}
+{"id": "S-CS22-02",      "origin": "I-CS22-02",        "destination": "I-CS22-01",        "length": "3.85",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CS22-01"]}
+{"id": "S-CS22-03",      "origin": "I-CS22-02",        "destination": "I-CS22-03",        "length": "1.59",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CS22-04"]}
+{"id": "S-CS22-04",      "origin": "I-CS22-03",        "destination": "I-CS22-02",        "length": "1.59",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CS22-03"]}
+{"id": "S-CS22-05",      "origin": "I-CS22-03",        "destination": "I-CS22-04",        "length": "3.83",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CS22-06"]}
+{"id": "S-CS22-06",      "origin": "I-CS22-04",        "destination": "I-CS22-03",        "length": "3.83",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CS22-05"]}
+{"id": "S-CV10-N340-01", "origin": "I-CV10-02",        "destination": "I-N340-01",        "length": "2.24",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-N340-02"]}
+{"id": "S-CV10-N340-02", "origin": "I-N340-01",        "destination": "I-CV10-02",        "length": "2.24",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-N340-01"]}
+{"id": "S-CV10-N340-03", "origin": "I-CV10-08",        "destination": "I-N340-07",        "length": "2.58",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-N340-04"]}
+{"id": "S-CV10-N340-04", "origin": "I-N340-07",        "destination": "I-CV10-08",        "length": "2.58",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-N340-03"]}
+{"id": "S-CV10-N340-05", "origin": "I-CV10-09",        "destination": "I-N340-08",        "length": "1.91",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-N340-06"]}
+{"id": "S-CV10-N340-06", "origin": "I-N340-08",        "destination": "I-CV10-09",        "length": "1.91",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-CV10-N340-05"]}
+{"id": "S-N340-AP7-03",  "origin": "I-AP7-03",         "destination": "I-N340-06",        "length": "0.95",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-AP7-04"]}
+{"id": "S-N340-AP7-04",  "origin": "I-N340-06",        "destination": "I-AP7-03",         "length": "0.95",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-AP7-03"]}
+{"id": "S-N340-CS22-01", "origin": "I-N340-04",        "destination": "I-CS22-01",        "length": "2.59",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-CS22-02"]}
+{"id": "S-N340-CS22-02", "origin": "I-CS22-01",        "destination": "I-N340-04",        "length": "2.59",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-CS22-01"]}
+{"id": "S-N340-CS22-03", "origin": "I-N340-05",        "destination": "I-CS22-01",        "length": "1.65",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-CS22-04"]}
+{"id": "S-N340-CS22-04", "origin": "I-CS22-01",        "destination": "I-N340-05",        "length": "1.65",  "maxSpeed": "100", "capacity": "10", "density": "0", "numberTracks": "2" , "twins": ["S-N340-CS22-03"]}       
