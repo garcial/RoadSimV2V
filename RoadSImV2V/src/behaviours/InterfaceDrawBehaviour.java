@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import javax.swing.SwingUtilities;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import agents.InterfaceAgent;
@@ -48,9 +49,10 @@ public class InterfaceDrawBehaviour extends Behaviour {
 					@Override
 					public void run() {
 
-						String parts[] = msg.getContent().split("#");
+						
 						HashMap<String, Mobile> cars = agent.getMap().getCars();
-
+						
+						/*String parts[] = msg.getContent().split("#");
 						for (int i=1; i < parts.length; i+=4) {
 
 							Mobile m = cars.get(parts[i]);
@@ -60,6 +62,20 @@ public class InterfaceDrawBehaviour extends Behaviour {
 								m.setX(Float.parseFloat(parts[i+1]));
 								m.setY(Float.parseFloat(parts[i+2]));
 								m.setSpecialColor(Boolean.valueOf(parts[i+3]));
+							}
+						}*/
+						
+						JSONObject cont = new JSONObject(msg.getContent());
+						JSONArray list = cont.getJSONArray("cars");
+						for(int i = 0; i < list.length(); i++){
+							JSONObject obj = list.getJSONObject(i);
+							Mobile m = cars.get(obj.get("id"));
+							
+							if (m != null) {
+
+								m.setX((float) obj.getDouble("x"));
+								m.setY((float) obj.getDouble("y"));
+								m.setSpecialColor(obj.getBoolean("specialColor"));
 							}
 						}
 

@@ -8,6 +8,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import behaviours.SegmentListenBehaviour;
 import behaviours.SegmentRadarBehaviour;
 import behaviours.SegmentSendToDrawBehaviour;
@@ -144,16 +147,28 @@ public class SegmentAgent extends Agent {
 	public String getDrawingInformation() {
 
 		//It is far more efficient to use this rather than a simple String
-		StringBuilder ret = new StringBuilder();
-
+		/*StringBuilder ret = new StringBuilder();
 		ret.append(cars.size() + "#");
-
 		for(CarData car: cars.values()) {
-
 			ret.append(car.getId() + "#" + Float.toString(car.getX()) + "#" + Float.toString(car.getY()) + "#" + Boolean.toString(car.getSpecialColor()) + "#");
 		}
+		return ret.toString();*/
+		// resp = { "cars": [ "id" : "foo"...], ["id" : "foo2"...] }
+		// Como queremos esta estructura hemos preparado un JSONObject y metido una lista
+		JSONObject resp = new JSONObject();
+		JSONArray ret = new JSONArray();
 
-		return ret.toString();
+		for(CarData car: cars.values()) {
+			JSONObject ret2 = new JSONObject();
+			ret2.put("id", car.getId());
+			ret2.put("x", car.getX());
+			ret2.put("y", car.getY());
+			ret2.put("specialColor", car.getSpecialColor());
+			ret.put(ret2);
+		}
+		
+		resp.put("cars", ret);
+		return resp.toString();
 	}
 
 	/**
