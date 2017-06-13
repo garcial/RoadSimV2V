@@ -1,5 +1,7 @@
 package behaviours;
 
+import org.json.JSONObject;
+
 import agents.CarAgent;
 import agents.SegmentAgent;
 import jade.core.AID;
@@ -34,7 +36,16 @@ public class CarSendingDataBehaviour extends Behaviour {
 			msg.setOntology("roadTwinsOntology");
 			// Ask to twin Segment of the current segment on other cars in my sensor space
 			msg.addReceiver(new SegmentAgent().getAID()); // TODO:
-			msg.setContent(carAgent.getX()+"#"+carAgent.getY()+"#"+carAgent.getRatio()+"#"+carAgent.getId());
+			//msg.setContent(carAgent.getX()+"#"+carAgent.getY()+"#"+carAgent.getRatio()+"#"+carAgent.getId());
+			
+			JSONObject content = new JSONObject();
+			content.put("x", carAgent.getX());
+			content.put("y", carAgent.getY());
+			content.put("radio", carAgent.getRatio());
+			content.put("id", carAgent.getId());
+			
+			msg.setContent(content.toString());
+			
 			carAgent.send(msg);
 			step++;
 			break;
