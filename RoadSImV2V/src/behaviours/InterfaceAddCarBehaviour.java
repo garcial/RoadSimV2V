@@ -39,6 +39,15 @@ public class InterfaceAddCarBehaviour extends CyclicBehaviour {
 		if (msg != null) {
 			
 			//Get the data
+			/*String cont = msg.getContent();
+ 
+ 			final String id = cont.substring(cont.indexOf("id=")+3, cont.indexOf("algorithmType="));
+ 			final float x = Float.parseFloat(cont.substring(
+ 					cont.indexOf("x=")+2, cont.indexOf("y=")));
+ 			final float y = Float.parseFloat(cont.substring(
+ 					cont.indexOf("y=")+2, cont.indexOf("id=")));
+ 			final int algorithmType = Integer.parseInt(cont.substring(
+ 					cont.indexOf("algorithmType=")+14));*/
 			JSONObject cont = new JSONObject(msg.getContent());
 
 			final String id = cont.getString("id");

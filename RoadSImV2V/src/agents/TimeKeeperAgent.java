@@ -147,6 +147,7 @@ public class TimeKeeperAgent extends Agent {
 					msg = new ACLMessage(ACLMessage.INFORM);
 					msg.addReceiver(interfaceAgent.getName());
 					msg.setOntology("numberOfCarsOntology");
+					//msg.setContent(Integer.toString(cars.length));
 					JSONObject numberOfCars = new JSONObject();
 					numberOfCars.put("numberOfCars", cars.length);
 					
@@ -180,6 +181,7 @@ public class TimeKeeperAgent extends Agent {
 				ACLMessage msg = myAgent.receive(mt);
 
 				if (msg != null) {
+					// ((TimeKeeperAgent)this.myAgent).setTickLength(Long.parseLong(msg.getContent()));
 					JSONObject messageData = new JSONObject(msg.getContent()); 
 					Long tickLength = (long) (messageData.getInt("idTick"));
 					System.out.println(tickLength);

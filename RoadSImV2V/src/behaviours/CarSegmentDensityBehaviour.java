@@ -22,7 +22,7 @@ public class CarSegmentDensityBehaviour extends CyclicBehaviour {
 	public void action() {
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg!= null) {
-			
+			//myCarAgent.setCurrentTrafficDensity(Double.parseDouble(msg.getContent()));
 			JSONObject densityData = new JSONObject(msg.getContent());
 			myCarAgent.setCurrentTrafficDensity(densityData.getDouble("density"));
 		} else block();

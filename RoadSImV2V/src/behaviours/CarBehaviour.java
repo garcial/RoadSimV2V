@@ -148,7 +148,10 @@ public class CarBehaviour extends CyclicBehaviour {
 		msg.setOntology("carToSegmentOntology");
 		msg.setConversationId(type);
 		msg.addReceiver(segment.getSegmentAgent().getAID());
-		
+		/* msg.setContent(this.agent.getId() + "#" + Float.toString(this.agent.getX()) + 
+ 				"#" + Float.toString(this.agent.getY()) + "#" + this.agent.getSpecialColor() + 
+ 				"#" +this.agent.getRatio()+ "#");
+		 * */
 		JSONObject carDataRegister = new JSONObject();
 		carDataRegister.put("id", this.agent.getId());
 		carDataRegister.put("x", this.agent.getX());

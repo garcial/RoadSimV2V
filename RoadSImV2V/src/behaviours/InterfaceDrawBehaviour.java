@@ -120,6 +120,8 @@ public class InterfaceDrawBehaviour extends Behaviour {
 
 					@Override
 					public void run() {
+						
+						//agent.getMap().setNumberOfCars(Integer.parseInt(msg.getContent()));
 						JSONObject numberOfCarsData = new JSONObject(msg.getContent());
 						int numberOfCars = (int) numberOfCarsData.get("numberOfCars");
 						agent.getMap().setNumberOfCars(numberOfCars);	

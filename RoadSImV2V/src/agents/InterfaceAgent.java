@@ -102,6 +102,7 @@ public class InterfaceAgent extends Agent{
 		JSONObject jsonmessage = new JSONObject();
 		jsonmessage.put("idTick", newTick);
 		System.out.println("idTick: " + jsonmessage.toString());
+		//msg.setContent(Integer.toString(newTick));
 		msg.setContent(jsonmessage.toString());
 		this.send(msg);
 	}

@@ -138,6 +138,7 @@ public class CarAgent extends Agent {
 		//We notify the interface about the new car
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		msg.addReceiver(interfaceAgent.getName());
+		//msg.setContent("x="+this.x+"y="+this.y+"id="+this.id+"algorithmType="+this.algorithmType);
 		JSONObject carData = new JSONObject();
 		carData.put("x", this.x);
 		carData.put("y", this.y);
@@ -157,6 +158,8 @@ public class CarAgent extends Agent {
 		msg.setConversationId("register");
 		msg.addReceiver(next.getSegment().getSegmentAgent().getAID());
 		
+		/* msg.setContent(getId() + "#" + Float.toString(getX()) + "#" + Float.toString(getY()) + 
+		 				       "#" + getSpecialColor() + "#" + getRatio()+"#"); */
 		JSONObject carDataRegister = new JSONObject();
 		carDataRegister.put("id", getId());
 		carDataRegister.put("x", getX());
@@ -172,6 +175,7 @@ public class CarAgent extends Agent {
 		
 		JSONObject densityData = new JSONObject(msg.getContent());
 		
+		// setCurrentTrafficDensity(Double.parseDouble(msg.getContent()));
 		setCurrentTrafficDensity(densityData.getDouble("density"));
 		//Change my speed according to the maximum allowed speed
 	    setCurrentSpeed(Math.min(getMaxSpeed(), getCurrentSegment().getCurrentAllowedSpeed()));
