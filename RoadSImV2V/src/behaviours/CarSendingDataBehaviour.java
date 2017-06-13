@@ -1,5 +1,6 @@
 package behaviours;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import agents.CarAgent;
@@ -52,8 +53,11 @@ public class CarSendingDataBehaviour extends Behaviour {
 		case 1: 
 			ACLMessage req = myAgent.receive(mtTwins);
 			if (req!= null){
-				String[] contenido = req.getContent().split("#");
-				int numTwins = Integer.parseInt(contenido[contenido.length-1]);
+				//String[] contenido = req.getContent().split("#");
+				JSONObject contenido = new JSONObject(req.getContent());
+				//Contenido tiene la siguiente estructura {"ids": ["234242@232", "ferf234123@",...]}
+				JSONArray list = contenido.getJSONArray("ids");
+				int numTwins = list.length();
 				// Ojo con pedir la misma información varias veces al mismo
 				//    vehículo durante el tiempo en que coinciden en el radio 
 				//    de localización => Lo hace el agente segmento
@@ -61,8 +65,8 @@ public class CarSendingDataBehaviour extends Behaviour {
 				// Si al menos hay un vecino con el que comunicarse ...
 				ACLMessage msgInf = new ACLMessage(ACLMessage.INFORM);
 				msgInf.setOntology("roadStateOntology");
-				for(int i = 1; i < contenido.length; i++) {
-					msgInf.addReceiver(new AID(contenido[i], true));
+				for(int i = 1; i < list.length(); i++) {
+					msgInf.addReceiver(new AID(list.get(i).toString(), true));
 				}
 				msgInf.setConversationId("Aquí va un JGraph");
 				// There are two options:

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import agents.SegmentAgent;
@@ -61,16 +62,21 @@ public class SegmentRadarBehaviour extends CyclicBehaviour {
 			ACLMessage msgCarsOnRadio = new ACLMessage(ACLMessage.INFORM);
 			// Filter just cars not used before for this carAgent
 			int cont = 0;
-			StringBuilder str = new StringBuilder();
+			//StringBuilder str = new StringBuilder();
+			JSONObject objres = new JSONObject();
+			JSONArray list = new JSONArray();
 			for(String id:twins) {
 				if (!mySegmentAgent.isCarUsed(idSolicitante, id)) {
-					str.append(id).append("#");
+					list.put(id);
+					//str.append(id).append("#");
 					cont++;
 				}
 			}
-			str.append(cont);
+			//str.append(cont);
+			objres.put("ids", list);
 			msgCarsOnRadio.setOntology("roadTwinsOntology");
-			msgCarsOnRadio.setContent(str.toString());
+			//msgCarsOnRadio.setContent(str.toString());
+			msgCarsOnRadio.setContent(objres.toString());
 			mySegmentAgent.send(msgCarsOnRadio);
 
 		} else block();
