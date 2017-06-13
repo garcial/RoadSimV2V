@@ -283,7 +283,8 @@ public class CanvasWorld extends JFrame implements ActionListener, ChangeListene
 	 */
 	public void deleteCar(String id) {
 
-		contentPane.deleteCar(id);
+		JSONObject objid = new JSONObject(id);
+		contentPane.deleteCar(objid.getString("id"));
 	}
 
 	//Setters and getters

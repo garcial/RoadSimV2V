@@ -1,6 +1,7 @@
 package behaviours;
 
 import org.json.JSONObject;
+import org.json.ToJSON;
 
 import agents.CarAgent;
 import environment.Segment;
@@ -176,7 +177,7 @@ public class CarBehaviour extends CyclicBehaviour {
 			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 			msg.setOntology("deleteCarOntology");
 			msg.addReceiver(this.agent.getInterfaceAgent().getName());
-			msg.setContent(this.agent.getId());
+			msg.setContent(ToJSON.toJSon("id",this.agent.getId()));
 
 			myAgent.send(msg);
 		}
