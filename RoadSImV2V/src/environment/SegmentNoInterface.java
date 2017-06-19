@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import agents.SegmentAgent;
+import agentsNoInterface.SegmentAgent;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 
@@ -14,7 +14,7 @@ import jade.wrapper.StaleProxyException;
  * This section is only accessible from its origin and can only be 
  * left by its destination.
  */
-public class Segment implements Serializable{
+public class SegmentNoInterface implements Serializable{
 
 	private static final long serialVersionUID = -6853406084306746147L;
 
@@ -78,7 +78,7 @@ public class Segment implements Serializable{
 	/**
 	 * Default constructor. 
 	 */
-	public Segment(){
+	public SegmentNoInterface(){
 
 		this.id = "";
 		this.origin = new Intersection();
@@ -100,11 +100,11 @@ public class Segment implements Serializable{
 	/**
 	 * Constructor. 
 	 *
-	 * @param  origin {@link Intersection} where this {@link Segment} starts.
-	 * @param  destination {@link Intersection} where this {@link Segment} ends.
-	 * @param  length The length of this {@link Segment} in Km.
+	 * @param  origin {@link Intersection} where this {@link SegmentNoInterface} starts.
+	 * @param  destination {@link Intersection} where this {@link SegmentNoInterface} ends.
+	 * @param  length The length of this {@link SegmentNoInterface} in Km.
 	 */
-	public Segment(String id, Intersection origin, Intersection destination, 
+	public SegmentNoInterface(String id, Intersection origin, Intersection destination, 
 			       double length, int maxSpeed, int capacity, int density, 
 			       int numberTracks, jade.wrapper.AgentContainer mainContainer, 
 			       boolean segmentLogging, String loggingDirectory){
@@ -143,6 +143,12 @@ public class Segment implements Serializable{
 
 			agent.start();
 			
+			//Agent Controller to segments without interface
+			AgentController agentNoOnterface = mainContainer.createNewAgent(
+					this.id, "agentsNoInterface.SegmentAgent", new Object[]{this});
+
+			agentNoOnterface.start();
+
 		} catch (StaleProxyException e) {
 
 			System.out.println("Error starting " + this.id);

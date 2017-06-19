@@ -141,41 +141,81 @@ public class Main {
 		}
 
 		//Create the agents
-		//Interface
-		try {
+		//Interface if is necesary
+		if(drawGUI){
+			try {
 
-			AgentController agent = 
-					mainContainer.createNewAgent("interfaceAgent",
-							"agents.InterfaceAgent", new Object[]{map, drawGUI});
+				AgentController agent = 
+						mainContainer.createNewAgent("interfaceAgent",
+								"agents.InterfaceAgent", new Object[]{map, drawGUI});
 
-			agent.start();
+				agent.start();
 
-		} catch (StaleProxyException e) {
+			} catch (StaleProxyException e) {
 
-			System.out.println("Error starting the interface");
-			e.printStackTrace();
+				System.out.println("Error starting the interface");
+				e.printStackTrace();
+			}
+
+			//TimeKeeper
+			try {
+				AgentController agent = 
+						mainContainer.createNewAgent("timeKeeperAgent",
+								"agents.TimeKeeperAgent",
+								new Object[]{tickLength, startingTick, finishingTick});
+
+				agent.start();
+
+			} catch (StaleProxyException e1) {
+
+				System.out.println("Error starting the TimeKeeper agent");
+				e1.printStackTrace();
+			}
+
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e2) {
+				e2.printStackTrace();
+			}
+		} else {
+			try {
+
+				AgentController agent = 
+						mainContainer.createNewAgent("interfaceAgent",
+								"agentsNoInterface.InterfaceAgent", new Object[]{map, drawGUI});
+
+				agent.start();
+
+			} catch (StaleProxyException e) {
+
+				System.out.println("Error starting the interface");
+				e.printStackTrace();
+			}
+
+			//TimeKeeper
+			try {
+				AgentController agent = 
+						mainContainer.createNewAgent("timeKeeperAgent",
+								"agentsNoInterface.TimeKeeperAgent",
+								new Object[]{tickLength, startingTick, finishingTick});
+
+				agent.start();
+
+			} catch (StaleProxyException e1) {
+
+				System.out.println("Error starting the TimeKeeper agent");
+				e1.printStackTrace();
+			}
+
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e2) {
+				e2.printStackTrace();
+			}
 		}
 
-		//TimeKeeper
-		try {
-			AgentController agent = 
-					mainContainer.createNewAgent("timeKeeperAgent",
-							"agents.TimeKeeperAgent",
-							new Object[]{tickLength, startingTick, finishingTick});
-
-			agent.start();
-
-		} catch (StaleProxyException e1) {
-
-			System.out.println("Error starting the TimeKeeper agent");
-			e1.printStackTrace();
-		}
-
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e2) {
-			e2.printStackTrace();
-		}
+		
+		
 
 		//Cars
 		//Create a profile for the car container
@@ -204,13 +244,23 @@ public class Main {
 
 			try {
 
-				AgentController agent = 
-						carContainer.createNewAgent("car" + Integer.toString(i) 
-						          + "Agent", "agents.CarAgent", 
-						          new Object[]{map, initialintersection,
-						        		       finalIntersection, 120, "fastest"});
+				if(drawGUI){
+					AgentController agent = 
+							carContainer.createNewAgent("car" + Integer.toString(i) 
+							          + "Agent", "agents.CarAgent", 
+							          new Object[]{map, initialintersection,
+							        		       finalIntersection, 120, "fastest"});
 
-				agent.start();
+					agent.start();
+				} else {
+					AgentController agent = 
+							carContainer.createNewAgent("car" + Integer.toString(i) 
+							          + "Agent", "agentsNoInterface.CarAgent", 
+							          new Object[]{map, initialintersection,
+							        		       finalIntersection, 120, "fastest"});
+
+					agent.start();
+				}
 
 			} catch (StaleProxyException e) {
 
@@ -221,13 +271,25 @@ public class Main {
 		
 		//EventManager
 		try {
-			AgentController agent = 
-					mainContainer.createNewAgent("eventManagerAgent",
-							"agents.EventManagerAgent", 
-							new Object[]{map, carContainer, segmentContainer,
-									    "staticFiles/events", startingTick});
+			
+			if(drawGUI){
+				AgentController agent = 
+						mainContainer.createNewAgent("eventManagerAgent",
+								"agents.EventManagerAgent", 
+								new Object[]{map, carContainer, segmentContainer,
+										    "staticFiles/events", startingTick});
 
-			agent.start();
+				agent.start();
+			}else{
+				AgentController agent = 
+						mainContainer.createNewAgent("eventManagerAgent",
+								"agentsNoInterface.EventManagerAgent", 
+								new Object[]{map, carContainer, segmentContainer,
+										    "staticFiles/events", startingTick});
+
+				agent.start();
+			}
+			
 
 		} catch (StaleProxyException e1) {
 

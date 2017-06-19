@@ -1,4 +1,4 @@
-package behaviours;
+package behavioursNoInterface;
 
 import java.util.HashMap;
 
@@ -7,7 +7,7 @@ import javax.swing.SwingUtilities;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import agents.InterfaceAgent;
+import agentsNoInterface.InterfaceAgent;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
@@ -79,7 +79,7 @@ public class InterfaceDrawBehaviour extends Behaviour {
 							}
 						}
 
-						agent.getMap().setCars(cars);
+						//agent.getMap().setCars(cars);
 					}
 				});
 			} else if (msg.getOntology().equals("deleteCarOntology")) {
@@ -88,7 +88,8 @@ public class InterfaceDrawBehaviour extends Behaviour {
 
 					@Override
 					public void run() {
-						agent.getMap().deleteCar(msg.getContent());	
+
+						//agent.getMap().deleteCar(msg.getContent());	
 					}
 				});
 
@@ -99,7 +100,7 @@ public class InterfaceDrawBehaviour extends Behaviour {
 					@Override
 					public void run() {
 
-						agent.getMap().setTime(msg.getContent());	
+						//agent.getMap().setTime(msg.getContent());	
 					}
 				});
 			} else if (msg.getOntology().equals("logOntology")) {
@@ -109,7 +110,7 @@ public class InterfaceDrawBehaviour extends Behaviour {
 					@Override
 					public void run() {
 
-						agent.getMap().appendText(msg.getContent());	
+						//agent.getMap().appendText(msg.getContent());	
 					}
 				});
 
@@ -123,7 +124,7 @@ public class InterfaceDrawBehaviour extends Behaviour {
 						//agent.getMap().setNumberOfCars(Integer.parseInt(msg.getContent()));
 						JSONObject numberOfCarsData = new JSONObject(msg.getContent());
 						int numberOfCars = (int) numberOfCarsData.get("numberOfCars");
-						agent.getMap().setNumberOfCars(numberOfCars);	
+						//agent.getMap().setNumberOfCars(numberOfCars);	
 					}
 				}); 
 			}
