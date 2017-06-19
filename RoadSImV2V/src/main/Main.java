@@ -178,20 +178,6 @@ public class Main {
 				e2.printStackTrace();
 			}
 		} else {
-			try {
-
-				AgentController agent = 
-						mainContainer.createNewAgent("interfaceAgent",
-								"agentsNoInterface.InterfaceAgent", new Object[]{map, drawGUI});
-
-				agent.start();
-
-			} catch (StaleProxyException e) {
-
-				System.out.println("Error starting the interface");
-				e.printStackTrace();
-			}
-
 			//TimeKeeper
 			try {
 				AgentController agent = 
