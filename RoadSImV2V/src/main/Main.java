@@ -131,9 +131,9 @@ public class Main {
 
 		//Load the map
 		try {
-
+			// The map load the segments that create the SegmentAgent
 			map = new Map("staticFiles/map", segmentContainer,
-					      segmentLogging, loggingDirectory);
+					      segmentLogging, loggingDirectory, drawGUI);
 		} catch (IOException e) {
 
 			System.out.println("Error reading the maps file.");
