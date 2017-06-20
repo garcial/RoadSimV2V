@@ -48,6 +48,7 @@ public class TimeKeeperAgent extends Agent {
 			fe.printStackTrace(); 
 		}
 
+		// Decide is is necessary draw the interface 
 		this.drawGUI = (boolean) this.getArguments()[0];
 		
 		if(this.drawGUI){
@@ -185,7 +186,6 @@ public class TimeKeeperAgent extends Agent {
 
 				@Override
 				public void action() {
-
 					ACLMessage msg = myAgent.receive(mt);
 
 					if (msg != null) {

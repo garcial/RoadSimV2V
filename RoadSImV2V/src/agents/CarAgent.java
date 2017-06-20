@@ -38,6 +38,7 @@ public class CarAgent extends Agent {
 	private double currentTrafficDensity;
 	private String id; 
 	private DFAgentDescription interfaceAgent;
+	private boolean drawGUI;
 	private Map map;
 	private Path path;
 	private Segment currentSegment;
@@ -66,16 +67,19 @@ public class CarAgent extends Agent {
 			//simply kill it for now.
 			this.takeDown();
 		}
+		
+		//Is necessary draw th gui
+		this.drawGUI = (boolean) this.getArguments()[0];
 
 		//Get the map from an argument
-		this.map = (Map) this.getArguments()[0];
+		this.map = (Map) this.getArguments()[1];
 		
 		//Get the starting and final points of my trip
-		this.initialIntersection = (String) this.getArguments()[1];
-		this.finalIntersection = (String) this.getArguments()[2];
+		this.initialIntersection = (String) this.getArguments()[2];
+		this.finalIntersection = (String) this.getArguments()[3];
 		
 		//Get the speeds
-		this.maxSpeed = (int) this.getArguments()[3];
+		this.maxSpeed = (int) this.getArguments()[4];
 		this.currentSpeed = 0; //Se gestiona en el comportamiento 
 		                       // (int) this.getArguments()[4];
 
@@ -83,7 +87,7 @@ public class CarAgent extends Agent {
 		AlgorithmFactory factory = new AlgorithmFactory();
 		this.alg = null;
 		
-		String routeType = (String) this.getArguments()[4];
+		String routeType = (String) this.getArguments()[5];
 		
 		if (routeType.equals("fastest")) {
 			
@@ -109,44 +113,50 @@ public class CarAgent extends Agent {
 		setX(map.getIntersectionByID(getInitialIntersection()).getX());
 		setY(map.getIntersectionByID(getInitialIntersection()).getY());
 
-		//Find the interface agent
-		dfd = new DFAgentDescription();
-		sd = new ServiceDescription();
-		sd.setType("interfaceAgent");
-		dfd.addServices(sd);
+		if(this.drawGUI){
+			//Find the interface agent
+			dfd = new DFAgentDescription();
+			sd = new ServiceDescription();
+			sd.setType("interfaceAgent");
+			dfd.addServices(sd);
 
-		DFAgentDescription[] result = null;
+			DFAgentDescription[] result = null;
 
-		try {
-			result = DFService.searchUntilFound(
-					this, getDefaultDF(), dfd, null, 5000);
-		} catch (FIPAException e) { e.printStackTrace(); }
-
-		while (result == null || result[0] == null) {
-			
 			try {
 				result = DFService.searchUntilFound(
 						this, getDefaultDF(), dfd, null, 5000);
 			} catch (FIPAException e) { e.printStackTrace(); }
+
+			while (result == null || result[0] == null) {
+				
+				try {
+					result = DFService.searchUntilFound(
+							this, getDefaultDF(), dfd, null, 5000);
+				} catch (FIPAException e) { e.printStackTrace(); }
+			}
+			
+			this.interfaceAgent = result[0];
 		}
 		
-		this.interfaceAgent = result[0];
-
 		//An unique identifier for the car
 		this.id = getName().toString();
 
 		//We notify the interface about the new car
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-		msg.addReceiver(interfaceAgent.getName());
-		//msg.setContent("x="+this.x+"y="+this.y+"id="+this.id+"algorithmType="+this.algorithmType);
-		JSONObject carData = new JSONObject();
-		carData.put("x", this.x);
-		carData.put("y", this.y);
-		carData.put("id", this.id);
-		carData.put("algorithmType", this.algorithmType);
-		msg.setContent(carData.toString());
-		msg.setOntology("newCarOntology");
-		send(msg);
+		
+		if(this.drawGUI){
+			msg.addReceiver(interfaceAgent.getName());
+			//msg.setContent("x="+this.x+"y="+this.y+"id="+this.id+"algorithmType="+this.algorithmType);
+			JSONObject carData = new JSONObject();
+			carData.put("x", this.x);
+			carData.put("y", this.y);
+			carData.put("id", this.id);
+			carData.put("algorithmType", this.algorithmType);
+			msg.setContent(carData.toString());
+			msg.setOntology("newCarOntology");
+			send(msg);
+		}
+		
 
 		// Set the initial values for the carAgent on the road
 		Step next = getPath().getGraphicalPath().get(0);
@@ -179,16 +189,18 @@ public class CarAgent extends Agent {
 		setCurrentTrafficDensity(densityData.getDouble("density"));
 		//Change my speed according to the maximum allowed speed
 	    setCurrentSpeed(Math.min(getMaxSpeed(), getCurrentSegment().getCurrentAllowedSpeed()));
-			
-	    //If we are going under the maximum speed I'm allowed to go, or I can go, I am in a congestion, draw me differently
-	    if (getCurrentSpeed() < Math.min(this.getMaxSpeed(), this.getCurrentSegment().getMaxSpeed())) {
+		
+	    //The special color is useless without the interfaceAgent
+	    if(this.drawGUI){
+	    	//If we are going under the maximum speed I'm allowed to go, or I can go, I am in a congestion, draw me differently
+		    if (getCurrentSpeed() < Math.min(this.getMaxSpeed(), this.getCurrentSegment().getMaxSpeed())) {
 
-	    	setSpecialColor(true);
-	    } else {
+		    	setSpecialColor(true);
+		    } else {
 
-	    	setSpecialColor(false);
+		    	setSpecialColor(false);
+		    }
 	    }
-
 		//Runs the agent
 		addBehaviour(new CarBehaviour(this, 50));	
 	}
