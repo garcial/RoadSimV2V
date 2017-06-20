@@ -208,7 +208,7 @@ public class Main {
 				AgentController agent = 
 						carContainer.createNewAgent("car" + Integer.toString(i) 
 						          + "Agent", "agents.CarAgent", 
-						          new Object[]{map, initialintersection,
+						          new Object[]{drawGUI,map, initialintersection,
 						        		       finalIntersection, 120, "fastest"});
 	
 				agent.start();
