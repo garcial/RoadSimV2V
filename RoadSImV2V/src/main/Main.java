@@ -208,9 +208,9 @@ public class Main {
 				AgentController agent = 
 						carContainer.createNewAgent("car" + Integer.toString(i) 
 						          + "Agent", "agents.CarAgent", 
-						          new Object[]{drawGUI,map, initialintersection,
-						        		       finalIntersection, 120, "fastest"});
-	
+						          new Object[]{map, initialintersection,
+						        		       finalIntersection, 120, "fastest", drawGUI});
+				System.out.println("Se crea un coche");
 				agent.start();
 				
 			} catch (StaleProxyException e) {

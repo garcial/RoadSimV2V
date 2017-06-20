@@ -86,8 +86,8 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 					if (parts[0].equals("newCar")) {
 						
 						try {
-
-							AgentController agent = this.agent.getCarContainer().createNewAgent("car" + Long.toString(currentTick) + Integer.toString(counter), "agents.CarAgent", new Object[]{this.agent.getMap(), parts[2], parts[3], Integer.parseInt(parts[4]), parts[5]});
+							// SE ha añadido un true antes de hacer el cambio
+							AgentController agent = this.agent.getCarContainer().createNewAgent("car" + Long.toString(currentTick) + Integer.toString(counter), "agents.CarAgent", new Object[]{this.agent.getMap(), parts[2], parts[3], Integer.parseInt(parts[4]), parts[5], true});
 
 							agent.start();
 							

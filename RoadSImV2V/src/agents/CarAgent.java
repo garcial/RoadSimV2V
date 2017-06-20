@@ -69,17 +69,17 @@ public class CarAgent extends Agent {
 		}
 		
 		//Is necessary draw th gui
-		this.drawGUI = (boolean) this.getArguments()[0];
+		this.drawGUI = (boolean) this.getArguments()[5];
 
 		//Get the map from an argument
-		this.map = (Map) this.getArguments()[1];
+		this.map = (Map) this.getArguments()[0];
 		
 		//Get the starting and final points of my trip
-		this.initialIntersection = (String) this.getArguments()[2];
-		this.finalIntersection = (String) this.getArguments()[3];
+		this.initialIntersection = (String) this.getArguments()[1];
+		this.finalIntersection = (String) this.getArguments()[2];
 		
 		//Get the speeds
-		this.maxSpeed = (int) this.getArguments()[4];
+		this.maxSpeed = (int) this.getArguments()[3];
 		this.currentSpeed = 0; //Se gestiona en el comportamiento 
 		                       // (int) this.getArguments()[4];
 
@@ -87,7 +87,7 @@ public class CarAgent extends Agent {
 		AlgorithmFactory factory = new AlgorithmFactory();
 		this.alg = null;
 		
-		String routeType = (String) this.getArguments()[5];
+		String routeType = (String) this.getArguments()[4];
 		
 		if (routeType.equals("fastest")) {
 			
