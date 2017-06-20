@@ -227,7 +227,7 @@ public class Main {
 					mainContainer.createNewAgent("eventManagerAgent",
 							"agents.EventManagerAgent", 
 							new Object[]{map, carContainer, segmentContainer,
-									    "staticFiles/events", startingTick});
+									    "staticFiles/events", startingTick,drawGUI});
 
 			agent.start();
 
