@@ -115,12 +115,14 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 					counter++;
 				}
 				
-				msg = new ACLMessage(ACLMessage.INFORM);
-				msg.setOntology("logOntology");
-				msg.addReceiver(this.agent.getInterfaceAgent().getName());
-				msg.setContent(str.toString());
+				if(this.drawGUI){
+					msg = new ACLMessage(ACLMessage.INFORM);
+					msg.setOntology("logOntology");
+					msg.addReceiver(this.agent.getInterfaceAgent().getName());
+					msg.setContent(str.toString());
 
-				myAgent.send(msg);
+					myAgent.send(msg);
+				}
 			}
 		} else block();
 	}

@@ -44,7 +44,7 @@ public class CarSendingDataBehaviour extends Behaviour {
 			content.put("y", carAgent.getY());
 			content.put("radio", carAgent.getRatio());
 			content.put("id", carAgent.getId());
-			
+			System.out.println("Se envia información: " + carAgent.getX() + " " + carAgent.getY() + " " + carAgent.getId());
 			msg.setContent(content.toString());
 			
 			carAgent.send(msg);
