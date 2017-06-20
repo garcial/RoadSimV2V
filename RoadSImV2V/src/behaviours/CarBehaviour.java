@@ -28,10 +28,11 @@ public class CarBehaviour extends CyclicBehaviour {
 	private CarAgent agent;
 	private AID topic;
 	private boolean done = false;
+	private boolean drawGUI;
 
-	public CarBehaviour(CarAgent a, long timeout) {
+	public CarBehaviour(CarAgent a, long timeout, boolean drawGUI) {
 		this.agent = a;
-		
+		this.drawGUI = drawGUI;
 		this.topic = null;
 		
 		try {
@@ -127,6 +128,7 @@ public class CarBehaviour extends CyclicBehaviour {
 					}
 					
 					//If we are going under the maximum speed I'm allowed to go, or I can go, I am in a congestion, draw me differently
+					//I don't know if is necessary here but i change this in the destination
 					if (this.agent.getCurrentSpeed() < Math.min(this.agent.getMaxSpeed(), this.agent.getCurrentSegment().getMaxSpeed())) {
 						
 						this.agent.setSpecialColor(true);
@@ -172,7 +174,7 @@ public class CarBehaviour extends CyclicBehaviour {
 		this.informSegment(this.agent.getCurrentSegment(), "deregister");
 
 		//Delete the car from the canvas
-		if (this.agent.getInterfaceAgent() != null) {
+		if (this.agent.getInterfaceAgent() != null && this.drawGUI) {
 
 			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 			msg.setOntology("deleteCarOntology");

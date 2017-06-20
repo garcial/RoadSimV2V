@@ -202,7 +202,7 @@ public class CarAgent extends Agent {
 		    }
 	    }
 		//Runs the agent
-		addBehaviour(new CarBehaviour(this, 50));	
+		addBehaviour(new CarBehaviour(this, 50, this.drawGUI));	
 	}
 	
 	/**
