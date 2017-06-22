@@ -27,7 +27,7 @@ public class Main {
 	private static final int numberOfCars = 0;
 	
 	//Draw the GUI
-	private static final boolean drawGUI = false;
+	private static final boolean drawGUI = true;
 	
 	//Start the RMA
 	private static final boolean startRMA = false;

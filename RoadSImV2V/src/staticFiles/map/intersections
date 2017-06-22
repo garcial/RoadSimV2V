@@ -1,26 +1,8 @@
-{"id": "I-CV10-01",        "coordinates": {"x": 156, "y": 692}}
-{"id": "I-CV10-02",        "coordinates": {"x": 178, "y": 628}}
-{"id": "I-CV10-03",        "coordinates": {"x":  95, "y": 505}}
-{"id": "I-CV10-04",        "coordinates": {"x": 119, "y": 366}}
-{"id": "I-CV10-05",        "coordinates": {"x": 151, "y": 290}}
-{"id": "I-CV10-06",        "coordinates": {"x": 253, "y": 182}}
-{"id": "I-CV10-07",        "coordinates": {"x": 317, "y": 139}}
-{"id": "I-CV10-08",        "coordinates": {"x": 337, "y":  78}}
-{"id": "I-CV10-09",        "coordinates": {"x": 400, "y":  48}}
-{"id": "I-CV10-10",        "coordinates": {"x": 414, "y":   0}}
-{"id": "I-N340-01",        "coordinates": {"x": 245, "y": 600}}
-{"id": "I-N340-02-AP7-02", "coordinates": {"x": 299, "y": 529}}
-{"id": "I-N340-03",        "coordinates": {"x": 323, "y": 481}}
-{"id": "I-N340-04",        "coordinates": {"x": 420, "y": 298}}
-{"id": "I-N340-05",        "coordinates": {"x": 421, "y": 212}}
-{"id": "I-N340-06",        "coordinates": {"x": 413, "y": 164}}
-{"id": "I-N340-07",        "coordinates": {"x": 409, "y": 126}}
-{"id": "I-N340-08",        "coordinates": {"x": 445, "y":  95}}
-{"id": "I-N340-09",        "coordinates": {"x": 573, "y":   0}}
-{"id": "I-CS22-01",        "coordinates": {"x": 472, "y": 220}}
-{"id": "I-CS22-02",        "coordinates": {"x": 583, "y": 274}}
-{"id": "I-CS22-03",        "coordinates": {"x": 619, "y": 228}}
-{"id": "I-CS22-04",        "coordinates": {"x": 708, "y": 180}}
-{"id": "I-AP7-01",         "coordinates": {"x": 301, "y": 693}}
-{"id": "I-AP7-03",         "coordinates": {"x": 385, "y": 170}}
-{"id": "I-AP7-04",         "coordinates": {"x": 579, "y":   6}}
+{"id":"I-A1-0","coordinates":{"x":82,"y":566}}
+{"id":"I-A1-1","coordinates":{"x":208,"y":431}}
+{"id":"I-A1-2","coordinates":{"x":317,"y":304}}
+{"id":"I-A1-3","coordinates":{"x":423,"y":183}}
+{"id":"I-A1-4","coordinates":{"x":514,"y":73}}
+{"id":"I-A1-5","coordinates":{"x":560,"y":30}}
+{"id":"I-N1-1","coordinates":{"x":453,"y":398}}
+{"id":"I-N1-2","coordinates":{"x":579,"y":242}}
