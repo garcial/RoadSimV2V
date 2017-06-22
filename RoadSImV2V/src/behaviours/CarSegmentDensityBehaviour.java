@@ -1,5 +1,7 @@
 package behaviours;
 
+import org.json.JSONObject;
+
 import agents.CarAgent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
@@ -20,7 +22,9 @@ public class CarSegmentDensityBehaviour extends CyclicBehaviour {
 	public void action() {
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg!= null) {
-			myCarAgent.setCurrentTrafficDensity(Double.parseDouble(msg.getContent()));
+			//myCarAgent.setCurrentTrafficDensity(Double.parseDouble(msg.getContent()));
+			JSONObject densityData = new JSONObject(msg.getContent());
+			myCarAgent.setCurrentTrafficDensity(densityData.getDouble("density"));
 		} else block();
 	}
 

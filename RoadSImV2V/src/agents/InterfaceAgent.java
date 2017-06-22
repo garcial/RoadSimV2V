@@ -9,6 +9,8 @@ import jade.lang.acl.ACLMessage;
 
 import javax.swing.SwingUtilities;
 
+import org.json.JSONObject;
+
 import behaviours.InterfaceAddCarBehaviour;
 import behaviours.InterfaceDrawBehaviour;
 import environment.Map;
@@ -97,8 +99,11 @@ public class InterfaceAgent extends Agent{
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		msg.setOntology("changeTickLengthOntology");
 		msg.addReceiver(this.timeKeeperAgent.getName());
-		msg.setContent(Integer.toString(newTick));
-		
+		JSONObject jsonmessage = new JSONObject();
+		jsonmessage.put("idTick", newTick);
+		System.out.println("idTick: " + jsonmessage.toString());
+		//msg.setContent(Integer.toString(newTick));
+		msg.setContent(jsonmessage.toString());
 		this.send(msg);
 	}
 

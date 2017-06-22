@@ -8,6 +8,9 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import behaviours.SegmentListenBehaviour;
 import behaviours.SegmentRadarBehaviour;
 import behaviours.SegmentSendToDrawBehaviour;
@@ -30,6 +33,7 @@ public class SegmentAgent extends Agent {
 
 	//The segment this agent belongs to
 	private Segment segment;
+	private boolean drawGUI;
 
 	//The cars that are currently on this segment
 	private HashMap<String, CarData> cars;
@@ -49,6 +53,7 @@ public class SegmentAgent extends Agent {
 
 		//Get the segment from parameter
 		this.segment = (Segment) this.getArguments()[0];
+		this.drawGUI = (boolean) this.getArguments()[1];
 		this.segment.setSegmentAgent(this);
 
 		this.cars = new HashMap<String, CarData>();
@@ -76,8 +81,9 @@ public class SegmentAgent extends Agent {
 		addBehaviour(new SegmentListenBehaviour(this));
 
 		//This behaviour will send the data to the GUI
-		addBehaviour(new SegmentSendToDrawBehaviour(this));		
-		
+		if(this.drawGUI){
+			addBehaviour(new SegmentSendToDrawBehaviour(this));
+		}
 		//This behaviour will answer car requests on neighbour cars driving on twin segments
 		addBehaviour(new SegmentRadarBehaviour(this));
 	}
@@ -144,16 +150,28 @@ public class SegmentAgent extends Agent {
 	public String getDrawingInformation() {
 
 		//It is far more efficient to use this rather than a simple String
-		StringBuilder ret = new StringBuilder();
-
+		/*StringBuilder ret = new StringBuilder();
 		ret.append(cars.size() + "#");
-
 		for(CarData car: cars.values()) {
-
 			ret.append(car.getId() + "#" + Float.toString(car.getX()) + "#" + Float.toString(car.getY()) + "#" + Boolean.toString(car.getSpecialColor()) + "#");
 		}
+		return ret.toString();*/
+		// resp = { "cars": [ "id" : "foo"...], ["id" : "foo2"...] }
+		// Como queremos esta estructura hemos preparado un JSONObject y metido una lista
+		JSONObject resp = new JSONObject();
+		JSONArray ret = new JSONArray();
 
-		return ret.toString();
+		for(CarData car: cars.values()) {
+			JSONObject ret2 = new JSONObject();
+			ret2.put("id", car.getId());
+			ret2.put("x", car.getX());
+			ret2.put("y", car.getY());
+			ret2.put("specialColor", car.getSpecialColor());
+			ret.put(ret2);
+		}
+		
+		resp.put("cars", ret);
+		return resp.toString();
 	}
 
 	/**

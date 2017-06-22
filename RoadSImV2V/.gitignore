@@ -76,3 +76,5 @@ local.properties
 #Project Files
 APDescription.txt
 MTPs-Main container.txt
+.classpath
+RoadSImV2V/.classpath

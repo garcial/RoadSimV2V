@@ -1,5 +1,8 @@
 package behaviours;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import agents.CarAgent;
 import agents.SegmentAgent;
 import jade.core.AID;
@@ -34,15 +37,27 @@ public class CarSendingDataBehaviour extends Behaviour {
 			msg.setOntology("roadTwinsOntology");
 			// Ask to twin Segment of the current segment on other cars in my sensor space
 			msg.addReceiver(new SegmentAgent().getAID()); // TODO:
-			msg.setContent(carAgent.getX()+"#"+carAgent.getY()+"#"+carAgent.getRatio()+"#"+carAgent.getId());
+			//msg.setContent(carAgent.getX()+"#"+carAgent.getY()+"#"+carAgent.getRatio()+"#"+carAgent.getId());
+			
+			JSONObject content = new JSONObject();
+			content.put("x", carAgent.getX());
+			content.put("y", carAgent.getY());
+			content.put("radio", carAgent.getRatio());
+			content.put("id", carAgent.getId());
+			//System.out.println("Se envia informaci�n: " + carAgent.getX() + " " + carAgent.getY() + " " + carAgent.getId());
+			msg.setContent(content.toString());
+			
 			carAgent.send(msg);
 			step++;
 			break;
 		case 1: 
 			ACLMessage req = myAgent.receive(mtTwins);
 			if (req!= null){
-				String[] contenido = req.getContent().split("#");
-				int numTwins = Integer.parseInt(contenido[contenido.length-1]);
+				//String[] contenido = req.getContent().split("#");
+				JSONObject contenido = new JSONObject(req.getContent());
+				//Contenido tiene la siguiente estructura {"ids": ["234242@232", "ferf234123@",...]}
+				JSONArray list = contenido.getJSONArray("ids");
+				int numTwins = list.length();
 				// Ojo con pedir la misma información varias veces al mismo
 				//    vehículo durante el tiempo en que coinciden en el radio 
 				//    de localización => Lo hace el agente segmento
@@ -50,8 +65,8 @@ public class CarSendingDataBehaviour extends Behaviour {
 				// Si al menos hay un vecino con el que comunicarse ...
 				ACLMessage msgInf = new ACLMessage(ACLMessage.INFORM);
 				msgInf.setOntology("roadStateOntology");
-				for(int i = 1; i < contenido.length; i++) {
-					msgInf.addReceiver(new AID(contenido[i], true));
+				for(int i = 1; i < list.length(); i++) {
+					msgInf.addReceiver(new AID(list.get(i).toString(), true));
 				}
 				msgInf.setConversationId("Aquí va un JGraph");
 				// There are two options:

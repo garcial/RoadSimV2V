@@ -69,6 +69,8 @@ public class Segment implements Serializable{
 	
 	private String loggingDirectory;
 	
+	private boolean drawGUI;
+	
 	private List<String> twinSegments;
 	
 	public List<String> getTwinSegments() {
@@ -95,6 +97,7 @@ public class Segment implements Serializable{
 		this.serviceLevels = new HashMap<Character, Float>();
 		this.currentServiceLevel = 'A';
 		this.twinSegments = new LinkedList<String>();
+		this.drawGUI = true;
 	}
 
 	/**
@@ -107,7 +110,7 @@ public class Segment implements Serializable{
 	public Segment(String id, Intersection origin, Intersection destination, 
 			       double length, int maxSpeed, int capacity, int density, 
 			       int numberTracks, jade.wrapper.AgentContainer mainContainer, 
-			       boolean segmentLogging, String loggingDirectory){
+			       boolean segmentLogging, String loggingDirectory, boolean drawGUI){
 
 		this.id = id;
 		this.origin = origin;
@@ -124,6 +127,7 @@ public class Segment implements Serializable{
 		this.currentServiceLevel = 'A';
 		this.segmentLogging = segmentLogging;
 		this.loggingDirectory = loggingDirectory;
+		this.drawGUI = drawGUI;
 		this.twinSegments = new LinkedList<String>();
 		
 		//Put the service levels
@@ -137,11 +141,12 @@ public class Segment implements Serializable{
 		//Create the agents
 		try {
 
+			//Agent Controller to segments with Interface
 			AgentController agent = mainContainer.createNewAgent(
-					this.id, "agents.SegmentAgent", new Object[]{this});
+					this.id, "agents.SegmentAgent", new Object[]{this, this.drawGUI});
 
 			agent.start();
-
+			
 		} catch (StaleProxyException e) {
 
 			System.out.println("Error starting " + this.id);

@@ -33,6 +33,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultCaret;
 
+import org.json.JSONObject;
+
 import agents.InterfaceAgent;
 import environment.Intersection;
 import environment.Map;
@@ -214,8 +216,9 @@ public class CanvasWorld extends JFrame implements ActionListener, ChangeListene
 	 * @param time New time
 	 */
 	public void setTime(String time) {
-
-		this.time.setText("Time: " + time);
+		
+		JSONObject inter = new JSONObject(time);
+		this.time.setText("Time: " + inter.getInt("hora") + ":" + inter.getInt("minutos"));
 	}
 
 	/**
@@ -280,7 +283,8 @@ public class CanvasWorld extends JFrame implements ActionListener, ChangeListene
 	 */
 	public void deleteCar(String id) {
 
-		contentPane.deleteCar(id);
+		JSONObject objid = new JSONObject(id);
+		contentPane.deleteCar(objid.getString("id"));
 	}
 
 	//Setters and getters
