@@ -138,9 +138,9 @@ public class Main {
 
 		//Load the map
 		try {
-
+			// The map load the segments that create the SegmentAgent
 			map = new Map("staticFiles/map", segmentContainer,
-					      segmentLogging, loggingDirectory);
+					      segmentLogging, loggingDirectory, drawGUI);
 		} catch (IOException e) {
 
 			System.out.println("Error reading the maps file.");
@@ -148,29 +148,32 @@ public class Main {
 		}
 
 		//Create the agents
-		//Interface
-		try {
+		//Interface if is necesary
+		if(drawGUI){
+			try {
+
 
 			AgentController agent = 
 					mainContainer.createNewAgent("interfaceAgent",
 							                     "agents.InterfaceAgent", 
 							                  new Object[]{map, drawGUI});
 
-			agent.start();
+				agent.start();
 
-		} catch (StaleProxyException e) {
+			} catch (StaleProxyException e) {
 
-			System.out.println("Error starting the interface");
-			e.printStackTrace();
+				System.out.println("Error starting the interface");
+				e.printStackTrace();
+			}
 		}
-
 		//TimeKeeper
 		try {
 			AgentController agent = 
 					mainContainer.createNewAgent("timeKeeperAgent",
 							"agents.TimeKeeperAgent",
-							new Object[]{tickLength, startingTick, 
-									     finishingTick});
+
+							new Object[]{drawGUI,tickLength,
+									startingTick, finishingTick});
 
 			agent.start();
 
@@ -220,10 +223,10 @@ public class Main {
 				                  Integer.toString(i) +
 						          "Agent", "agents.CarAgent", 
 						          new Object[]{map, initialintersection,
-						        	finalIntersection, 120, "fastest"});
-
+				        		  finalIntersection, 120, "fastest", drawGUI});
+				//System.out.println("Se crea un coche");
 				agent.start();
-
+				
 			} catch (StaleProxyException e) {
 
 				System.out.println("Error starting a car agent");
@@ -233,13 +236,13 @@ public class Main {
 		
 		//EventManager
 		try {
+
 			AgentController agent = 
 					mainContainer.createNewAgent("eventManagerAgent",
 							"agents.EventManagerAgent", 
-							new Object[]{map, carContainer, 
-									     segmentContainer,
-									    "staticFiles/events", 
-									    startingTick});
+							new Object[]{map, carContainer, segmentContainer,
+									    "staticFiles/events", startingTick,drawGUI});
+
 
 			agent.start();
 

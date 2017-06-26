@@ -33,6 +33,7 @@ public class SegmentAgent extends Agent {
 
 	//The segment this agent belongs to
 	private Segment segment;
+	private boolean drawGUI;
 
 	//The cars that are currently on this segment
 	private HashMap<String, CarData> cars;
@@ -52,6 +53,7 @@ public class SegmentAgent extends Agent {
 
 		//Get the segment from parameter
 		this.segment = (Segment) this.getArguments()[0];
+		this.drawGUI = (boolean) this.getArguments()[1];
 		this.segment.setSegmentAgent(this);
 
 		this.cars = new HashMap<String, CarData>();
@@ -79,8 +81,9 @@ public class SegmentAgent extends Agent {
 		addBehaviour(new SegmentListenBehaviour(this));
 
 		//This behaviour will send the data to the GUI
-		addBehaviour(new SegmentSendToDrawBehaviour(this));		
-		
+		if(this.drawGUI){
+			addBehaviour(new SegmentSendToDrawBehaviour(this));
+		}
 		//This behaviour will answer car requests on neighbour cars driving on twin segments
 		addBehaviour(new SegmentRadarBehaviour(this));
 	}

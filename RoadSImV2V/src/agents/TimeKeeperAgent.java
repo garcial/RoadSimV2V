@@ -28,6 +28,7 @@ public class TimeKeeperAgent extends Agent {
 
 	private static final long serialVersionUID = 4546329963020795810L;
 	private long tickLength, currentTick, finishingTick;
+	private boolean drawGUI;
 	private List<AID> agents = new ArrayList<AID>();
 	private DFAgentDescription interfaceAgent;
 
@@ -47,29 +48,34 @@ public class TimeKeeperAgent extends Agent {
 			fe.printStackTrace(); 
 		}
 
-		//Find the interface agent
-		dfd = new DFAgentDescription();
-		sd = new ServiceDescription();
-		sd.setType("interfaceAgent");
-		dfd.addServices(sd);
+		// Decide is is necessary draw the interface 
+		this.drawGUI = (boolean) this.getArguments()[0];
+		
+		if(this.drawGUI){
+			//Find the interface agent
+			dfd = new DFAgentDescription();
+			sd = new ServiceDescription();
+			sd.setType("interfaceAgent");
+			dfd.addServices(sd);
 
-		DFAgentDescription[] result = null;
+			DFAgentDescription[] result = null;
 
-		try {
-			result = DFService.searchUntilFound(
-					this, getDefaultDF(), dfd, null, 5000);
-		} catch (FIPAException e) { e.printStackTrace(); }
+			try {
+				result = DFService.searchUntilFound(
+						this, getDefaultDF(), dfd, null, 5000);
+			} catch (FIPAException e) { e.printStackTrace(); }
 
-		this.interfaceAgent = result[0];
+			this.interfaceAgent = result[0];
+		}
 
 		//Get the ticklength
-		this.tickLength = (long) this.getArguments()[0];
+		this.tickLength = (long) this.getArguments()[1];
 
 		//Start at specific tick
-		this.currentTick = (long) this.getArguments()[1];
+		this.currentTick = (long) this.getArguments()[2];
 
 		//End the simulation at specific tick
-		this.finishingTick = (long) this.getArguments()[2];
+		this.finishingTick = (long) this.getArguments()[3];
 
 		//A reference to myself
 		TimeKeeperAgent timeKeeperAgent = this;
@@ -102,6 +108,7 @@ public class TimeKeeperAgent extends Agent {
 
 					// Stops the entire app, not just this agent. 
 					// The value 0 states right finalization
+
 					System.exit(0);
 				}
 
@@ -136,14 +143,16 @@ public class TimeKeeperAgent extends Agent {
 				msg.setContent(Long.toString(timeKeeperAgent.currentTick));
 				myAgent.send(msg);
 				
-				//Send the number of cars to the interface agent
-				//Search for cars that are currently in the DF
-				DFAgentDescription[] cars = null;
+				//If is necesary draw the GUI
+				if (timeKeeperAgent.getDrawGUI()) {
+					//Send the number of cars to the interface agent
+					//Search for cars that are currently in the DF
+					DFAgentDescription[] cars = null;
 
-				DFAgentDescription dfd = new DFAgentDescription();
-				ServiceDescription sd  = new ServiceDescription();
-				sd.setType("carAgent");
-				dfd.addServices(sd);
+					DFAgentDescription dfd = new DFAgentDescription();
+					ServiceDescription sd  = new ServiceDescription();
+					sd.setType("carAgent");
+					dfd.addServices(sd);
 
 				try {
 					cars = DFService.search(
@@ -158,7 +167,9 @@ public class TimeKeeperAgent extends Agent {
 					numberOfCars.put("numberOfCars", cars.length);					
 					msg.setContent(numberOfCars.toString());
 					myAgent.send(msg);
+
 				}
+			}
 			}
 
 			@Override
@@ -171,8 +182,9 @@ public class TimeKeeperAgent extends Agent {
 		 * End of test code
 		 */
 
-		//Check for tickLeght changes
-		addBehaviour(new Behaviour() {
+		if(this.drawGUI){
+			//Check for tickLeght changes
+			addBehaviour(new Behaviour() {
 
 			private static final long serialVersionUID = 
 					                                 8455875589611369392L;
@@ -182,27 +194,27 @@ public class TimeKeeperAgent extends Agent {
 					MessageTemplate.MatchOntology(
 							                 "changeTickLengthOntology"));
 
-			@Override
-			public void action() {
+				@Override
+				public void action() {
+					ACLMessage msg = myAgent.receive(mt);
 
-				ACLMessage msg = myAgent.receive(mt);
+					if (msg != null) {
+						JSONObject messageData = 
+								             new JSONObject(msg.getContent()); 
+						Long tickLength = 
+								        (long) (messageData.getInt("idTick"));
+						System.out.println(tickLength);
+						((TimeKeeperAgent)this.myAgent).
+						                            setTickLength(tickLength);
+					} else block();
+				}
 
-				if (msg != null) {
-					JSONObject messageData = 
-							             new JSONObject(msg.getContent()); 
-					Long tickLength = 
-							        (long) (messageData.getInt("idTick"));
-					System.out.println(tickLength);
-					((TimeKeeperAgent)this.myAgent).
-					                            setTickLength(tickLength);
-				} else block();
-			}
-
-			@Override
-			public boolean done() {
-				return false;
-			}
-		});
+				@Override
+				public boolean done() {
+					return false;
+				}
+			});
+		}
 	}
 
 	//Setters and getters
@@ -218,5 +230,9 @@ public class TimeKeeperAgent extends Agent {
 	public void setTickLength(long newTick) {
 
 		this.tickLength = newTick;
+	}
+	
+	public boolean getDrawGUI(){
+		return this.drawGUI;
 	}
 }

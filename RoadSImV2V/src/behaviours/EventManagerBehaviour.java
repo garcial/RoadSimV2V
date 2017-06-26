@@ -20,13 +20,13 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 	private static final long serialVersionUID = 4537023518719689317L;
 
 	private EventManagerAgent agent;
-	
+	private boolean drawGUI;
 	private AID topic;
 
-	public EventManagerBehaviour(EventManagerAgent agent) {
+	public EventManagerBehaviour(EventManagerAgent agent, boolean drawGUI) {
 
 		this.agent = agent;
-		
+		this.drawGUI = drawGUI;
 		this.topic = null;
 		
 		try {
@@ -58,7 +58,7 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 			int minutes = (int) (totalMinutes % 60);
 			
 			//If the minute has changed, notify the interface
-			if (minutes != this.agent.getPreviousMinute()) {
+			if (minutes != this.agent.getPreviousMinute() && this.drawGUI) {
 				
 				this.agent.setPreviousMinute(minutes);
 				
@@ -95,17 +95,17 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 					if (parts[0].equals("newCar")) {
 						
 						try {
+							// SE ha añadido un true antes de hacer el cambio
 							AgentController agent = this.agent.
 									getCarContainer().
 									createNewAgent("car" + 
 									Long.toString(currentTick) + 
 									Integer.toString(counter), 
-									"agents.CarAgent", new Object[] {
+									"agents.CarAgent", new Object[]{
 											this.agent.getMap(), 
-			/* IntOrigin, IntDest */		parts[2], parts[3], 
-			/* maxSpeed car */				Integer.parseInt(parts[4]),
-			/* alg type */					parts[5],
-			/* Initial time */              currentTick});
+											parts[2], parts[3], 
+											Integer.parseInt(parts[4]), 
+											parts[5],currentTick, this.drawGUI});
 
 							agent.start();
 							
@@ -137,12 +137,14 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 					counter++;
 				}
 				
-				msg = new ACLMessage(ACLMessage.INFORM);
-				msg.setOntology("logOntology");
-				msg.addReceiver(this.agent.getInterfaceAgent().getName());
-				msg.setContent(str.toString());
+				if(this.drawGUI){
+					msg = new ACLMessage(ACLMessage.INFORM);
+					msg.setOntology("logOntology");
+					msg.addReceiver(this.agent.getInterfaceAgent().getName());
+					msg.setContent(str.toString());
 
-				myAgent.send(msg);
+					myAgent.send(msg);
+				}
 			}
 		} else block();
 	}

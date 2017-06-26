@@ -39,6 +39,9 @@ public class Map implements Serializable {
 	//Parameters for the segments
 	private boolean segmentLogging;
 	private String loggingDirectory;
+	
+	// Draw th GUI
+	private boolean drawGUI;
 
 	/**
 	 * Constructor that builds a Map from a folder.
@@ -46,7 +49,7 @@ public class Map implements Serializable {
 	 * @param folder Folder where the files are stored.
 	 */
 	public Map(String folder, jade.wrapper.AgentContainer mainContainer,
-			   boolean segmentLogging, String loggingDirectory) 
+			   boolean segmentLogging, String loggingDirectory, boolean drawGUI) 
 		   throws IOException{
 
 		//For the agents
@@ -58,6 +61,8 @@ public class Map implements Serializable {
 		//Read the files
 		this.intersectionCount = 0;
 		this.segmentCount = 0;
+		
+		this.drawGUI = drawGUI;
 
 		//Get all files from the given folder
 		String url = Map.class.getClassLoader().getResource(folder).getPath();
@@ -159,7 +164,7 @@ public class Map implements Serializable {
 							          seg.getInt("density"), 
 							          seg.getInt("numberTracks"), 
 							          this.mainContainer, this.segmentLogging, 
-							          this.loggingDirectory);
+							          this.loggingDirectory, this.drawGUI);
 
 					if(origin != null){
 						origin.addOutSegment(segment);

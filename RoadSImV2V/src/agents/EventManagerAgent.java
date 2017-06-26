@@ -43,6 +43,8 @@ public class EventManagerAgent extends Agent {
 	private Map map;
 
 	private DFAgentDescription interfaceAgent;
+	
+	private boolean drawGUI;
 
 	protected void setup() {
 
@@ -64,8 +66,10 @@ public class EventManagerAgent extends Agent {
 		//Get starting tick
 		this.timeElapsed = (long) this.getArguments()[4];
 
+		//Draw the gui or not
+		this.drawGUI = (boolean) this.getArguments()[5];
 		//Previous minute will be used to know when to send a msg to the 
-		//    interface, when the minute changes
+		// interface, when the minute changes
 		this.previousMinute = 0;
 
 		//Register
@@ -82,20 +86,22 @@ public class EventManagerAgent extends Agent {
 			fe.printStackTrace(); 
 		}
 
-		//Find the interface agent
-		dfd = new DFAgentDescription();
-		sd = new ServiceDescription();
-		sd.setType("interfaceAgent");
-		dfd.addServices(sd);
+		if(this.drawGUI){
+			//Find the interface agent
+			dfd = new DFAgentDescription();
+			sd = new ServiceDescription();
+			sd.setType("interfaceAgent");
+			dfd.addServices(sd);
 
-		DFAgentDescription[] result = null;
+			DFAgentDescription[] result = null;
 
-		try {
-			result = DFService.searchUntilFound(
-					this, getDefaultDF(), dfd, null, 5000);
-		} catch (FIPAException e) { e.printStackTrace(); }
+			try {
+				result = DFService.searchUntilFound(
+						this, getDefaultDF(), dfd, null, 5000);
+			} catch (FIPAException e) { e.printStackTrace(); }
 
-		this.interfaceAgent = result[0];
+			this.interfaceAgent = result[0];
+		}
 
 		//Read from file
 		//Get all files from the given folder
@@ -175,7 +181,7 @@ public class EventManagerAgent extends Agent {
 		}
 
 		//Start the behaviour
-		addBehaviour(new EventManagerBehaviour(this));
+		addBehaviour(new EventManagerBehaviour(this, this.drawGUI));
 	}
 
 	//Getters and setter

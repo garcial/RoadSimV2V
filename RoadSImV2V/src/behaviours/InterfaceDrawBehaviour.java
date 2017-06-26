@@ -88,7 +88,6 @@ public class InterfaceDrawBehaviour extends Behaviour {
 
 					@Override
 					public void run() {
-
 						agent.getMap().deleteCar(msg.getContent());	
 					}
 				});
