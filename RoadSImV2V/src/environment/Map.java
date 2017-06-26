@@ -125,6 +125,7 @@ public class Map implements Serializable {
 					intersectionsAux.put(inter.getString("id"), intersection);
 					//JGRAPHT
 					this.jgraht.addVertex(intersection);
+					System.out.println("Map.java-- Add Vertex "+ intersection.getId() +" : [ " + intersection.toString() + " ]");
 					line = intersectionsReader.readLine();
 					this.intersectionCount++;
 				}
@@ -177,7 +178,7 @@ public class Map implements Serializable {
 					//Add an Edge to de Jgraph
 					if(origin != null && destination != null){
 						Edge e = new Edge(segment);
-						System.out.println(e.toString());
+						System.out.println("Map.java-- Add Edge " + segment.getId() + ": [ " + e.toString() + " ]");
 						this.jgraht.addEdge(origin, destination, e);
 					}
 

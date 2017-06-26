@@ -142,7 +142,7 @@ public class CarBehaviour extends CyclicBehaviour {
 						this.dateFinalSegment = new Date().getTime();
 						this.serviceLevelSegment = this.agent.getCurrentSegment().getCurrentServiceLevel();
 						this.agent.getJgraht().addEdge(this.agent.getCurrentSegment().getOrigin(), next.getSegment().getOrigin(), new Edge(this.agent.getCurrentSegment(),this.serviceLevelSegment, this.dateInitSegment, this.dateFinalSegment));
-						System.out.println(this.agent.getJgraht().toString());
+						//System.out.println(this.agent.getJgraht().toString());
 						
 						//Deregister from previous segment
 						this.informSegment(
