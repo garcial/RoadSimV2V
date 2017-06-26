@@ -17,11 +17,11 @@ public class Main {
 	//Initial tick length, this value is ignored if the GUI is drawn
 	private static final long tickLength = 1L;
 	
-	//Start at specific tick
-	private static final long startingTick = 7*3600 + 59*60; //Start at 7:59
+	//Start at specific tick: 7:59 that in seconds is ..
+	private static final long startingTick = 7*3600 + 59*60;
 	
-	//Finish the simulation at specific tick
-	private static final long finishingTick = 24*3600; //End at 00:00
+	//Finish the simulation at specific tick: 00:00
+	private static final long finishingTick = 24*3600;
 	
 	//Random smart cars from the beginning
 	private static final int numberOfCars = 0;
@@ -58,47 +58,53 @@ public class Main {
 		 */
 		//How many threads will be in charge of delivering the messages, 
 		//   maximum 100, default 5
-		profile.setParameter("jade_core_messaging_MessageManager_poolsize", "100");
+		profile.setParameter("jade_core_messaging_MessageManager_poolsize",
+				            "100");
 		
 		/*
-		 * This is needed because when the MessageManager fills up, it slows down 
-		 * all the agents, so to achieve a good performance we make the queue 
-		 * bigger.
+		 * This is needed because when the MessageManager fills up, it  
+		 * slows down all the agents, so to achieve a good performance  
+		 * we make the queue bigger.
 		 */
-		//Size of the message queue, default 100000000 (100Mb), now the maximum 
-		//   size we can
-		profile.setParameter("jade_core_messaging_MessageManager_maxqueuesize", 
-				             Integer.toString(Integer.MAX_VALUE));
+		//Size of the message queue, default 100000000 (100Mb), now the 
+		//    maximum size we can
+		profile.setParameter(
+				"jade_core_messaging_MessageManager_maxqueuesize", 
+				Integer.toString(Integer.MAX_VALUE));
 		
 		/*
-		 * This is just so that the program does not bother us with warnings
+		 * This is just so that the program does not bother us with
+		 *    warnings
 		 */
-		profile.setParameter("jade_core_messaging_MessageManager_warningqueuesize",
-				             Integer.toString(Integer.MAX_VALUE));
+		profile.setParameter(
+				"jade_core_messaging_MessageManager_warningqueuesize",
+				Integer.toString(Integer.MAX_VALUE));
 		
 		//Default 1000ms, now 5000ms
 		profile.setParameter(
-				"jade_core_messaging_MessageManager_deliverytimethreshold",
-				"5000");
+			"jade_core_messaging_MessageManager_deliverytimethreshold",
+			"5000");
 
 		/*
-		 * This is needed because the TimeKeeperAgent has to search for more than
-		 * 100 agents
+		 * This is needed because the TimeKeeperAgent has to search 
+		 * for more than 100 agents
 		 */
-		//By default, the maximum number of returned matches by the DF is 100
-		//this makes it larger
+		//By default, the maximum number of returned matches by the DF
+		//   is 100 this makes it larger
 		profile.setParameter("jade_domain_df_maxresult", "10000");
 		
 		/*
-		 * This activates the Topic service, which allows us to "broadcast"
-		 *  messages.
+		 * This activates the Topic service, which allows us to 
+		 *  "broadcast" messages.
 		 * It will be activated in all containers
 		 */
-		profile.setParameter(Profile.SERVICES, 
-				             "jade.core.messaging.TopicManagementService");
+		profile.setParameter(
+				Profile.SERVICES, 
+				"jade.core.messaging.TopicManagementService");
 		
 		//Container that will hold the agents
-		jade.wrapper.AgentContainer mainContainer = rt.createMainContainer(profile);
+		jade.wrapper.AgentContainer mainContainer = 
+				                     rt.createMainContainer(profile);
 
 		//Start RMA
 		if (startRMA) {
@@ -120,14 +126,15 @@ public class Main {
 		profile.setParameter(Profile.CONTAINER_NAME, "Segment container");
 		
 		/*
-		 * This activates the Topic service, which allows us to "broadcast" messages
+		 * This activates the Topic service, which allows us to "broadcast"
+		 *     messages
 		 */
 		profile.setParameter(Profile.SERVICES, 
 				             "jade.core.messaging.TopicManagementService");
 
 		//Container that will hold the agents
 		jade.wrapper.AgentContainer segmentContainer = 
-				                             rt.createAgentContainer(profile);
+				                         rt.createAgentContainer(profile);
 
 		//Load the map
 		try {
@@ -146,7 +153,8 @@ public class Main {
 
 			AgentController agent = 
 					mainContainer.createNewAgent("interfaceAgent",
-							"agents.InterfaceAgent", new Object[]{map, drawGUI});
+							                     "agents.InterfaceAgent", 
+							                  new Object[]{map, drawGUI});
 
 			agent.start();
 
@@ -161,7 +169,8 @@ public class Main {
 			AgentController agent = 
 					mainContainer.createNewAgent("timeKeeperAgent",
 							"agents.TimeKeeperAgent",
-							new Object[]{tickLength, startingTick, finishingTick});
+							new Object[]{tickLength, startingTick, 
+									     finishingTick});
 
 			agent.start();
 
@@ -183,13 +192,15 @@ public class Main {
 		profile.setParameter(Profile.CONTAINER_NAME, "Car container");
 		
 		/*
-		 * This activates the Topic service, which allows us to "broadcast" messages
+		 * This activates the Topic service, which allows us to "broadcast"
+		 *    messages
 		 */
 		profile.setParameter(Profile.SERVICES,
 				             "jade.core.messaging.TopicManagementService");
 
 		//Container that will hold the agents
-		jade.wrapper.AgentContainer carContainer = rt.createAgentContainer(profile);
+		jade.wrapper.AgentContainer carContainer = 
+				                          rt.createAgentContainer(profile);
 
 		for (int i=0; i<numberOfCars; i++){
 			
@@ -205,10 +216,11 @@ public class Main {
 			try {
 
 				AgentController agent = 
-						carContainer.createNewAgent("car" + Integer.toString(i) 
-						          + "Agent", "agents.CarAgent", 
+						carContainer.createNewAgent("car" + 
+				                  Integer.toString(i) +
+						          "Agent", "agents.CarAgent", 
 						          new Object[]{map, initialintersection,
-						        		       finalIntersection, 120, "fastest"});
+						        	finalIntersection, 120, "fastest"});
 
 				agent.start();
 
@@ -224,8 +236,10 @@ public class Main {
 			AgentController agent = 
 					mainContainer.createNewAgent("eventManagerAgent",
 							"agents.EventManagerAgent", 
-							new Object[]{map, carContainer, segmentContainer,
-									    "staticFiles/events", startingTick});
+							new Object[]{map, carContainer, 
+									     segmentContainer,
+									    "staticFiles/events", 
+									    startingTick});
 
 			agent.start();
 

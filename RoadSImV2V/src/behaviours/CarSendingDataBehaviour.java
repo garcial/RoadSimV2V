@@ -70,7 +70,13 @@ public class CarSendingDataBehaviour extends Behaviour {
 					msgInf.addReceiver(new AID(list.get(i).toString(),
 							           true));
 				}
-				msgInf.setConversationId("Aquí va un JGraph");
+				JSONObject json = new JSONObject();
+				json.put("speed", carAgent.getCurrentSpeed());
+				json.put("position", carAgent.getCurrentPk());
+				json.put("id", carAgent.getId());
+				json.put("futureTraffic", 
+						              carAgent.getPastTraffic().toJSON());
+				msgInf.setContent(json.toString());
 				// There are two options:
 				// 1) Do a request/answer cycle and do not imclude a 
 				//     content in the msg, and then this car receives

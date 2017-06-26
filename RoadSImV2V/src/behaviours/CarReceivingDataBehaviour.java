@@ -27,10 +27,19 @@ public class CarReceivingDataBehaviour extends CyclicBehaviour {
 		ACLMessage msg = myAgent.receive(mtInform);
 		
 		if (msg != null) {			
-			// TODO: Integrate JSON data received from other cars in my 
+			// Integrate JSON data received from other cars in my 
 			//       invision futureTraffic EDD for rerouting
 			JSONObject datos = new JSONObject(msg.getContent());
-			for(String key: datos.keySet()){
+			// Received current id, current speed,
+			//   current position and pastTrafficState (that is to 
+			//   be added to futureTrafficState of the agent that
+			//   receives this msg)
+			carAgent.getSensorTrafficData().getCarsSpeeds().
+			                         add(datos.getDouble("speed"));
+			carAgent.getSensorTrafficData().getCarsPositions().
+			                         add(datos.getDouble("position"));
+			
+			for(String key:datos.getJSONObject("futureTraffic").keySet()){
 				carAgent.getFutureTraffic().
 				         put(key, datos.getJSONObject(key));
 			}

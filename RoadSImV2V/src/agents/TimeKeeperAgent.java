@@ -74,19 +74,23 @@ public class TimeKeeperAgent extends Agent {
 		//A reference to myself
 		TimeKeeperAgent timeKeeperAgent = this;
 
-		//Create the tick topic
+		//Create the tick topic, but do not register to it
 		AID topic = null;
 		try {
-			TopicManagementHelper topicHelper = (TopicManagementHelper) getHelper(TopicManagementHelper.SERVICE_NAME);
+			TopicManagementHelper topicHelper = (TopicManagementHelper) 
+					     getHelper(TopicManagementHelper.SERVICE_NAME);
 			topic = topicHelper.createTopic("tick");
 
 		} catch (Exception e) {
-			System.err.println("Agent " + getLocalName() + ": ERROR creating topic \"tick\"");
+			System.err.println("Agent " + getLocalName() + 
+					          ": ERROR creating topic \"tick\"");
 			e.printStackTrace();
 		}
-
+		// It is a spetial AID with the topic "tick". There is no 
+		//    concern about which agent holds it.
 		final AID finalTopic = topic;
 
+		// add forever behaviour
 		addBehaviour(new Behaviour() {
 
 			private static final long serialVersionUID = 1L;
@@ -94,33 +98,39 @@ public class TimeKeeperAgent extends Agent {
 			@Override
 			public void action() {
 
-				if (timeKeeperAgent.currentTick == timeKeeperAgent.finishingTick) {
+				if (currentTick == finishingTick) {
 
+					// Stops the entire app, not just this agent. 
+					// The value 0 states right finalization
 					System.exit(0);
 				}
 
-				//I was using a TickerBehaviour, but you cannot change the tick length
 				try {
-					Thread.sleep(((TimeKeeperAgent) myAgent).getTickLength());
-				} catch (InterruptedException e) {
-					System.out.println("Bye");
-				}
-
-				if (timeKeeperAgent.getTickLength() > 0){
-					try {
-						Thread.sleep(timeKeeperAgent.getTickLength());
-					} catch (InterruptedException e1) {
-
-						e1.printStackTrace();
-					}
+					
+					// Sleeps for TickLength miliseconds
+					Thread.sleep(timeKeeperAgent.getTickLength());
+				} catch (InterruptedException e) { 
+					System.out.println("Bye"); 
 				}
 
 				timeKeeperAgent.currentTick++;
 
-				//Aquí hay una comunicación que no sé donde va
+				//Send the topic "tick"
 				ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-				msg.addUserDefinedParameter(ACLMessage.IGNORE_FAILURE, "true");
-				msg.addUserDefinedParameter(ACLMessage.DONT_NOTIFY_FAILURE, "true");
+				// if the delivery of a message fails, no failure handling
+				//    action must be performed.
+				msg.addUserDefinedParameter(
+						ACLMessage.IGNORE_FAILURE, "true");
+				// if the delivery of a message fails, no FAILURE 
+				//    notification has to be sent back to the sender.				
+				msg.addUserDefinedParameter(
+						          ACLMessage.DONT_NOTIFY_FAILURE, "true");
+				// This message must be stored for a given timeout (in ms)
+				//     in case it is sent to/from a temporarily 
+				//     disconnected split container. After that timeout a
+				//     FAILURE message will be sent back to the sender.
+				// 0 means store and forward disabled -1 means infinite 
+				//     timeout
 				msg.addUserDefinedParameter(ACLMessage.SF_TIMEOUT, "-1");
 				msg.addReceiver(finalTopic);
 				msg.setContent(Long.toString(timeKeeperAgent.currentTick));
@@ -138,19 +148,14 @@ public class TimeKeeperAgent extends Agent {
 				try {
 					cars = DFService.search(
 							timeKeeperAgent, getDefaultDF(), dfd, null);
-				} catch (FIPAException e) { 
-
-					e.printStackTrace(); 
-				}
+				} catch (FIPAException e) { e.printStackTrace(); }
 
 				if (cars != null) {
 					msg = new ACLMessage(ACLMessage.INFORM);
 					msg.addReceiver(interfaceAgent.getName());
 					msg.setOntology("numberOfCarsOntology");
-					//msg.setContent(Integer.toString(cars.length));
 					JSONObject numberOfCars = new JSONObject();
-					numberOfCars.put("numberOfCars", cars.length);
-					
+					numberOfCars.put("numberOfCars", cars.length);					
 					msg.setContent(numberOfCars.toString());
 					myAgent.send(msg);
 				}
@@ -169,11 +174,13 @@ public class TimeKeeperAgent extends Agent {
 		//Check for tickLeght changes
 		addBehaviour(new Behaviour() {
 
-			private static final long serialVersionUID = 8455875589611369392L;
+			private static final long serialVersionUID = 
+					                                 8455875589611369392L;
 
 			MessageTemplate mt = MessageTemplate.and(
 					MessageTemplate.MatchPerformative(ACLMessage.INFORM), 
-					MessageTemplate.MatchOntology("changeTickLengthOntology"));
+					MessageTemplate.MatchOntology(
+							                 "changeTickLengthOntology"));
 
 			@Override
 			public void action() {
@@ -181,11 +188,13 @@ public class TimeKeeperAgent extends Agent {
 				ACLMessage msg = myAgent.receive(mt);
 
 				if (msg != null) {
-					// ((TimeKeeperAgent)this.myAgent).setTickLength(Long.parseLong(msg.getContent()));
-					JSONObject messageData = new JSONObject(msg.getContent()); 
-					Long tickLength = (long) (messageData.getInt("idTick"));
+					JSONObject messageData = 
+							             new JSONObject(msg.getContent()); 
+					Long tickLength = 
+							        (long) (messageData.getInt("idTick"));
 					System.out.println(tickLength);
-					((TimeKeeperAgent)this.myAgent).setTickLength(tickLength);
+					((TimeKeeperAgent)this.myAgent).
+					                            setTickLength(tickLength);
 				} else block();
 			}
 

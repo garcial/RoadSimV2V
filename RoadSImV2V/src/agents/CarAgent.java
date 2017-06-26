@@ -10,15 +10,11 @@ import jade.lang.acl.MessageTemplate;
 import searchAlgorithms.Algorithm;
 import searchAlgorithms.AlgorithmFactory;
 import searchAlgorithms.Method;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.json.JSONArray;
+import trafficData.TrafficData;
+import trafficData.TrafficDataInStore;
+import trafficData.TrafficDataOutStore;
 import org.json.JSONObject;
 
-import agents.CarAgent.BlockData;
-import agents.CarAgent.TrafficData;
 import behaviours.CarBehaviour;
 import behaviours.CarReceivingDataBehaviour;
 import environment.Map;
@@ -41,10 +37,13 @@ public class CarAgent extends Agent {
 	public static final int MAXWORLDY = 695;
 
 	private float x, y;
+	private float currentPk;
 	private int direction;
 	private int ratio;
-	private int currentSpeed,maxSpeed;
+	private int currentSpeed, maxSpeed;
 	private double currentTrafficDensity;
+	private long elapsedtime;
+	private long tini; // For measuring temporal intervals of traffic data
 	private String id; 
 	private DFAgentDescription interfaceAgent;
 	private Map map;
@@ -55,32 +54,19 @@ public class CarAgent extends Agent {
 	private boolean smart = false;
 	private Algorithm alg;
 	private int algorithmType;
+   
+	// This object stores current traffic sensored data
+	// every time a car goes into a new segment, this object is
+	// reseting.
+	private TrafficData sensorTrafficData;
 
 	// future: is for storing data received from other cars and
 	//    used for computing my route to destination
-	private TrafficData futureTraffic;
+	private TrafficDataInStore futureTraffic;
 
 	// past: is for informing data to send to other cars about
 	//    what is the traffic state in my performed route
-    private TrafficData pastTraffic;
-
-	public TrafficData getPastTraffic() {
-		return pastTraffic;
-	}
-
-	public void setPastTraffic(TrafficData pastTraffic) {
-		this.pastTraffic = pastTraffic;
-	}
-
-	public TrafficData getFutureTraffic() {
-		return futureTraffic;
-	}
-
-	public void setFutureTraffic(TrafficData futureTraffic) {
-		this.futureTraffic = futureTraffic;
-	}
-	
-	
+    private TrafficDataOutStore pastTraffic;
 
 	protected void setup() {
 
@@ -137,6 +123,9 @@ public class CarAgent extends Agent {
 			this.smart = true;
 		}
 		
+		//Get the initial time tick from eventManager
+		elapsedtime = (long) this.getArguments()[5];
+		
 		//Get the desired Path from the origin to the destination
 		this.path = alg.getPath(this.map, getInitialIntersection(), 
 				                getFinalIntersection(), this.maxSpeed);
@@ -146,11 +135,15 @@ public class CarAgent extends Agent {
 		setY(map.getIntersectionByID(getInitialIntersection()).getY());
 		
 		//Store data received from other cars in a Map
-		futureTraffic = new TrafficData();
+		futureTraffic = new TrafficDataInStore();
 		
 		//Store data to send to other cars in my route
-		pastTraffic = new TrafficData();
+		pastTraffic = new TrafficDataOutStore();
 
+		// Store current trafficData sensored by myself
+		sensorTrafficData = new TrafficData();
+		// Tini for measuring traffic data intervals in twin segments 
+		tini = elapsedtime;
 		//Find the interface agent
 		dfd = new DFAgentDescription();
 		sd = new ServiceDescription();
@@ -272,6 +265,14 @@ public class CarAgent extends Agent {
 		this.y = y;
 	}
 
+	public float getCurrentPk() {
+		return currentPk;
+	}
+
+	public void setCurrentPk(float currentPk) {
+		this.currentPk = currentPk;
+	}
+
 	public void setDirection(int direction) {
 		this.direction = direction;
 	}
@@ -357,98 +358,44 @@ public class CarAgent extends Agent {
 		this.currentTrafficDensity = currentTrafficDensity;
 	}
 
-
-	public class TrafficData {
-		private HashMap<String, ArrayList<BlockData>> data;
-		
-		public TrafficData() {
-			data = new HashMap<String, ArrayList<BlockData>>();
-		}
-
-		public HashMap<String, ArrayList<BlockData>> getData() {
-			return data;
-		}
-
-		public void setData(HashMap<String, ArrayList<BlockData>> data) {
-			this.data = data;
-		}
-		public void put(String key, JSONObject json) {
-			if (data.containsKey(key)) data.get(key).add(new BlockData(json));
-			else {
-				ArrayList<BlockData> al = new ArrayList<BlockData>();
-				al.add(new BlockData(json));
-				data.put(key, al);
-			}
-		}
-		
-	}
-	
-	public class BlockData {
-		private int tini;
-		private int tfin;
-		private int numCars;
-		private ArrayList<Double> carsPositions;
-		private ArrayList<Double> carsSpeeds;
-
-		public BlockData(int tini, int tfin, int numCars,
-				         ArrayList<Double> carsPositions, 
-				         ArrayList<Double> carsSpeeds) {
-			super();
-			this.tini = tini;
-			this.tfin = tfin;
-			this.setNumCars(numCars);
-			this.carsPositions = carsPositions;
-			this.carsSpeeds = carsSpeeds;
-		}
-		
-		public BlockData(JSONObject json) {
-			this.tini = json.getInt("tini");
-			this.tfin = json.getInt("tfin");
-			this.setNumCars(json.getInt("numCars"));
-			JSONArray carPos = json.getJSONArray("positions");
-			this.carsPositions = new ArrayList<Double>();
-			for(int i = 0; i<carPos.length(); i++) 
-				carsPositions.add(carPos.getDouble(i));
-			JSONArray speeds = json.getJSONArray("speeds");
-			this.carsSpeeds = new ArrayList<Double>();
-			for(int i = 0; i<speeds.length(); i++)
-				carsSpeeds.add(speeds.getDouble(i));			
-		}
-		
-		public int getTini() {
-			return tini;
-		}
-		public void setTini(int tini) {
-			this.tini = tini;
-		}
-		public int getTfin() {
-			return tfin;
-		}
-		public void setTfin(int tfin) {
-			this.tfin = tfin;
-		}
-		public ArrayList<Double> getCarsPositions() {
-			return carsPositions;
-		}
-		public void setCarsPositions(ArrayList<Double> carsPositions) {
-			this.carsPositions = carsPositions;
-		}
-		public ArrayList<Double> getCarsSpeeds() {
-			return carsSpeeds;
-		}
-		public void setCarsSpeeds(ArrayList<Double> carsSpeeds) {
-			this.carsSpeeds = carsSpeeds;
-		}
-
-		public int getNumCars() {
-			return numCars;
-		}
-
-		public void setNumCars(int numCars) {
-			this.numCars = numCars;
-		}
-		
+	public long getElapsedtime() {
+		return elapsedtime;
 	}
 
+	public void increaseElapsedtime() {
+		this.elapsedtime++;
+	}
+
+	public long getTini() {
+		return tini;
+	}
+
+	public void setTini(long tini) {
+		this.tini = tini;
+	}
+
+	public TrafficData getSensorTrafficData() {
+		return sensorTrafficData;
+	}
+
+	public void setSensorTrafficData(TrafficData sensorTrafficData) {
+		this.sensorTrafficData = sensorTrafficData;
+	}
+
+	public TrafficDataOutStore getPastTraffic() {
+		return pastTraffic;
+	}
+
+	public void setPastTraffic(TrafficDataOutStore pastTraffic) {
+		this.pastTraffic = pastTraffic;
+	}
+
+	public TrafficDataInStore getFutureTraffic() {
+		return futureTraffic;
+	}
+
+	public void setFutureTraffic(TrafficDataInStore futureTraffic) {
+		this.futureTraffic = futureTraffic;
+	}
 
 }
