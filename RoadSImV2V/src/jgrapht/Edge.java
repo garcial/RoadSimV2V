@@ -1,7 +1,6 @@
 package jgrapht;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import environment.EdgeData;
@@ -17,6 +16,9 @@ public class Edge extends DefaultWeightedEdge {
 	 */
 	private Segment segment;
 	private float weight;
+	private long tini;
+	private long tfin;
+	private int serviceLevel;
 	private List<EdgeData> edgeDataList;
 	private static final long serialVersionUID = 17455L;
 
@@ -35,6 +37,9 @@ public class Edge extends DefaultWeightedEdge {
 		this.edgeDataList = new ArrayList<EdgeData>();
 		this.segment = segment;
 		this.weight = 0.0f;
+		this.serviceLevel = serviceLevel;
+		this.tini = initialDate;
+		this.tfin = finalDate;
 		this.edgeDataList.add(new EdgeData(serviceLevel, initialDate, finalDate));
 		
 		
@@ -46,6 +51,16 @@ public class Edge extends DefaultWeightedEdge {
 	 * */
 	public double getWeight(){
 		return weight;
+	}
+	
+	public void updateList(long n_k){
+		for(EdgeData elem:this.edgeDataList){
+			if(elem.getFinalDate() < n_k){
+				this.edgeDataList.remove(elem);
+			} else if (elem.getInitialDate() < n_k){
+				this.tini = n_k;
+			}
+		}
 	}
 
 	public Segment getSegment() {
@@ -72,10 +87,37 @@ public class Edge extends DefaultWeightedEdge {
 		this.weight = weight;
 	}
 
+	public long getTini() {
+		return tini;
+	}
+
+	public void setTini(long tini) {
+		this.tini = tini;
+	}
+
+	public long getTfin() {
+		return tfin;
+	}
+
+	public void setTfin(long tfin) {
+		this.tfin = tfin;
+	}
+
+	public int getServiceLevel() {
+		return serviceLevel;
+	}
+
+	public void setServiceLevel(int serviceLevel) {
+		this.serviceLevel = serviceLevel;
+	}
+
 	@Override
 	public String toString() {
-		return "Edge [segment=" + segment + ", weight=" + weight + ", edgeDataList=" + edgeDataList.toString() + "]";
+		return "Edge [segment=" + segment + ", weight=" + weight + ", tini=" + tini + ", tfin=" + tfin
+				+ ", serviceLevel=" + serviceLevel + ", edgeDataList=" + edgeDataList + "]";
 	}
+
+	
 
 	
 
