@@ -1,5 +1,7 @@
 package behaviours;
 
+import java.util.Date;
+
 import org.json.JSONObject;
 import org.json.ToJSON;
 
@@ -14,6 +16,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import trafficData.TrafficData;
+import jgrapht.Edge;
 
 /**
  * This behaviour is used by the CarAgent and calculates the next 
@@ -29,6 +32,9 @@ public class CarBehaviour extends CyclicBehaviour {
 	private CarAgent agent;
 	private AID topic;
 	private boolean done = false;
+	private long dateInitSegment;
+	private long dateFinalSegment;
+	private char serviceLevelSegment;
 
 
 	public CarBehaviour(CarAgent a, long timeout) {
@@ -132,6 +138,12 @@ public class CarBehaviour extends CyclicBehaviour {
 					if (!this.agent.getCurrentSegment().
 							equals(next.getSegment())) {
 
+						//Calculate the information to the jgraph and Deregister from previous segment
+						this.dateFinalSegment = new Date().getTime();
+						this.serviceLevelSegment = this.agent.getCurrentSegment().getCurrentServiceLevel();
+						this.agent.getJgraht().addEdge(this.agent.getCurrentSegment().getOrigin(), next.getSegment().getOrigin(), new Edge(this.agent.getCurrentSegment(),this.serviceLevelSegment, this.dateInitSegment, this.dateFinalSegment));
+						System.out.println(this.agent.getJgraht().toString());
+						
 						//Deregister from previous segment
 						this.informSegment(
 							this.agent.getCurrentSegment(), "deregister");
@@ -144,6 +156,10 @@ public class CarBehaviour extends CyclicBehaviour {
 						//Register in the new segment
 						this.informSegment(next.getSegment(), "register");
 						
+						//Calculate de information to remove the segment that you register
+						this.dateInitSegment = new Date().getTime();
+						//I don't know if remove the edge or if remove the content of the edge
+						this.agent.getJgraht().removeEdge(next.getSegment().getOrigin(), next.getSegment().getDestination());
 						
 						// TODO:If we are using the smart algorithm, 
 						//  recalculate all the traffic states on the map 

@@ -13,14 +13,18 @@ import searchAlgorithms.Method;
 import trafficData.TrafficData;
 import trafficData.TrafficDataInStore;
 import trafficData.TrafficDataOutStore;
+
+import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.json.JSONObject;
 
 import behaviours.CarBehaviour;
 import behaviours.CarReceivingDataBehaviour;
+import environment.Intersection;
 import environment.Map;
 import environment.Path;
 import environment.Segment;
 import environment.Step;
+import jgrapht.Edge;
 
 /**
  * This code represents a mobile car, it will have an origin an a 
@@ -54,6 +58,7 @@ public class CarAgent extends Agent {
 	private boolean smart = false;
 	private Algorithm alg;
 	private int algorithmType;
+	private DefaultDirectedWeightedGraph<Intersection, Edge> jgraht;
    
 	// This object stores current traffic sensored data
 	// every time a car goes into a new segment, this object is
@@ -90,6 +95,8 @@ public class CarAgent extends Agent {
 
 		//Get the map from an argument
 		this.map = (Map) this.getArguments()[0];
+		//Get the jgraph from the map
+		this.jgraht = this.map.getJgraht();
 		
 		//Get the starting and final points of my trip
 		this.initialIntersection = (String) this.getArguments()[1];
@@ -327,6 +334,14 @@ public class CarAgent extends Agent {
 
 	public boolean getSpecialColor() {
 		return specialColor;
+	}
+	
+	public DefaultDirectedWeightedGraph<Intersection, Edge> getJgraht() {
+		return jgraht;
+	}
+
+	public void setJgraht(DefaultDirectedWeightedGraph<Intersection, Edge> jgraht) {
+		this.jgraht = jgraht;
 	}
 
 	public void setSpecialColor(boolean specialColor) {
