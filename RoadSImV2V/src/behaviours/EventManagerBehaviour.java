@@ -66,10 +66,10 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 				timeMsg.setOntology("updateTimeOntology");
 				timeMsg.addReceiver(this.agent.getInterfaceAgent().
 						                       getName());
-				timeMsg.setContent(new JSONObject(
-						"hora:" + String.format("%02d",hours) + 
-						", minutos:" +String.format("%02d", minutes)).
-						toString());
+				JSONObject timejson = new JSONObject();
+				timejson.put("hora", String.format("%02d",hours));
+				timejson.put("minutos", String.format("%02d", minutes));
+				timeMsg.setContent(timejson.toString());
 				myAgent.send(timeMsg);
 			}
 
