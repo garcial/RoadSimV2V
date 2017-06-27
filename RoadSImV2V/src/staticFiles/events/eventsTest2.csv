@@ -1,0 +1,6 @@
+newCar,08:00,I-A1-0,I-A1-5,84,shortest
+newCar,08:00,I-A1-5,I-A1-0,84,shortest
+newCar,08:10,I-A1-0,I-A1-5,102,smartest
+newCar,08:10,I-A1-5,I-A1-0,102,smartest
+newCar,08:05,I-A1-0,I-A1-5,87,fastest
+newCar,08:05,I-A1-5,I-A1-0,87,fastest

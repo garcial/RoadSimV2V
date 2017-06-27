@@ -1,6 +1,7 @@
 package environment;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +50,16 @@ public class Segment implements Serializable{
 	private int currentAllowedSpeed;
 
 	//Kilometric points
-	private int pkMin, pkMax;
+	private float pkIni;
+	
+	//Direction
+	private String direction;
+
+	//Variable to draw the GUI
+	private boolean drawGUI;
+	
+	//List with the twins segments
+	private List<String> twinSegments;
 
 	//Segment agent
 	private SegmentAgent segmentAgent;
@@ -68,14 +78,6 @@ public class Segment implements Serializable{
 	private boolean segmentLogging;
 	
 	private String loggingDirectory;
-	
-	private boolean drawGUI;
-	
-	private List<String> twinSegments;
-	
-	public List<String> getTwinSegments() {
-		return twinSegments;
-	}
 
 	/**
 	 * Default constructor. 
@@ -90,8 +92,8 @@ public class Segment implements Serializable{
 		this.numberTracks = 0;
 		this.steps = new LinkedList<Step>();
 		this.maxSpeed = 0;
-		this.pkMin = 0;
-		this.pkMax = 0;
+		this.pkIni = 0;
+		this.direction = "up";
 		this.mainContainer = null;
 		this.currentAllowedSpeed = this.maxSpeed;
 		this.serviceLevels = new HashMap<Character, Float>();
@@ -110,7 +112,8 @@ public class Segment implements Serializable{
 	public Segment(String id, Intersection origin, Intersection destination, 
 			       double length, int maxSpeed, int capacity, int density, 
 			       int numberTracks, jade.wrapper.AgentContainer mainContainer, 
-			       boolean segmentLogging, String loggingDirectory, boolean drawGUI){
+			       boolean segmentLogging, String loggingDirectory, boolean drawGUI,
+			       String direction, double pkstart, LinkedList segTwinsList){
 
 		this.id = id;
 		this.origin = origin;
@@ -128,7 +131,9 @@ public class Segment implements Serializable{
 		this.segmentLogging = segmentLogging;
 		this.loggingDirectory = loggingDirectory;
 		this.drawGUI = drawGUI;
-		this.twinSegments = new LinkedList<String>();
+		this.direction = direction;
+		this.pkIni = (float) pkstart;
+		this.twinSegments = segTwinsList;
 		
 		//Put the service levels
 		this.serviceLevels.put('A', 1.00f);
@@ -195,12 +200,8 @@ public class Segment implements Serializable{
 		return maxSpeed;
 	}
 
-	public int getPkMin() {
-		return pkMin;
-	}
-
-	public int getPkMax() {
-		return pkMax;
+	public float getPkIni() {
+		return pkIni;
 	}
 
 	public SegmentAgent getSegmentAgent() {
@@ -244,5 +245,9 @@ public class Segment implements Serializable{
 
 	public String getLoggingDirectory() {
 		return loggingDirectory;
+	}
+	
+	public List<String> getTwinSegments() {
+		return twinSegments;
 	}
 }
