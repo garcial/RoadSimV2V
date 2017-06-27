@@ -15,13 +15,13 @@ import jade.lang.acl.MessageTemplate;
 
 public class SegmentRadarBehaviour extends CyclicBehaviour {
 
-	private static final long serialVersionUID = -3953532297570848414L;
+	private static final long serialVersionUID =-3953532297570848414L;
 
 	//Template to listen for the new communications from cars
 	private MessageTemplate mtCarRadar = 
 			MessageTemplate.and(
-					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
-					MessageTemplate.MatchOntology("roadTwinsOntology"));
+				MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+				MessageTemplate.MatchOntology("roadTwinsOntology"));
 	
 	private SegmentAgent mySegmentAgent;
 	
@@ -59,7 +59,8 @@ public class SegmentRadarBehaviour extends CyclicBehaviour {
 			}
 			twins.remove(idSolicitante);
 			// Build msg to answer the carAgent requesting
-			ACLMessage msgCarsOnRadio = new ACLMessage(ACLMessage.INFORM);
+			ACLMessage msgCarsOnRadio = 
+					               new ACLMessage(ACLMessage.INFORM);
 			// Filter just cars not used before for this carAgent
 			int cont = 0;
 			//StringBuilder str = new StringBuilder();

@@ -9,10 +9,11 @@ import environment.Segment;
 public class Edge extends DefaultWeightedEdge {
 
 	/**
-	 * The edge was composed by the segment and its density in a moment
-	 * segment -- The segment that represent this Edge
+	 * The edge was composed by the segment and its density in a 
+	 * moment segment -- The segment that represent this Edge
 	 * weight -- Time to go to the destination
-	 * edgeDataList -- List of data of others cars about this segment
+	 * edgeDataList -- List of data of others cars about this 
+	 * segment
 	 */
 	private Segment segment;
 	private float weight;
@@ -32,7 +33,8 @@ public class Edge extends DefaultWeightedEdge {
 		this.weight = (float) 0.0;
 	}
 
-	public Edge(Segment segment, char serviceLevel, long initialDate, long finalDate) {
+	public Edge(Segment segment, char serviceLevel, 
+			    long initialDate, long finalDate) {
 		super();
 		this.edgeDataList = new ArrayList<EdgeData>();
 		this.segment = segment;
@@ -40,7 +42,8 @@ public class Edge extends DefaultWeightedEdge {
 		this.serviceLevel = serviceLevel;
 		this.tini = initialDate;
 		this.tfin = finalDate;
-		this.edgeDataList.add(new EdgeData(serviceLevel, initialDate, finalDate));
+		this.edgeDataList.add(
+				new EdgeData(serviceLevel, initialDate, finalDate));
 		
 		
 	}
@@ -113,8 +116,10 @@ public class Edge extends DefaultWeightedEdge {
 
 	@Override
 	public String toString() {
-		return "Edge [segment=" + segment + ", weight=" + weight + ", tini=" + tini + ", tfin=" + tfin
-				+ ", serviceLevel=" + serviceLevel + ", edgeDataList=" + edgeDataList + "]";
+		return "Edge [segment=" + segment + ", weight=" + weight +
+			   ", tini=" + tini + ", tfin=" + tfin + 
+			   ", serviceLevel=" + serviceLevel + ", edgeDataList=" +
+			   edgeDataList + "]";
 	}
 
 	

@@ -16,7 +16,7 @@ public class TrafficDataOutStore {
 		data.put(segment, bd);
 	}
 	
-	public void put(String segment, JSONObject json){
+	public void put(String segment, JSONObject json) {
 		data.put(segment, new TrafficData(json));
 	}
 

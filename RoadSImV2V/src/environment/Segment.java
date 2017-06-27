@@ -16,7 +16,7 @@ import jade.wrapper.StaleProxyException;
  */
 public class Segment implements Serializable{
 
-	private static final long serialVersionUID = -6853406084306746147L;
+	private static final long serialVersionUID =-6853406084306746147L;
 
 	//Unique id
 	private String id;
@@ -103,14 +103,19 @@ public class Segment implements Serializable{
 	/**
 	 * Constructor. 
 	 *
-	 * @param  origin {@link Intersection} where this {@link Segment} starts.
-	 * @param  destination {@link Intersection} where this {@link Segment} ends.
+	 * @param  origin {@link Intersection} where this {@link Segment}
+	 *         starts.
+	 * @param  destination {@link Intersection} where this 
+	 *         {@link Segment} ends.
 	 * @param  length The length of this {@link Segment} in Km.
 	 */
-	public Segment(String id, Intersection origin, Intersection destination, 
-			       double length, int maxSpeed, int capacity, int density, 
-			       int numberTracks, jade.wrapper.AgentContainer mainContainer, 
-			       boolean segmentLogging, String loggingDirectory, boolean drawGUI){
+	public Segment(String id, Intersection origin,  
+			       Intersection destination,double length,  
+			       int maxSpeed, int capacity, int density,  
+			       int numberTracks, 
+			       jade.wrapper.AgentContainer mainContainer, 
+			       boolean segmentLogging, String loggingDirectory,
+			       boolean drawGUI) {
 
 		this.id = id;
 		this.origin = origin;
@@ -143,7 +148,8 @@ public class Segment implements Serializable{
 
 			//Agent Controller to segments with Interface
 			AgentController agent = mainContainer.createNewAgent(
-					this.id, "agents.SegmentAgent", new Object[]{this, this.drawGUI});
+					this.id, "agents.SegmentAgent", 
+					new Object[]{this, this.drawGUI});
 
 			agent.start();
 			
@@ -232,10 +238,10 @@ public class Segment implements Serializable{
 		return currentServiceLevel;
 	}
 
-	public void setCurrentServiceLevel(Character currentServiceLevel) {
+	public void setCurrentServiceLevel(Character currentServiceLevel){
 		this.currentServiceLevel = currentServiceLevel;
 		this.currentAllowedSpeed = (int) 
-				(this.maxSpeed * this.serviceLevels.get(currentServiceLevel));
+		(this.maxSpeed * this.serviceLevels.get(currentServiceLevel));
 	}
 
 	public boolean isSegmentLogging() {

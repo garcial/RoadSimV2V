@@ -38,8 +38,9 @@ public class EventManagerAgent extends Agent {
 	// Second parameter: Events to be fired on tick
 	private HashMap<Long, List<String>> events;
 
-	private jade.wrapper.AgentContainer carContainer, segmentContainer;
-
+	private jade.wrapper.AgentContainer carContainer;
+	private jade.wrapper.AgentContainer segmentContainer;
+	
 	private Map map;
 
 	private DFAgentDescription interfaceAgent;
@@ -56,21 +57,19 @@ public class EventManagerAgent extends Agent {
 
 		//Get the containers
 		this.carContainer = (jade.wrapper.AgentContainer) 
-				                                   this.getArguments()[1];
+				                             this.getArguments()[1];
 		this.segmentContainer = (jade.wrapper.AgentContainer) 
-				                                   this.getArguments()[2];
+				                             this.getArguments()[2];
 
 		//Get the folder
 		String folder = (String) this.getArguments()[3];
-
 		//Get starting tick
 		this.timeElapsed = (long) this.getArguments()[4];
 
 		//Draw the gui or not
 		this.drawGUI = (boolean) this.getArguments()[5];
-		//Previous minute will be used to know when to send a msg to the 
-		// interface, when the minute changes
-
+		//Previous minute will be used to know when to send a msg to  
+		// the interface, when the minute changes
 		this.previousMinute = 0;
 
 		//Register
@@ -79,7 +78,6 @@ public class EventManagerAgent extends Agent {
 		ServiceDescription sd = new ServiceDescription();
 		sd.setType("eventManagerAgent");
 		sd.setName(getLocalName());
-
 		dfd.addServices(sd);
 		try {
 			DFService.register(this,  dfd);
@@ -93,22 +91,18 @@ public class EventManagerAgent extends Agent {
 			sd = new ServiceDescription();
 			sd.setType("interfaceAgent");
 			dfd.addServices(sd);
-
 			DFAgentDescription[] result = null;
-
 			try {
 				result = DFService.searchUntilFound(
 						this, getDefaultDF(), dfd, null, 5000);
 			} catch (FIPAException e) { e.printStackTrace(); }
-
 			this.interfaceAgent = result[0];
 		}
 
 		//Read from file
 		//Get all files from the given folder
 		String url = Map.class.getClassLoader().getResource(folder).
-				                                                getPath();
-
+				                                getPath();
 		File[] files = new File(url).listFiles();
 
 		//Check correct files
@@ -119,12 +113,11 @@ public class EventManagerAgent extends Agent {
 		for(int i=0; i<files.length; i++){
 
 			if(files[i].getName().equals("events.csv")){
-
 				try {
 					eventsReader = new BufferedReader(
-							new FileReader(files[i].getAbsolutePath()));
+						new FileReader(files[i].getAbsolutePath()));
 				} catch (FileNotFoundException e) {
-					System.out.println("Error reading the events file.");
+					System.out.println("Error reading events file.");
 					e.printStackTrace();
 				}
 			}
@@ -148,7 +141,7 @@ public class EventManagerAgent extends Agent {
 		} catch (IOException e) {
 
 			System.out.println(
-					      "Error reading the line from the events file.");
+					 "Error reading the line from the events file.");
 			e.printStackTrace();
 		} finally {
 			
@@ -159,8 +152,8 @@ public class EventManagerAgent extends Agent {
 			}
 		}
 
-		//Translate from hours to ticks, we will use that as the key to 
-		//    our dictionary
+		//Translate from hours to ticks, we will use that as the key 
+		//    to our dictionary
 		for (String event : aux) {
 
 			String time = event.split(",")[1];
@@ -172,10 +165,8 @@ public class EventManagerAgent extends Agent {
 
 			//Add it to the event queue
 			if (this.getEvents().containsKey(tick)) {
-
 				this.getEvents().get(tick).add(event);
 			} else {
-
 				this.getEvents().put(tick, new LinkedList<String>());
 				this.getEvents().get(tick).add(event);
 			}

@@ -39,12 +39,14 @@ public class Intersection implements Serializable{
 	/**
 	 * Constructor. 
 	 *
-	 * @param  in   A list of {@link Segment} that go into this intersection.
-	 * @param  out  A list of {@link Segment} that leave this intersection.
+	 * @param  in   A list of {@link Segment} that go into this
+	 *              intersection.
+	 * @param  out  A list of {@link Segment} that leave this
+	 *              intersection.
 	 * @param coordinates A array with the coordinates.
 	 */
 	public Intersection(String id, ArrayList<Segment> in, 
-			            ArrayList<Segment> out, int x, int y){
+			            ArrayList<Segment> out, int x, int y) {
 		
 		this.id = id;
 		this.in = in;
@@ -56,8 +58,10 @@ public class Intersection implements Serializable{
 	/**
 	 * Constructor. 
 	 *
-	 * @param  in   A list of {@link Segment} that go into this intersection.
-	 * @param  out  A list of {@link Segment} that leave this intersection.
+	 * @param  in   A list of {@link Segment} that go into this
+	 *              intersection.
+	 * @param  out  A list of {@link Segment} that leave this 
+	 *              intersection.
 	 * @param x A double with the x coordinate.
 	 * @param y A double with the y coordinate.
 	 */
@@ -74,7 +78,8 @@ public class Intersection implements Serializable{
 	 * Adds an in {@link Segment} to the Intersection. 
 	 *
 	 * @param  segment  {@link Segment} to be added.
-	 * @return A boolean whether the collection has been modified or not.
+	 * @return A boolean whether the collection has been modified 
+	 *         or not.
 	 */
 	public boolean addInSegment(Segment segment){
 		
@@ -85,9 +90,10 @@ public class Intersection implements Serializable{
 	 * Adds an out {@link Segment} to the Intersection. 
 	 *
 	 * @param  segment  {@link Segment} to be added.
-	 * @return A boolean whether the {@link Segment} has been added or not.
+	 * @return A boolean whether the {@link Segment} has been 
+	 *         added or not.
 	 */
-	public boolean addOutSegment(Segment segment){
+	public boolean addOutSegment(Segment segment) {
 		
 		return this.out.add(segment);
 	}

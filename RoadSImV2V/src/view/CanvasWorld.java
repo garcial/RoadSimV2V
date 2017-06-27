@@ -48,7 +48,8 @@ import view.CanvasWorld.MapPanel.Mobile;
  * all the elements, keeps a log and the time slider.
  *
  */
-public class CanvasWorld extends JFrame implements ActionListener, ChangeListener {
+public class CanvasWorld extends JFrame 
+       implements ActionListener, ChangeListener {
 
 	private static final long serialVersionUID = 1L;
 	private final int FPS = 40;
@@ -72,7 +73,8 @@ public class CanvasWorld extends JFrame implements ActionListener, ChangeListene
 	 * @param maxY
 	 * @param map
 	 */
-	public CanvasWorld(InterfaceAgent interfaceAgent, int maxX, int maxY, Map map) {
+	public CanvasWorld(InterfaceAgent interfaceAgent, int maxX, 
+			           int maxY, Map map) {
 
 		super();
 
@@ -92,14 +94,17 @@ public class CanvasWorld extends JFrame implements ActionListener, ChangeListene
 		setBounds(10, 10, MAXWORLDX, MAXWORLDY);
 		
 		//Set the icon
-		ImageIcon icon = new ImageIcon(CanvasWorld.class.getClassLoader().getResource("staticFiles/images/icon.png"));
+		ImageIcon icon = new ImageIcon(CanvasWorld.class.
+				  getClassLoader().
+				  getResource("staticFiles/images/icon.png"));
 		this.setIconImage(icon.getImage());
 
 		//Create a layout
 		this.getContentPane().setLayout(new GridBagLayout());
 
 		//Fluid layout
-		GridBagConstraints canvasConstraints = new GridBagConstraints();
+		GridBagConstraints canvasConstraints = 
+				                    new GridBagConstraints();
 
 		//Relative sizes
 		canvasConstraints.fill = GridBagConstraints.BOTH;

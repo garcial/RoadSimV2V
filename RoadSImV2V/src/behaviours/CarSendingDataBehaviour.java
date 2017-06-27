@@ -16,8 +16,8 @@ public class CarSendingDataBehaviour extends Behaviour {
 	
 	private MessageTemplate mtTwins = 
 			MessageTemplate.and(
-					MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-					MessageTemplate.MatchOntology("roadTwinsOntology"));
+				MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+				MessageTemplate.MatchOntology("roadTwinsOntology"));
 	
 	int step;
 	private CarAgent carAgent;
@@ -35,16 +35,15 @@ public class CarSendingDataBehaviour extends Behaviour {
 		case 0:
 			ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
 			msg.setOntology("roadTwinsOntology");
-			// Ask to twin Segment of the current segment on other cars 
-			//    in my sensor space
-			msg.addReceiver(new SegmentAgent().getAID()); // TODO:
+			// Ask to twin Segment of the current segment on other
+			//     cars in my sensor space
+			msg.addReceiver(new SegmentAgent().getAID()); 
 			
 			JSONObject content = new JSONObject();
 			content.put("x", carAgent.getX());
 			content.put("y", carAgent.getY());
 			content.put("radio", carAgent.getRatio());
 			content.put("id", carAgent.getId());
-			//System.out.println("Se envia informaci髇: " + carAgent.getX() + " " + carAgent.getY() + " " + carAgent.getId());
 			msg.setContent(content.toString());
 			
 			carAgent.send(msg);
@@ -53,17 +52,18 @@ public class CarSendingDataBehaviour extends Behaviour {
 		case 1: 
 			ACLMessage req = myAgent.receive(mtTwins);
 			if (req!= null){
-				JSONObject contenido = new JSONObject(req.getContent());
+				JSONObject contenido = 
+						            new JSONObject(req.getContent());  
 				//Contenido tiene la siguiente estructura: 
 				//   {"ids": ["234242@232", "ferf234123@",...]}
 				JSONArray list = contenido.getJSONArray("ids");
 				int numTwins = list.length();
-				// Ojo con pedir la misma informaci贸n varias veces al 
-				//    mismo veh铆culo durante el tiempo en que coinciden 
-				//     en el radio de localizaci贸n => => =>
+				// Ojo con pedir la misma informaci贸n varias veces 
+				//     al mismo veh铆culo durante el tiempo en que  
+				//     coinciden en el radio de localizaci贸n => => 
 				//     => => Lo hace el agente segmento
 				if (numTwins == 0) {step++; return;} // NO hay vecinos
-				// Si al menos hay un vecino con el que comunicarse ...
+				// Si al menos hay un vecino con el que comunicarse ..
 				ACLMessage msgInf = new ACLMessage(ACLMessage.INFORM);
 				msgInf.setOntology("roadStateOntology");
 				for(int i = 1; i < list.length(); i++) {
@@ -75,15 +75,16 @@ public class CarSendingDataBehaviour extends Behaviour {
 				json.put("position", carAgent.getCurrentPk());
 				json.put("id", carAgent.getId());
 				json.put("futureTraffic", 
-						              carAgent.getPastTraffic().toJSON());
+						          carAgent.getPastTraffic().toJSON());
 				msgInf.setContent(json.toString());
 				// There are two options:
 				// 1) Do a request/answer cycle and do not imclude a 
 				//     content in the msg, and then this car receives
 				//      just JGraph from each other car.
 				// 2) Do not perform a request/answer cycle, just 
-				//     inform other agents about my sensored data in radio
-				//     then, this car doesn't have to wait for a response.
+				//     inform other agents about my sensored data in 
+				//     radio then, this car doesn't have to wait for
+				//      a response.
 				// Choosing option 2: 
 				
 				carAgent.send(msgInf);

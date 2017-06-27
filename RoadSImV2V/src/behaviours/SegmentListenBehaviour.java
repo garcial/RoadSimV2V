@@ -1,7 +1,5 @@
 package behaviours;
 
-import java.util.Iterator;
-
 import org.json.JSONObject;
 
 import agents.SegmentAgent;
@@ -14,25 +12,27 @@ import jade.lang.acl.MessageTemplate;
 /**
  * This behaviour is used by the SegmentAgent and listens to messages
  * either by cars to register, deregister or update themselves from it
- * or from the EventManagerAgent to tell them updates about its status.
+ * or from the EventManagerAgent to tell them updates on its status.
  *
  */
 public class SegmentListenBehaviour extends Behaviour {
 
-	private static final long serialVersionUID = -2533061568306629976L;
+	private static final long serialVersionUID =-2533061568306629976L;
 
 	//Template to listen for the new communications from cars
 	private MessageTemplate mtCarControl = 
 			MessageTemplate.and(
-					MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-					MessageTemplate.MatchOntology("carToSegmentOntology"));
+			  MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+			  MessageTemplate.MatchOntology("carToSegmentOntology"));
 
 	private MessageTemplate mtEventManagerControl = 
-			MessageTemplate.and(
-					MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-					MessageTemplate.MatchOntology("eventManagerToSegmentOntology"));
+		 MessageTemplate.and(
+		   MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+		   MessageTemplate.MatchOntology(
+				                   "eventManagerToSegmentOntology"));
 
-	private MessageTemplate mt = MessageTemplate.or(mtCarControl, mtEventManagerControl);
+	private MessageTemplate mt =
+             MessageTemplate.or(mtCarControl, mtEventManagerControl);
 
 	private SegmentAgent agent;
 
@@ -51,29 +51,26 @@ public class SegmentListenBehaviour extends Behaviour {
 			
 			if (msg.getOntology().equals("carToSegmentOntology")) {
 
-				/*String car = msg.getContent();
- 				System.out.println("coche recibido: " + car);
- 				String parts[] = car.split("#");
-				 * */
 				JSONObject car = new JSONObject(msg.getContent());
 				//System.out.println("coche recibido: " + car);
 
 				//Register
-				if (msg.getConversationId().equals("update")) { //Update position
-					/*this.agent.updateCar(parts[0], Float.parseFloat(parts[1]), 
- 							  Float.parseFloat(parts[2]), Boolean.valueOf(parts[3]));*/
-					this.agent.updateCar(car.getString("id"), (float) car.getDouble("x"), 
-							(float) car.getDouble("y"), car.getBoolean("specialColor"));
+				if (msg.getConversationId().equals("update")) { 
+					//Update position
+
+					this.agent.updateCar(car.getString("id"), 
+							(float) car.getDouble("x"), 
+							(float) car.getDouble("y"), 
+							car.getBoolean("specialColor"));
 				} else {
-					if (msg.getConversationId().equals("register")) { // Register
-						/*this.agent.addCar(parts[0], Float.parseFloat(parts[1]), 
- 								Float.parseFloat(parts[2]), Boolean.valueOf(parts[3]),
- 										Integer.parseInt(parts[4]));*/
-						this.agent.addCar(car.getString("id"), (float) car.getDouble("x"), 
-								(float) car.getDouble("y"), car.getBoolean("specialColor"),
-										car.getInt("radio"));						
-					} else             // msg.getConversationId().equals("deregister"
-						//this.agent.removeCar(parts[0]);
+					if (msg.getConversationId().equals("register")) {
+						// Register
+						this.agent.addCar(car.getString("id"), 
+								(float) car.getDouble("x"), 
+								(float) car.getDouble("y"), 
+								       car.getBoolean("specialColor"),
+									   car.getInt("radio"));						
+					} else             
 						this.agent.removeCar(car.getString("id"));
 					
 					Segment segment = this.agent.getSegment();
@@ -118,7 +115,8 @@ public class SegmentListenBehaviour extends Behaviour {
 				}
 
 				
-			} else if (msg.getOntology().equals("eventManagerToSegmentOntology")) {
+			} else if (msg.getOntology().
+					        equals("eventManagerToSegmentOntology")) {
 				
 				Segment segment = this.agent.getSegment();
 				

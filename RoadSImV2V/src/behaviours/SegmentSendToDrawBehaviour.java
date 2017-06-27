@@ -18,7 +18,7 @@ import jade.lang.acl.MessageTemplate;
  */
 public class SegmentSendToDrawBehaviour extends CyclicBehaviour {
 
-	private static final long serialVersionUID = -6962886464372429902L;
+	private static final long serialVersionUID =-6962886464372429902L;
 
 	private SegmentAgent agent;
 	private DFAgentDescription interfaceAgent;
@@ -38,7 +38,8 @@ public class SegmentSendToDrawBehaviour extends CyclicBehaviour {
 
 		try {
 			result = DFService.searchUntilFound(
-					this.agent, this.agent.getDefaultDF(), dfd, null, 5000L);
+					this.agent, this.agent.getDefaultDF(), 
+					dfd, null, 5000L);
 		} catch (FIPAException e) { e.printStackTrace(); }
 
 		this.interfaceAgent = result[0];
@@ -46,7 +47,9 @@ public class SegmentSendToDrawBehaviour extends CyclicBehaviour {
 		this.topic = null;
 		
 		try {
-			TopicManagementHelper topicHelper = (TopicManagementHelper) this.agent.getHelper(TopicManagementHelper.SERVICE_NAME);
+			TopicManagementHelper topicHelper = 
+					(TopicManagementHelper) this.agent.
+					    getHelper(TopicManagementHelper.SERVICE_NAME);
 			topic = topicHelper.createTopic("tick");
 			topicHelper.register(topic);
 			
@@ -60,7 +63,8 @@ public class SegmentSendToDrawBehaviour extends CyclicBehaviour {
 	public void action() {
 
 		//Block until tick is received
-		ACLMessage msg = myAgent.receive(MessageTemplate.MatchTopic(topic));
+		ACLMessage msg = myAgent.receive(
+				                   MessageTemplate.MatchTopic(topic));
 
 		if (msg != null) {
 			
