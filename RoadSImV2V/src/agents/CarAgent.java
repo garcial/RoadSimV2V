@@ -10,21 +10,26 @@ import jade.lang.acl.MessageTemplate;
 import searchAlgorithms.Algorithm;
 import searchAlgorithms.AlgorithmFactory;
 import searchAlgorithms.Method;
-
+import trafficData.TrafficData;
+import trafficData.TrafficDataInStore;
+import trafficData.TrafficDataOutStore;
 import org.json.JSONObject;
 
 import behaviours.CarBehaviour;
+import behaviours.CarReceivingDataBehaviour;
 import environment.Map;
 import environment.Path;
 import environment.Segment;
 import environment.Step;
 
 /**
- * This code represents a mobile car, it will have an origin an a destination
- * and will get there using either the shortest, fastest or smartest path.
+ * This code represents a mobile car, it will have an origin an a 
+ * destination and will get there using either the shortest, 
+ * fastest or smartest path.
  *
  */
 public class CarAgent extends Agent {
+
 
 	private static final long serialVersionUID = 1L;
 
@@ -32,10 +37,13 @@ public class CarAgent extends Agent {
 	public static final int MAXWORLDY = 695;
 
 	private float x, y;
+	private float currentPk;
 	private int direction;
 	private int ratio;
-	private int currentSpeed,maxSpeed;
+	private int currentSpeed, maxSpeed;
 	private double currentTrafficDensity;
+	private long elapsedtime;
+	private long tini; // For measuring temporal intervals of traffic data
 	private String id; 
 	private DFAgentDescription interfaceAgent;
 	private boolean drawGUI;
@@ -47,7 +55,20 @@ public class CarAgent extends Agent {
 	private boolean smart = false;
 	private Algorithm alg;
 	private int algorithmType;
-	
+   
+	// This object stores current traffic sensored data
+	// every time a car goes into a new segment, this object is
+	// reseting.
+	private TrafficData sensorTrafficData;
+
+	// future: is for storing data received from other cars and
+	//    used for computing my route to destination
+	private TrafficDataInStore futureTraffic;
+
+	// past: is for informing data to send to other cars about
+	//    what is the traffic state in my performed route
+    private TrafficDataOutStore pastTraffic;
+
 	protected void setup() {
 
 		//Register the agent
@@ -106,13 +127,28 @@ public class CarAgent extends Agent {
 			this.smart = true;
 		}
 		
+		//Get the initial time tick from eventManager
+		elapsedtime = (long) this.getArguments()[6];
+		
 		//Get the desired Path from the origin to the destination
-		this.path = alg.getPath(this.map, getInitialIntersection(), getFinalIntersection(), this.maxSpeed);
+		this.path = alg.getPath(this.map, getInitialIntersection(), 
+				                getFinalIntersection(), this.maxSpeed);
 		
 		//Starting point
 		setX(map.getIntersectionByID(getInitialIntersection()).getX());
 		setY(map.getIntersectionByID(getInitialIntersection()).getY());
+		
+		//Store data received from other cars in a Map
+		futureTraffic = new TrafficDataInStore();
+		
+		//Store data to send to other cars in my route
+		pastTraffic = new TrafficDataOutStore();
 
+		// Store current trafficData sensored by myself
+		sensorTrafficData = new TrafficData();
+		// Tini for measuring traffic data intervals in twin segments 
+		tini = elapsedtime;
+		
 		if(this.drawGUI){
 			//Find the interface agent
 			dfd = new DFAgentDescription();
@@ -146,7 +182,6 @@ public class CarAgent extends Agent {
 		
 		if(this.drawGUI){
 			msg.addReceiver(interfaceAgent.getName());
-			//msg.setContent("x="+this.x+"y="+this.y+"id="+this.id+"algorithmType="+this.algorithmType);
 			JSONObject carData = new JSONObject();
 			carData.put("x", this.x);
 			carData.put("y", this.y);
@@ -167,9 +202,6 @@ public class CarAgent extends Agent {
 		msg.setOntology("carToSegmentOntology");
 		msg.setConversationId("register");
 		msg.addReceiver(next.getSegment().getSegmentAgent().getAID());
-		
-		/* msg.setContent(getId() + "#" + Float.toString(getX()) + "#" + Float.toString(getY()) + 
-		 				       "#" + getSpecialColor() + "#" + getRatio()+"#"); */
 		JSONObject carDataRegister = new JSONObject();
 		carDataRegister.put("id", getId());
 		carDataRegister.put("x", getX());
@@ -181,19 +213,21 @@ public class CarAgent extends Agent {
 		
 		send(msg);
 		// Receive the current traffic density from the current segment
-		msg = blockingReceive(MessageTemplate.MatchOntology("trafficDensityOntology"));
+		msg = blockingReceive(MessageTemplate.
+				              MatchOntology("trafficDensityOntology"));
 		
 		JSONObject densityData = new JSONObject(msg.getContent());
 		
-		// setCurrentTrafficDensity(Double.parseDouble(msg.getContent()));
 		setCurrentTrafficDensity(densityData.getDouble("density"));
 		//Change my speed according to the maximum allowed speed
 	    setCurrentSpeed(Math.min(getMaxSpeed(), getCurrentSegment().getCurrentAllowedSpeed()));
 		
 	    //The special color is useless without the interfaceAgent
 	    if(this.drawGUI){
-	    	//If we are going under the maximum speed I'm allowed to go, or I can go, I am in a congestion, draw me differently
-		    if (getCurrentSpeed() < Math.min(this.getMaxSpeed(), this.getCurrentSegment().getMaxSpeed())) {
+	    	//If we are going under the maximum speed I'm allowed to go,
+	    	//   or I can go, I am in a congestion, draw me differently
+		    if (getCurrentSpeed() < Math.min(this.getMaxSpeed(), 
+		    		       this.getCurrentSegment().getMaxSpeed())) {
 
 		    	setSpecialColor(true);
 		    } else {
@@ -202,20 +236,25 @@ public class CarAgent extends Agent {
 		    }
 	    }
 		//Runs the agent
+
 		addBehaviour(new CarBehaviour(this, 50, this.drawGUI));	
+		addBehaviour(new CarReceivingDataBehaviour(this));
 	}
 	
 	/**
-	 * Recalculate the route, this will be called from the behaviour if we are smart.
+	 * Recalculate the route, this will be called from the behaviour 
+	 *     if we are smart.
 	 * 
 	 * @param origin ID of the intersection where the car is
 	 */
 	public void recalculate(String origin) {
 		
-		// A JGraph envision structure must be obteined from jgraphs received by other cars in the
-		//    twin segment of the current segment where the car is going.
+		// A JGraph envision structure must be obteined from jgraphsT 
+		//     received by other cars in the twin segment of the 
+		//     current segment where the car is going.
 		// TODO:
-		this.path = this.alg.getPath(this.map, origin, getFinalIntersection(), this.maxSpeed);
+		this.path = this.alg.getPath(this.map, origin, 
+				               getFinalIntersection(), this.maxSpeed);
 	}
 
 	//Setters and getters
@@ -237,6 +276,14 @@ public class CarAgent extends Agent {
 
 	public void setY(float y) {
 		this.y = y;
+	}
+
+	public float getCurrentPk() {
+		return currentPk;
+	}
+
+	public void setCurrentPk(float currentPk) {
+		this.currentPk = currentPk;
 	}
 
 	public void setDirection(int direction) {
@@ -324,5 +371,44 @@ public class CarAgent extends Agent {
 		this.currentTrafficDensity = currentTrafficDensity;
 	}
 
+	public long getElapsedtime() {
+		return elapsedtime;
+	}
+
+	public void increaseElapsedtime() {
+		this.elapsedtime++;
+	}
+
+	public long getTini() {
+		return tini;
+	}
+
+	public void setTini(long tini) {
+		this.tini = tini;
+	}
+
+	public TrafficData getSensorTrafficData() {
+		return sensorTrafficData;
+	}
+
+	public void setSensorTrafficData(TrafficData sensorTrafficData) {
+		this.sensorTrafficData = sensorTrafficData;
+	}
+
+	public TrafficDataOutStore getPastTraffic() {
+		return pastTraffic;
+	}
+
+	public void setPastTraffic(TrafficDataOutStore pastTraffic) {
+		this.pastTraffic = pastTraffic;
+	}
+
+	public TrafficDataInStore getFutureTraffic() {
+		return futureTraffic;
+	}
+
+	public void setFutureTraffic(TrafficDataInStore futureTraffic) {
+		this.futureTraffic = futureTraffic;
+	}
 
 }
