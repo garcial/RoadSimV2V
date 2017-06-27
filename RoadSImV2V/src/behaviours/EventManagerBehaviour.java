@@ -95,13 +95,12 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 					if (parts[0].equals("newCar")) {
 						
 						try {
-
 							AgentController agent = this.agent.
 									getCarContainer().
 									createNewAgent("car" + 
 									Long.toString(currentTick) + 
 									Integer.toString(counter), 
-									"agents.CarAgent", new Object[] {
+									"agents.CarAgent", new Object[]{
 											this.agent.getMap(), 
 			/* IntOrigin, IntDest */		parts[2], parts[3], 
 			/* maxSpeed car */				Integer.parseInt(parts[4]),

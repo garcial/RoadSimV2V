@@ -66,11 +66,10 @@ public class EventManagerAgent extends Agent {
 		//Get starting tick
 		this.timeElapsed = (long) this.getArguments()[4];
 
-
 		//Draw the gui or not
 		this.drawGUI = (boolean) this.getArguments()[5];
 		//Previous minute will be used to know when to send a msg to the 
-		//    interface, when the minute changes
+		// interface, when the minute changes
 
 		this.previousMinute = 0;
 

@@ -170,9 +170,8 @@ public class Main {
 			AgentController agent = 
 					mainContainer.createNewAgent("timeKeeperAgent",
 							"agents.TimeKeeperAgent",
-
-							new Object[]{drawGUI, tickLength, startingTick, 
-									     finishingTick});
+							new Object[]{drawGUI,tickLength,
+									startingTick, finishingTick});
 
 			agent.start();
 
@@ -223,7 +222,6 @@ public class Main {
 						          "Agent", "agents.CarAgent", 
 						          new Object[]{map, initialintersection,
 						        		       finalIntersection, 120, "fastest", drawGUI});
-				System.out.println("Se crea un coche");
 
 				agent.start();
 				

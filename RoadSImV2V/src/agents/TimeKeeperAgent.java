@@ -104,7 +104,6 @@ public class TimeKeeperAgent extends Agent {
 			@Override
 			public void action() {
 
-
 				if (currentTick == finishingTick) {
 
 					// Stops the entire app, not just this agent. 
@@ -154,12 +153,10 @@ public class TimeKeeperAgent extends Agent {
 					sd.setType("carAgent");
 					dfd.addServices(sd);
 
-
 					try {
 						cars = DFService.search(
 								timeKeeperAgent, getDefaultDF(), dfd, null);
 					} catch (FIPAException e) { e.printStackTrace(); }
-
 
 
 					if (cars != null) {
@@ -189,7 +186,6 @@ public class TimeKeeperAgent extends Agent {
 			//Check for tickLeght changes
 			addBehaviour(new Behaviour() {
 
-
 				private static final long serialVersionUID = 
 						8455875589611369392L;
 
@@ -206,12 +202,13 @@ public class TimeKeeperAgent extends Agent {
 
 					if (msg != null) {
 						JSONObject messageData = 
-								new JSONObject(msg.getContent()); 
+								             new JSONObject(msg.getContent()); 
 						Long tickLength = 
-								(long) (messageData.getInt("idTick"));
+								        (long) (messageData.getInt("idTick"));
 						System.out.println(tickLength);
 						((TimeKeeperAgent)this.myAgent).
 						setTickLength(tickLength);
+
 					} else block();
 				}
 
@@ -219,7 +216,9 @@ public class TimeKeeperAgent extends Agent {
 				public boolean done() {
 					return false;
 				}
-			});}
+
+			});
+		}
 
 	}
 

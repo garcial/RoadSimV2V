@@ -13,14 +13,18 @@ import searchAlgorithms.Method;
 import trafficData.TrafficData;
 import trafficData.TrafficDataInStore;
 import trafficData.TrafficDataOutStore;
+
+import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.json.JSONObject;
 
 import behaviours.CarBehaviour;
 import behaviours.CarReceivingDataBehaviour;
+import environment.Intersection;
 import environment.Map;
 import environment.Path;
 import environment.Segment;
 import environment.Step;
+import jgrapht.Edge;
 
 /**
  * This code represents a mobile car, it will have an origin an a 
@@ -32,9 +36,6 @@ public class CarAgent extends Agent {
 
 
 	private static final long serialVersionUID = 1L;
-
-	public static final int MAXWORLDX = 800;
-	public static final int MAXWORLDY = 695;
 
 	private float x, y;
 	private float currentPk;
@@ -55,6 +56,7 @@ public class CarAgent extends Agent {
 	private boolean smart = false;
 	private Algorithm alg;
 	private int algorithmType;
+	private DefaultDirectedWeightedGraph<Intersection, Edge> jgraht;
    
 	// This object stores current traffic sensored data
 	// every time a car goes into a new segment, this object is
@@ -89,12 +91,14 @@ public class CarAgent extends Agent {
 			this.takeDown();
 		}
 		
-		//Is necessary draw th gui
+		//Is necessary draw the gui
 		this.drawGUI = (boolean) this.getArguments()[5];
 
 		//Get the map from an argument
 		this.map = (Map) this.getArguments()[0];
-		
+		//Get the jgraph from the map
+		this.jgraht = this.map.getJgraht();
+		System.out.println("CarAgent.java-- Get JgraphT: " + this.jgraht.toString());
 		//Get the starting and final points of my trip
 		this.initialIntersection = (String) this.getArguments()[1];
 		this.finalIntersection = (String) this.getArguments()[2];
@@ -144,6 +148,7 @@ public class CarAgent extends Agent {
 		//Store data to send to other cars in my route
 		pastTraffic = new TrafficDataOutStore();
 
+
 		// Store current trafficData sensored by myself
 		sensorTrafficData = new TrafficData();
 		// Tini for measuring traffic data intervals in twin segments 
@@ -179,6 +184,7 @@ public class CarAgent extends Agent {
 
 		//We notify the interface about the new car
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+
 		
 		if(this.drawGUI){
 			msg.addReceiver(interfaceAgent.getName());
@@ -191,7 +197,7 @@ public class CarAgent extends Agent {
 			msg.setOntology("newCarOntology");
 			send(msg);
 		}
-		
+
 
 		// Set the initial values for the carAgent on the road
 		Step next = getPath().getGraphicalPath().get(0);
@@ -219,8 +225,11 @@ public class CarAgent extends Agent {
 		JSONObject densityData = new JSONObject(msg.getContent());
 		
 		setCurrentTrafficDensity(densityData.getDouble("density"));
+
 		//Change my speed according to the maximum allowed speed
-	    setCurrentSpeed(Math.min(getMaxSpeed(), getCurrentSegment().getCurrentAllowedSpeed()));
+
+	    setCurrentSpeed(Math.min(getMaxSpeed(), 
+	    				getCurrentSegment().getCurrentAllowedSpeed()));
 		
 	    //The special color is useless without the interfaceAgent
 	    if(this.drawGUI){
@@ -229,6 +238,7 @@ public class CarAgent extends Agent {
 		    if (getCurrentSpeed() < Math.min(this.getMaxSpeed(), 
 		    		       this.getCurrentSegment().getMaxSpeed())) {
 
+
 		    	setSpecialColor(true);
 		    } else {
 
@@ -236,9 +246,9 @@ public class CarAgent extends Agent {
 		    }
 	    }
 		//Runs the agent
-
-		addBehaviour(new CarBehaviour(this, 50, this.drawGUI));	
+		addBehaviour(new CarBehaviour(this, 50, this.drawGUI));
 		addBehaviour(new CarReceivingDataBehaviour(this));
+
 	}
 	
 	/**
@@ -340,6 +350,14 @@ public class CarAgent extends Agent {
 
 	public boolean getSpecialColor() {
 		return specialColor;
+	}
+	
+	public DefaultDirectedWeightedGraph<Intersection, Edge> getJgraht() {
+		return jgraht;
+	}
+
+	public void setJgraht(DefaultDirectedWeightedGraph<Intersection, Edge> jgraht) {
+		this.jgraht = jgraht;
 	}
 
 	public void setSpecialColor(boolean specialColor) {
