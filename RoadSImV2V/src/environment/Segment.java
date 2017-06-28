@@ -250,4 +250,14 @@ public class Segment implements Serializable{
 	public List<String> getTwinSegments() {
 		return twinSegments;
 	}
+
+	public String getDirection() {
+		return direction;
+	}
+
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
+	
+	
 }

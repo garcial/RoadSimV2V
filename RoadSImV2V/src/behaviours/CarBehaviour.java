@@ -88,6 +88,7 @@ public class CarBehaviour extends CyclicBehaviour {
 				float currentX = this.agent.getX();
 				float currentY = this.agent.getY();
 
+				float currentpk = this.agent.getCurrentPk();
 				//The distance between my current position and my next 
 				//   desired position
 				float distNext = (float) Math.sqrt(
@@ -134,6 +135,14 @@ public class CarBehaviour extends CyclicBehaviour {
 							proportion * next.getDestinationX()));
 					this.agent.setY(((1 - proportion) * currentY + 
 							proportion * next.getDestinationY()));
+					
+					//Update the current pk when update the x and y
+					if("up".compareTo(this.agent.getCurrentSegment().getDirection()) == 0){
+						this.agent.setCurrentPk(currentpk + proportion);
+					} else {
+						this.agent.setCurrentPk(currentpk - proportion);
+					}
+					
 
 					//If I am in a new segment
 					if (!this.agent.getCurrentSegment().
@@ -157,6 +166,8 @@ public class CarBehaviour extends CyclicBehaviour {
 						//Register in the new segment
 						this.informSegment(next.getSegment(), "register");
 						
+						//Update the currentpk when register in other segment
+						this.agent.setCurrentPk(next.getSegment().getPkIni());
 						//Calculate de information to remove the segment that you register
 						this.dateInitSegment = new Date().getTime();
 						//I don't know if remove the edge or if remove the content of the edge

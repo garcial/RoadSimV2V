@@ -237,8 +237,7 @@ public class CarAgent extends Agent {
 	    	//   or I can go, I am in a congestion, draw me differently
 		    if (getCurrentSpeed() < Math.min(this.getMaxSpeed(), 
 		    		       this.getCurrentSegment().getMaxSpeed())) {
-
-
+		    	
 		    	setSpecialColor(true);
 		    } else {
 
