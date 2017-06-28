@@ -1,9 +1,6 @@
 package jgrapht;
 
-import java.util.ArrayList;
-import java.util.List;
 import org.jgrapht.graph.DefaultWeightedEdge;
-import environment.EdgeData;
 import environment.Segment;
 
 public class Edge extends DefaultWeightedEdge {
@@ -19,7 +16,6 @@ public class Edge extends DefaultWeightedEdge {
 	private long tini;
 	private long tfin;
 	private int serviceLevel;
-	private List<EdgeData> edgeDataList;
 	private static final long serialVersionUID = 17455L;
 
 	public Edge() {
@@ -27,22 +23,17 @@ public class Edge extends DefaultWeightedEdge {
 	}
 	
 	public Edge(Segment segment) {
-		this.edgeDataList = new ArrayList<EdgeData>();
 		this.segment = segment;
 		this.weight = (float) 0.0;
 	}
 
 	public Edge(Segment segment, char serviceLevel, long initialDate, long finalDate) {
 		super();
-		this.edgeDataList = new ArrayList<EdgeData>();
 		this.segment = segment;
 		this.weight = 0.0f;
 		this.serviceLevel = serviceLevel;
 		this.tini = initialDate;
 		this.tfin = finalDate;
-		this.edgeDataList.add(new EdgeData(serviceLevel, initialDate, finalDate));
-		
-		
 	}
 	
 	@Override
@@ -51,16 +42,6 @@ public class Edge extends DefaultWeightedEdge {
 	 * */
 	public double getWeight(){
 		return weight;
-	}
-	
-	public void updateList(long n_k){
-		for(EdgeData elem:this.edgeDataList){
-			if(elem.getFinalDate() < n_k){
-				this.edgeDataList.remove(elem);
-			} else if (elem.getInitialDate() < n_k){
-				this.tini = n_k;
-			}
-		}
 	}
 
 	public Segment getSegment() {
@@ -73,14 +54,6 @@ public class Edge extends DefaultWeightedEdge {
 	
 	public static long getSerialversionuid() {
 		return serialVersionUID;
-	}
-
-	public List<EdgeData> getEdgeDataList() {
-		return edgeDataList;
-	}
-
-	public void setEdgeDataList(List<EdgeData> edgeDataList) {
-		this.edgeDataList = edgeDataList;
 	}
 
 	public void setWeight(float weight) {
@@ -114,7 +87,7 @@ public class Edge extends DefaultWeightedEdge {
 	@Override
 	public String toString() {
 		return "Edge [segment=" + segment + ", weight=" + weight + ", tini=" + tini + ", tfin=" + tfin
-				+ ", serviceLevel=" + serviceLevel + ", edgeDataList=" + edgeDataList + "]";
+				+ ", serviceLevel=" + serviceLevel + "]";
 	}
 
 	

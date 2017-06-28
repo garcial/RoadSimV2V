@@ -16,6 +16,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import trafficData.TrafficData;
+import trafficData.TrafficDataOutStore;
 import jgrapht.Edge;
 
 /**
@@ -153,6 +154,19 @@ public class CarBehaviour extends CyclicBehaviour {
 						this.serviceLevelSegment = this.agent.getCurrentSegment().getCurrentServiceLevel();
 						this.agent.getJgraht().addEdge(this.agent.getCurrentSegment().getOrigin(), next.getSegment().getOrigin(), new Edge(this.agent.getCurrentSegment(),this.serviceLevelSegment, this.dateInitSegment, this.dateFinalSegment));
 						//System.out.println(this.agent.getJgraht().toString());
+						
+						// Modify the Traffic Data of the Segmenta that deregister
+						TrafficDataOutStore pastTraffic = this.agent.getPastTraffic();
+						JSONObject traficInfo = new JSONObject();
+						traficInfo.put("tini", this.dateInitSegment);
+						traficInfo.put("tfin", this.dateFinalSegment);
+						//We need the numcars, its speed and position
+						traficInfo.put("numCars", 0);
+						TrafficData traficDataSegment = new TrafficData(traficInfo);
+						
+						
+						pastTraffic.put(this.agent.getCurrentSegment().getId(), traficDataSegment);
+						
 						
 						//Deregister from previous segment
 						this.informSegment(
