@@ -16,6 +16,14 @@ public class TrafficDataOutStore {
 		data.put(segment, bd);
 	}
 	
+	public HashMap<String, TrafficData> getData() {
+		return data;
+	}
+
+	public void setData(HashMap<String, TrafficData> data) {
+		this.data = data;
+	}
+
 	public void put(String segment, JSONObject json){
 		data.put(segment, new TrafficData(json));
 	}

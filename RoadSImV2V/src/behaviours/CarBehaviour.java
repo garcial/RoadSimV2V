@@ -1,7 +1,9 @@
 package behaviours;
 
+import java.util.ArrayList;
 import java.util.Date;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.ToJSON;
 
@@ -162,8 +164,9 @@ public class CarBehaviour extends CyclicBehaviour {
 						traficInfo.put("tfin", this.dateFinalSegment);
 						//We need the numcars, its speed and position
 						traficInfo.put("numCars", 0);
+						traficInfo.put("positions", new JSONArray());
+						traficInfo.put("speeds", new JSONArray());
 						TrafficData traficDataSegment = new TrafficData(traficInfo);
-						
 						
 						pastTraffic.put(this.agent.getCurrentSegment().getId(), traficDataSegment);
 						
