@@ -26,7 +26,8 @@ public class CarReceivingDataBehaviour extends CyclicBehaviour {
 	public void action() {
 		ACLMessage msg = myAgent.receive(mtInform);
 		
-		if (msg != null) {			
+		if (msg != null) {		
+			System.out.println("RECIBIENDO información");
 			// Integrate JSON data received from other cars in my 
 			//       invision futureTraffic EDD for rerouting
 			JSONObject datos = new JSONObject(msg.getContent());

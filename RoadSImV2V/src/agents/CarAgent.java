@@ -40,7 +40,7 @@ public class CarAgent extends Agent {
 	private float x, y;
 	private float currentPk;
 	private int direction;
-	private int ratio;
+	private int ratio = 10; // El radio es un valor fijo que dependerá del hardware
 	private int currentSpeed, maxSpeed;
 	private double currentTrafficDensity;
 	private long elapsedtime;

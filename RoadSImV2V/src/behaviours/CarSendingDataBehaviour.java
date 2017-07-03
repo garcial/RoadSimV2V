@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import agents.CarAgent;
 import agents.SegmentAgent;
+import environment.Segment;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
@@ -37,8 +38,20 @@ public class CarSendingDataBehaviour extends Behaviour {
 			msg.setOntology("roadTwinsOntology");
 			// Ask to twin Segment of the current segment on other cars 
 			//    in my sensor space
-			msg.addReceiver(new SegmentAgent().getAID()); // TODO:
+			//Tengo el string id de segmento ahora como consigo el segmento y su agente
+			//Tengo dos ideas o consigo el segmento a partir de la intersección o a partir de los edges del JGrapht
+			for(String sa : this.carAgent.getCurrentSegment().getTwinSegments()){
+				//System.out.println(sa);
+				//Solo necesito mirar los que entran porque si yo he salido mi gemelo no puede salir de la
+				// intersección ha de entrar
+				for(Segment s: this.carAgent.getCurrentSegment().getOrigin().getInSegments()){
+					if(sa.compareTo(s.getId()) == 0){
+						msg.addReceiver(s.getSegmentAgent().getAID());
+					}
+				}
+			}
 			
+
 			JSONObject content = new JSONObject();
 			content.put("x", carAgent.getX());
 			content.put("y", carAgent.getY());
@@ -52,7 +65,9 @@ public class CarSendingDataBehaviour extends Behaviour {
 			break;
 		case 1: 
 			ACLMessage req = myAgent.receive(mtTwins);
+			//System.out.println(req);
 			if (req!= null){
+				System.out.println("CASO 1 de Car Sending");
 				JSONObject contenido = new JSONObject(req.getContent());
 				//Contenido tiene la siguiente estructura: 
 				//   {"ids": ["234242@232", "ferf234123@",...]}
@@ -97,6 +112,7 @@ public class CarSendingDataBehaviour extends Behaviour {
 
 	@Override
 	public boolean done() {
+		//System.out.println("Hecho");
 		return step == 2;
 	}
 

@@ -2,6 +2,7 @@ package behaviours;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -31,52 +32,57 @@ public class SegmentRadarBehaviour extends CyclicBehaviour {
 	@Override
 	public void action() {
 
-		ACLMessage msg = myAgent.receive(mtCarRadar);
-
+		ACLMessage msg = mySegmentAgent.receive(mtCarRadar);
+		
 		if (msg != null) { //There is a message
-
-			/*String parts[] = msg.getContent().split("#");
-			String idSolicitante = parts[3];
-			int x = Integer.parseInt(parts[0]);
-			int y = Integer.parseInt(parts[1]);
-			int radio = Integer.parseInt(parts[2]);*/
-			
+			//System.out.println("Ha llegado un paquete al segmento");	
 			JSONObject obj = new JSONObject(msg.getContent());
 			String idSolicitante = obj.getString("id");
 			int x = obj.getInt("x");
 			int y = obj.getInt("y");
 			int radio = obj.getInt("radio");
-			
 			List<String> twins = new ArrayList<String>();
 			
 			HashMap<String, CarData> cars = mySegmentAgent.getCars();
+			//System.out.println("CARS: " +cars.toString());
 			for(String id :cars.keySet()) {
+				//System.out.println("ID SEGMENT RADAR: " + id);
 				CarData cd = cars.get(id);
+				//System.out.println("CD: " + cd.toString());
 				double dist = Math.sqrt((x-cd.getX())*(x-cd.getX()) + 
 						(y-cd.getY())*(y-cd.getY()));
-				if (dist <= radio && dist <= cd.getRadio()) 
+				if (dist <= radio && dist <= cd.getRadio()){
 					twins.add(id);
+				}
 			}
 			twins.remove(idSolicitante);
+			//System.out.println(twins);
+			//System.out.println("TWINS: " + twins.toString());
 			// Build msg to answer the carAgent requesting
-			ACLMessage msgCarsOnRadio = new ACLMessage(ACLMessage.INFORM);
+			//ACLMessage msgCarsOnRadio = new ACLMessage(ACLMessage.INFORM);
+			ACLMessage msgCarsOnRadio = msg.createReply();
 			// Filter just cars not used before for this carAgent
-			int cont = 0;
+			//int cont = 0;
 			//StringBuilder str = new StringBuilder();
 			JSONObject objres = new JSONObject();
 			JSONArray list = new JSONArray();
 			for(String id:twins) {
-				if (!mySegmentAgent.isCarUsed(idSolicitante, id)) {
+				//if (!mySegmentAgent.isCarUsed(idSolicitante, id)) {
 					list.put(id);
 					//str.append(id).append("#");
-					cont++;
-				}
+					//cont++;
+				//}
 			}
 			//str.append(cont);
 			objres.put("ids", list);
 			msgCarsOnRadio.setOntology("roadTwinsOntology");
+			//Iterator iter = msgCarsOnRadio.getAllReceiver();
+			//while(iter.hasNext()){
+				//System.out.println(iter.next());
+			//}
 			//msgCarsOnRadio.setContent(str.toString());
 			msgCarsOnRadio.setContent(objres.toString());
+			//System.out.println(objres.toString());
 			mySegmentAgent.send(msgCarsOnRadio);
 
 		} else block();

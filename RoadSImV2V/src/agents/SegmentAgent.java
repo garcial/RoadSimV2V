@@ -40,7 +40,10 @@ public class SegmentAgent extends Agent {
 	private HashMap<String, ArrayList<String>> interactingCars;
 	
 	public boolean isCarUsed(String idCar, String otherCar) {
+		//System.out.println("Dentro del agente segmento");
+		//System.out.println("IDCAR: " + idCar + " ,OTHERCAR: " + otherCar);
 		if (interactingCars.containsKey(idCar)) {
+			//System.out.println("Ya ha habido comunicación ??");
 			if (!interactingCars.get(idCar).contains(otherCar)) {
 				interactingCars.get(idCar).add(otherCar);
 				return false;
