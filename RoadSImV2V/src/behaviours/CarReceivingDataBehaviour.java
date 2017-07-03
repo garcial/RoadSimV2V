@@ -39,6 +39,7 @@ public class CarReceivingDataBehaviour extends CyclicBehaviour {
 			                         add(datos.getDouble("speed"));
 			carAgent.getSensorTrafficData().getCarsPositions().
 			                         add(datos.getDouble("position"));
+			carAgent.getSensorTrafficData().getIds().add(datos.getString("id"));
 			
 			for(String key:datos.getJSONObject("futureTraffic").
 					             keySet()){

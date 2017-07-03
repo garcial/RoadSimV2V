@@ -30,7 +30,7 @@ public class EventManagerAgent extends Agent {
 
 	private int previousMinute;
 	
-	private long timeElapsed;
+//	private long timeElapsed;
 
 	private Set<String> aux;
 
@@ -64,7 +64,7 @@ public class EventManagerAgent extends Agent {
 		//Get the folder
 		String folder = (String) this.getArguments()[3];
 		//Get starting tick
-		this.timeElapsed = (long) this.getArguments()[4];
+		//this.timeElapsed = (long) this.getArguments()[4];
 
 		//Draw the gui or not
 		this.drawGUI = (boolean) this.getArguments()[5];
@@ -177,18 +177,18 @@ public class EventManagerAgent extends Agent {
 	}
 
 	//Getters and setter
-	public long getTimeElapsed() {
-		return timeElapsed;
-	}
-
-	public void setTimeElapsed(long timeElapsed) {
-		this.timeElapsed = timeElapsed;
-	}
-
-	public void incrementeTimeElapsed() {
-
-		this.timeElapsed += 1;
-	}
+//	public long getTimeElapsed() {
+//		return timeElapsed;
+//	}
+//
+//	public void setTimeElapsed(long timeElapsed) {
+//		this.timeElapsed = timeElapsed;
+//	}
+//
+//	public void incrementeTimeElapsed() {
+//
+//		this.timeElapsed += 1;
+//	}
 
 	public HashMap<Long, List<String>> getEvents() {
 		return events;

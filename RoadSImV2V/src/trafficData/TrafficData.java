@@ -11,6 +11,7 @@ public class TrafficData {
 	private int numCars;
 	private ArrayList<Double> carsPositions;
 	private ArrayList<Double> carsSpeeds;
+	private ArrayList<String> ids;
 	private JSONObject json;
 	
 	public TrafficData() {
@@ -19,6 +20,7 @@ public class TrafficData {
 		this.numCars = 0;
 		this.carsPositions = new ArrayList<Double>();
 		this.carsSpeeds = new ArrayList<Double>();
+		this.ids = new ArrayList<String>();
 		json = null;
 	}
 	
@@ -34,6 +36,9 @@ public class TrafficData {
 		this.carsSpeeds = new ArrayList<Double>();
 		for(int i = 0; i<speeds.length(); i++)
 			carsSpeeds.add(speeds.getDouble(i));	
+		JSONArray idsReceived = json.getJSONArray("ids");
+		for(int i = 0; i< idsReceived.length(); i++)
+			ids.add(idsReceived.getString(i));
 		this.json = json;
 	}
 	
@@ -70,14 +75,24 @@ public class TrafficData {
 		this.numCars = numCars;
 	}
 	
+
+	public ArrayList<String> getIds() {
+		return ids;
+	}
+
+	public void setIds(ArrayList<String> ids) {
+		this.ids = ids;
+	}
+	
 	public JSONObject toJSON(){
 		if (json!= null) return json;
-		json = new JSONObject();
+		JSONObject json = new JSONObject();
 		json.put("tini", getTini());
 		json.put("tfin", getTfin());
 		json.put("numCars", getNumCars());
-		json.put("positions", new JSONArray(getCarsPositions()));
-		json.put("speeds", new JSONArray(getCarsSpeeds()));
+		json.put("positions", new JSONArray(getCarsPositions().toArray(new Double[0])));
+		json.put("speeds", new JSONArray(getCarsSpeeds().toArray(new Double[0])));
+		json.put("ids", new JSONArray(getIds().toArray(new String[0])));
 		return json;
 	}
 
@@ -85,5 +100,6 @@ public class TrafficData {
 	public String toString() {
 		return toJSON().toString();
 	}
+
 }
 

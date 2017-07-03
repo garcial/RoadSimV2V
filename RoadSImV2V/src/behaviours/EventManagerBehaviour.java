@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONObject;
-import org.json.ToJSON;
 
 import agents.EventManagerAgent;
 import jade.core.AID;
@@ -51,7 +50,7 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 				                 MessageTemplate.MatchTopic(topic));
 		if (msg != null) {
 			
-			int totalMinutes = ((int) this.agent.getTimeElapsed())/60;
+			int totalMinutes = ((int) Long.parseLong(msg.getContent()))/60;
 			int hours = (int) (totalMinutes / 60);
 			int minutes = (int) (totalMinutes % 60);
 			
@@ -73,11 +72,11 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 			}
 
 			//Increment the elapsed time
-			this.agent.incrementeTimeElapsed();
+			//this.agent.incrementeTimeElapsed();
 			
 			HashMap<Long, List<String>> events = 
 					                           this.agent.getEvents();
-			long currentTick = this.agent.getTimeElapsed();
+			long currentTick = Long.parseLong(msg.getContent());
 			int counter = 0;
 			
 			//Check for events that need to be fired at this tick
@@ -106,7 +105,8 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 			/* maxSpeed car */			Integer.parseInt(parts[4]),
 			/* alg type */				parts[5],
 			/* drawGUI */				this.drawGUI,
-			/* Initial time */          currentTick});
+			/* Initial time */          currentTick, 
+			/* sensor ratio */          10});
 
 							agent.start();
 							

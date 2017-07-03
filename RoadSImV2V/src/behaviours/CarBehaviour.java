@@ -1,7 +1,5 @@
 package behaviours;
 
-import java.util.Date;
-
 import org.json.JSONObject;
 import org.json.ToJSON;
 
@@ -32,8 +30,6 @@ public class CarBehaviour extends CyclicBehaviour {
 	private CarAgent agent;
 	private AID topic;
 	private boolean done = false;
-	private long dateInitSegment;
-	private long dateFinalSegment;
 	private char serviceLevelSegment;
 	private boolean drawGUI;
 
@@ -68,7 +64,7 @@ public class CarBehaviour extends CyclicBehaviour {
 		if (msg != null) {
 			
 		    // Increase elapsed time
-			agent.increaseElapsedtime();
+			//agent.increaseElapsedtime();
 			//If I still have to move somewhere
 			if(this.agent.getPath().getGraphicalPath().size() > 0) {
 
@@ -143,9 +139,9 @@ public class CarBehaviour extends CyclicBehaviour {
 					if (!this.agent.getCurrentSegment().
 							equals(next.getSegment())) {
 
+						long tfin = Long.parseLong(msg.getContent());
 						//Calculate the information to the jgraph 
 						//   and Deregister from previous segment
-						this.dateFinalSegment = new Date().getTime();
 						this.serviceLevelSegment = this.agent.
 								            getCurrentSegment().
 								            getCurrentServiceLevel();
@@ -154,8 +150,8 @@ public class CarBehaviour extends CyclicBehaviour {
 						   next.getSegment().getOrigin(), 
 						   new Edge(this.agent.getCurrentSegment(),
 							   	    this.serviceLevelSegment, 
-									this.dateInitSegment, 
-									this.dateFinalSegment));
+									agent.getTini(), 
+									tfin));
 						
 						//Deregister from previous segment
 						this.informSegment(
@@ -174,7 +170,7 @@ public class CarBehaviour extends CyclicBehaviour {
 						
 						//Calculate de information to remove the 
 						//   segment that you register
-						this.dateInitSegment = new Date().getTime();
+						agent.setTini(tfin);
 						//I don't know if remove the edge or if remove
 						//   the content of the edge
 						this.agent.getJgraht().removeEdge(
@@ -200,7 +196,7 @@ public class CarBehaviour extends CyclicBehaviour {
 						           delete(next.getSegment().getId());
 						// Introducir el Tfin en TrafficData
 						agent.getSensorTrafficData().
-						             setTfin(agent.getElapsedtime());
+						             setTfin(tfin);
 						// Introduce current TrafficData into 
 						//     the pastTraffic
 						// First give the number of cars detected
@@ -212,8 +208,7 @@ public class CarBehaviour extends CyclicBehaviour {
 								        agent.getSensorTrafficData());
 						//Start a new current trafficData by myself
 						agent.setSensorTrafficData(new TrafficData());
-						agent.getSensorTrafficData().setTini(
-								              agent.getElapsedtime());
+						agent.getSensorTrafficData().setTini(tfin);
 					}
 					
 					//If we are going under the maximum speed I'm 

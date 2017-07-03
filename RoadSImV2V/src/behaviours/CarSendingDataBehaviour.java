@@ -1,5 +1,8 @@
 package behaviours;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -37,8 +40,13 @@ public class CarSendingDataBehaviour extends Behaviour {
 			msg.setOntology("roadTwinsOntology");
 			// Ask to twin Segment of the current segment on other
 			//     cars in my sensor space
-			msg.addReceiver(new SegmentAgent().getAID()); 
-			
+			//TODO: Revise how to obtain the IAD of the twin segments
+			//      from Strings
+			List<String> twins = carAgent.getCurrentSegment().
+					                      getTwinSegments();
+			for(int i = 1; i < twins.size(); i++) {
+				msg.addReceiver(new AID(twins.get(i), true));
+			}
 			JSONObject content = new JSONObject();
 			content.put("x", carAgent.getX());
 			content.put("y", carAgent.getY());
@@ -50,6 +58,8 @@ public class CarSendingDataBehaviour extends Behaviour {
 			step++;
 			break;
 		case 1: 
+			//TODO: Revise how to manage all the responses from
+			//      all the twin segments
 			ACLMessage req = myAgent.receive(mtTwins);
 			if (req!= null){
 				JSONObject contenido = 
