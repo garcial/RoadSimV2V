@@ -67,11 +67,11 @@ public class SegmentRadarBehaviour extends CyclicBehaviour {
 			JSONObject objres = new JSONObject();
 			JSONArray list = new JSONArray();
 			for(String id:twins) {
-				//if (!mySegmentAgent.isCarUsed(idSolicitante, id)) {
+				if (!mySegmentAgent.isCarUsed(idSolicitante, id)) {
 					list.put(id);
 					//str.append(id).append("#");
 					//cont++;
-				//}
+				}
 			}
 			//str.append(cont);
 			objres.put("ids", list);
