@@ -1,6 +1,14 @@
 # Compiled class file
 *.class
 
+#Project Files
+APDescription.txt
+MTPs-Main container.txt
+.classpath
+./RoadSImV2V/.classpath
+.\RoadSImV2V\.classpath
+RoadSImV2V\.classpath
+
 # Log file
 *.log
 
@@ -73,8 +81,3 @@ local.properties
 .scala_dependencies
 .worksheet
 
-#Project Files
-APDescription.txt
-MTPs-Main container.txt
-.classpath
-./RoadSImV2V/.classpath
