@@ -70,7 +70,7 @@ public class EventManagerAgent extends Agent {
 		this.drawGUI = (boolean) this.getArguments()[5];
 		//Previous minute will be used to know when to send a msg to  
 		// the interface, when the minute changes
-		this.previousMinute = 0;
+		this.previousMinute = -1;
 
 		//Register
 		DFAgentDescription dfd = new DFAgentDescription();
@@ -155,7 +155,7 @@ public class EventManagerAgent extends Agent {
 		//Translate from hours to ticks, we will use that as the key 
 		//    to our dictionary
 		for (String event : aux) {
-
+			System.out.println(event);
 			String time = event.split(",")[1];
 			int hours = Integer.parseInt(time.split(":")[0]);
 			int minutes = Integer.parseInt(time.split(":")[1]);

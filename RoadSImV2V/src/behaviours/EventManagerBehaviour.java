@@ -53,7 +53,6 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 			int totalMinutes = ((int) Long.parseLong(msg.getContent()))/60;
 			int hours = (int) (totalMinutes / 60);
 			int minutes = (int) (totalMinutes % 60);
-			
 			//If the minute has changed, notify the interface
 			if (minutes != this.agent.getPreviousMinute() && 
 				this.drawGUI) {
@@ -76,12 +75,14 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 			
 			HashMap<Long, List<String>> events = 
 					                           this.agent.getEvents();
+			//System.out.println(events);
 			long currentTick = Long.parseLong(msg.getContent());
+			//System.out.println(currentTick);
 			int counter = 0;
 			
-			//Check for events that need to be fired at this tick
+			//TODO: Check for events that need to be fired at this tick
+			// Los coches del primer minuto 0 no salen
 			if (events.containsKey(currentTick)) {
-				
 				//Execute all the actions
 				List<String> actions = events.get(currentTick);
 				

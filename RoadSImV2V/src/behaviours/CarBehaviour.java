@@ -89,7 +89,7 @@ public class CarBehaviour extends CyclicBehaviour {
 				//   between previousTick and currentTick
 				//   We transform km/h to k/s if divide it by 3600
 				float pkIncrement =(float) (currentSpeed / 3600) * (currentTick - this.previousTick) ;
-				System.out.println("PKCurrent: " + currentPk);
+				//System.out.println("PKCurrent: " + currentPk);
 				//The proportion of the map is 1px ~= 29m and one 
 				//  tick =1s. Calculate the pixels per tick I have to
 				//   move
@@ -193,6 +193,7 @@ public class CarBehaviour extends CyclicBehaviour {
 						traficInfo.put("numCars", 0);
 						traficInfo.put("positions", new JSONArray());
 						traficInfo.put("speeds", new JSONArray());
+						traficInfo.put("ids", new JSONArray());
 						TrafficData traficDataSegment = new TrafficData(traficInfo);
 						
 						pastTraffic.put(this.agent.getCurrentSegment().getId(), traficDataSegment);

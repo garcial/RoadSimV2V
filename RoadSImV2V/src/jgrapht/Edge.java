@@ -36,9 +36,6 @@ public class Edge extends DefaultWeightedEdge {
 		this.serviceLevel = serviceLevel;
 		this.tini = initialDate;
 		this.tfin = finalDate;
-
-		this.edgeDataList.add(
-				new EdgeData(serviceLevel, initialDate, finalDate));
 		
 	}
 	
@@ -92,15 +89,8 @@ public class Edge extends DefaultWeightedEdge {
 
 	@Override
 	public String toString() {
-<<<<<<< HEAD
 		return "Edge [segment=" + segment + ", weight=" + weight + ", tini=" + tini + ", tfin=" + tfin
 				+ ", serviceLevel=" + serviceLevel + "]";
-=======
-		return "Edge [segment=" + segment + ", weight=" + weight +
-			   ", tini=" + tini + ", tfin=" + tfin + 
-			   ", serviceLevel=" + serviceLevel + ", edgeDataList=" +
-			   edgeDataList + "]";
->>>>>>> develop
 	}
 
 	
