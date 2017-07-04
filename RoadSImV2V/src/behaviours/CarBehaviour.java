@@ -65,6 +65,7 @@ public class CarBehaviour extends CyclicBehaviour {
 
 		if (msg != null) {
 			
+			long currentTick = Long.parseLong(msg.getContent());
 		    // Increase elapsed time
 			//agent.increaseElapsedtime();
 			//If I still have to move somewhere
@@ -74,15 +75,19 @@ public class CarBehaviour extends CyclicBehaviour {
 				Step next = this.agent.getPath().getGraphicalPath().
 						                         get(0);
 				// First calculate the currentSpeed,Greenshield model
-				agent.setCurrentSpeed((int) Math.min(
+				int currentSpeed = (int) Math.min(
 				         agent.getMaxSpeed(),
 				         agent.getCurrentSegment().getMaxSpeed() *
-	                     (1-agent.getCurrentTrafficDensity()/28.2)));
+	                     (1-agent.getCurrentTrafficDensity()/28.2));
 				
+				agent.setCurrentSpeed(currentSpeed);
+				
+				float currentPk = this.agent.getCurrentPk();
 				// Update pkCurrent with this speed and the difference
 				//   between previousTick and currentTick
-				
-				
+				//   We transform km/h to k/s if divide it by 3600
+				float pkIncrement =(float) (currentSpeed / 3600) * (currentTick - this.previousTick) ;
+				System.out.println("PKCurrent: " + currentPk);
 				//The proportion of the map is 1px ~= 29m and one 
 				//  tick =1s. Calculate the pixels per tick I have to
 				//   move
@@ -92,6 +97,8 @@ public class CarBehaviour extends CyclicBehaviour {
 				//Virtual position
 				float currentX = this.agent.getX();
 				float currentY = this.agent.getY();
+				
+				
 
 				//The distance between my current position and my next 
 				//   desired position
@@ -136,7 +143,13 @@ public class CarBehaviour extends CyclicBehaviour {
 					
 					//Proportion inside the segment
 					float proportion = increment / distNext;
-
+					
+					//Update the current pk when update the x and y
+					if("up".compareTo(this.agent.getCurrentSegment().getDirection()) == 0){
+						this.agent.setCurrentPk(currentPk + proportion);
+					} else {
+						this.agent.setCurrentPk(currentPk - proportion);
+					}
 					this.agent.setX(((1 - proportion) * currentX + 
 							proportion * next.getDestinationX()));
 					this.agent.setY(((1 - proportion) * currentY + 
@@ -178,6 +191,7 @@ public class CarBehaviour extends CyclicBehaviour {
 						//Calculate de information to remove the 
 						//   segment that you register
 						agent.setTini(tfin);
+						agent.setCurrentPk(next.getSegment().getPkIni());
 						//I don't know if remove the edge or if remove
 						//   the content of the edge
 						this.agent.getJgraht().removeEdge(
