@@ -32,12 +32,14 @@ public class CarBehaviour extends CyclicBehaviour {
 	private boolean done = false;
 	private char serviceLevelSegment;
 	private boolean drawGUI;
+	private long previousTick;
 
 	public CarBehaviour(CarAgent a, long timeout, boolean drawGUI) {
 
 		this.agent = a;
 		this.drawGUI = drawGUI;
 		this.topic = null;
+		previousTick = agent.getTini() - 1;
 		
 		try {
 			TopicManagementHelper topicHelper =(TopicManagementHelper) 
@@ -76,6 +78,11 @@ public class CarBehaviour extends CyclicBehaviour {
 				         agent.getMaxSpeed(),
 				         agent.getCurrentSegment().getMaxSpeed() *
 	                     (1-agent.getCurrentTrafficDensity()/28.2)));
+				
+				// Update pkCurrent with this speed and the difference
+				//   between previousTick and currentTick
+				
+				
 				//The proportion of the map is 1px ~= 29m and one 
 				//  tick =1s. Calculate the pixels per tick I have to
 				//   move
@@ -233,6 +240,7 @@ public class CarBehaviour extends CyclicBehaviour {
 					this.informSegment(next.getSegment(), "update");
 					agent.addBehaviour(
 							    new CarSendingDataBehaviour(agent));
+					previousTick = Long.parseLong(msg.getContent());
 				}
 			}
 		} else block();
