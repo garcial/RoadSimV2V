@@ -38,15 +38,17 @@ public class SegmentAgent extends Agent {
 	//The cars that are currently on this segment
 	private HashMap<String, CarData> cars;
 	private HashMap<String, ArrayList<String>> interactingCars;
-	
-	public boolean isCarUsed(String idCar, String otherCar) {
-		if (interactingCars.containsKey(idCar)) {
-			if (!interactingCars.get(idCar).contains(otherCar)) {
-				interactingCars.get(idCar).add(otherCar);
-				return false;
-			}
+
+	public boolean isNewCommunication(String idCar, String otherCar) {
+		if (!interactingCars.get(idCar).contains(otherCar)) {
+			interactingCars.get(idCar).add(otherCar);
+			return true;
 		}
-		return true;
+		return false;
+	}
+	
+	public void addInteractionCar(String idSolicitante, String id) {
+		interactingCars.get(idSolicitante).add(id);
 	}
 
 	protected void setup() {

@@ -12,6 +12,7 @@ import agents.SegmentAgent.CarData;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import sun.applet.resources.MsgAppletViewer_sv;
 
 public class SegmentRadarBehaviour extends CyclicBehaviour {
 
@@ -35,17 +36,11 @@ public class SegmentRadarBehaviour extends CyclicBehaviour {
 
 		if (msg != null) { //There is a message
 
-			/*String parts[] = msg.getContent().split("#");
-			String idSolicitante = parts[3];
-			int x = Integer.parseInt(parts[0]);
-			int y = Integer.parseInt(parts[1]);
-			int radio = Integer.parseInt(parts[2]);*/
-			
-			JSONObject obj = new JSONObject(msg.getContent());
+		    JSONObject obj = new JSONObject(msg.getContent());
 			String idSolicitante = obj.getString("id");
 			int x = obj.getInt("x");
 			int y = obj.getInt("y");
-			int radio = obj.getInt("radio");
+			int radio = obj.getInt("ratio");
 			
 			List<String> twins = new ArrayList<String>();
 			
@@ -62,22 +57,18 @@ public class SegmentRadarBehaviour extends CyclicBehaviour {
 			ACLMessage msgCarsOnRadio = 
 					               new ACLMessage(ACLMessage.INFORM);
 			// Filter just cars not used before for this carAgent
-			int cont = 0;
-			//StringBuilder str = new StringBuilder();
 			JSONObject objres = new JSONObject();
 			JSONArray list = new JSONArray();
 			for(String id:twins) {
-				if (!mySegmentAgent.isCarUsed(idSolicitante, id)) {
+				if (mySegmentAgent.isNewCommunication(idSolicitante, id)) {
 					list.put(id);
-					//str.append(id).append("#");
-					cont++;
+					mySegmentAgent.addInteractionCar(idSolicitante, id);
 				}
 			}
-			//str.append(cont);
 			objres.put("ids", list);
 			msgCarsOnRadio.setOntology("roadTwinsOntology");
-			//msgCarsOnRadio.setContent(str.toString());
 			msgCarsOnRadio.setContent(objres.toString());
+			msgCarsOnRadio.addReceiver(msg.getSender());
 			mySegmentAgent.send(msgCarsOnRadio);
 
 		} else block();

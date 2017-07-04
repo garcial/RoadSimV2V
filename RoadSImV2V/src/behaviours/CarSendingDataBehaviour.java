@@ -45,7 +45,9 @@ public class CarSendingDataBehaviour extends Behaviour {
 			List<String> twins = carAgent.getCurrentSegment().
 					                      getTwinSegments();
 			for(int i = 1; i < twins.size(); i++) {
-				msg.addReceiver(new AID(twins.get(i), true));
+				msg.addReceiver(carAgent.getMap().
+						        getSegmentByID(twins.get(i)).
+						        getSegmentAgent().getAID());
 			}
 			JSONObject content = new JSONObject();
 			content.put("x", carAgent.getX());

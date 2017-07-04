@@ -39,6 +39,7 @@ public class Map implements Serializable {
 	//Parameters for the segments
 	private boolean segmentLogging;
 	private String loggingDirectory;
+	HashMap<String, Segment> segmentsAux;
 	
 	// Draw th GUI
 	private boolean drawGUI;
@@ -144,8 +145,7 @@ public class Map implements Serializable {
 				line = segmentsReader.readLine();
 
 				//This will be used to add the steps later
-				HashMap<String, Segment> segmentsAux = 
-						    new HashMap<String, Segment>();
+				segmentsAux = new HashMap<String, Segment>();
 
 				//Read all the segments				
 				while(line != null){
@@ -386,4 +386,9 @@ public class Map implements Serializable {
 			}
 		}
 	}
+	
+	public Segment getSegmentByID(String id) {
+		return segmentsAux.get(id);
+	}
+	
 }
