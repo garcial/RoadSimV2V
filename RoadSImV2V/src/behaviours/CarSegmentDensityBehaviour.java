@@ -11,7 +11,8 @@ public class CarSegmentDensityBehaviour extends CyclicBehaviour {
 
 	private static final long serialVersionUID = 7963143335893634038L;
 	
-	MessageTemplate mt = MessageTemplate.MatchOntology("trafficDensityOntology");
+	MessageTemplate mt = MessageTemplate.
+			                  MatchOntology("trafficDensityOntology");
 	
 	private CarAgent myCarAgent;
 	public CarSegmentDensityBehaviour(CarAgent myCarAgent) {
@@ -22,9 +23,9 @@ public class CarSegmentDensityBehaviour extends CyclicBehaviour {
 	public void action() {
 		ACLMessage msg = myAgent.receive(mt);
 		if (msg!= null) {
-			//myCarAgent.setCurrentTrafficDensity(Double.parseDouble(msg.getContent()));
 			JSONObject densityData = new JSONObject(msg.getContent());
-			myCarAgent.setCurrentTrafficDensity(densityData.getDouble("density"));
+			myCarAgent.setCurrentTrafficDensity(
+					                densityData.getDouble("density"));
 		} else block();
 	}
 

@@ -77,7 +77,8 @@ public class InterfaceAgent extends Agent{
 
 				@Override
 				public void run() {
-					map = new CanvasWorld(me, MAXWORLDX, MAXWORLDY, graphicalMap);	
+					map = new CanvasWorld(me, MAXWORLDX, MAXWORLDY,
+							              graphicalMap);	
 				}
 			});
 

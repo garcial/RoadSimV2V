@@ -13,16 +13,17 @@ import agents.SegmentAgent.CarData;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import sun.applet.resources.MsgAppletViewer_sv;
 
 public class SegmentRadarBehaviour extends CyclicBehaviour {
 
-	private static final long serialVersionUID = -3953532297570848414L;
+	private static final long serialVersionUID =-3953532297570848414L;
 
 	//Template to listen for the new communications from cars
 	private MessageTemplate mtCarRadar = 
 			MessageTemplate.and(
-					MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
-					MessageTemplate.MatchOntology("roadTwinsOntology"));
+				MessageTemplate.MatchPerformative(ACLMessage.REQUEST),
+				MessageTemplate.MatchOntology("roadTwinsOntology"));
 	
 	private SegmentAgent mySegmentAgent;
 	
@@ -41,6 +42,7 @@ public class SegmentRadarBehaviour extends CyclicBehaviour {
 			int x = obj.getInt("x");
 			int y = obj.getInt("y");
 			int radio = obj.getInt("radio");
+
 			List<String> twins = new ArrayList<String>();
 			
 			HashMap<String, CarData> cars = mySegmentAgent.getCars();
@@ -59,30 +61,24 @@ public class SegmentRadarBehaviour extends CyclicBehaviour {
 			//System.out.println(twins);
 			//System.out.println("TWINS: " + twins.toString());
 			// Build msg to answer the carAgent requesting
-			//ACLMessage msgCarsOnRadio = new ACLMessage(ACLMessage.INFORM);
-			ACLMessage msgCarsOnRadio = msg.createReply();
+			ACLMessage msgCarsOnRadio = 
+					               new ACLMessage(ACLMessage.INFORM);
 			// Filter just cars not used before for this carAgent
-			//int cont = 0;
-			//StringBuilder str = new StringBuilder();
+
 			JSONObject objres = new JSONObject();
 			JSONArray list = new JSONArray();
 			for(String id:twins) {
-				if (!mySegmentAgent.isCarUsed(idSolicitante, id)) {
+				if (mySegmentAgent.isNewCommunication(idSolicitante, id)) {
 					list.put(id);
-					//str.append(id).append("#");
-					//cont++;
+					mySegmentAgent.addInteractionCar(idSolicitante, id);
 				}
 			}
-			//str.append(cont);
 			objres.put("ids", list);
 			msgCarsOnRadio.setOntology("roadTwinsOntology");
-			//Iterator iter = msgCarsOnRadio.getAllReceiver();
-			//while(iter.hasNext()){
-				//System.out.println(iter.next());
-			//}
-			//msgCarsOnRadio.setContent(str.toString());
+
 			msgCarsOnRadio.setContent(objres.toString());
-			//System.out.println(objres.toString());
+			msgCarsOnRadio.addReceiver(msg.getSender());
+
 			mySegmentAgent.send(msgCarsOnRadio);
 
 		} else block();

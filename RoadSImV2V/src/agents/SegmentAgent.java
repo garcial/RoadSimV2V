@@ -23,8 +23,8 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 
 /**
- * This agent will keep track of the cars that are inside between two intersections
- * and will update the data accordingly.
+ * This agent will keep track of the cars that are inside between two
+ * intersections and will update the data accordingly.
  *
  */
 public class SegmentAgent extends Agent {
@@ -38,18 +38,17 @@ public class SegmentAgent extends Agent {
 	//The cars that are currently on this segment
 	private HashMap<String, CarData> cars;
 	private HashMap<String, ArrayList<String>> interactingCars;
-	
-	public boolean isCarUsed(String idCar, String otherCar) {
-		//System.out.println("Dentro del agente segmento");
-		//System.out.println("IDCAR: " + idCar + " ,OTHERCAR: " + otherCar);
-		if (interactingCars.containsKey(idCar)) {
-			//System.out.println("Ya ha habido comunicación ??");
-			if (!interactingCars.get(idCar).contains(otherCar)) {
-				interactingCars.get(idCar).add(otherCar);
-				return false;
-			}
+
+	public boolean isNewCommunication(String idCar, String otherCar) {
+		if (!interactingCars.get(idCar).contains(otherCar)) {
+			interactingCars.get(idCar).add(otherCar);
+			return true;
 		}
-		return true;
+		return false;
+	}
+	
+	public void addInteractionCar(String idSolicitante, String id) {
+		interactingCars.get(idSolicitante).add(id);
 	}
 
 	protected void setup() {
@@ -87,7 +86,8 @@ public class SegmentAgent extends Agent {
 		if(this.drawGUI){
 			addBehaviour(new SegmentSendToDrawBehaviour(this));
 		}
-		//This behaviour will answer car requests on neighbour cars driving on twin segments
+		//This behaviour will answer car requests on neighbour cars 
+		//   driving on twin segments
 		addBehaviour(new SegmentRadarBehaviour(this));
 	}
 
@@ -100,7 +100,8 @@ public class SegmentAgent extends Agent {
 	 * @param specialColor If we have to paint it specially
 	 * @param radio is the radio of its sensor
 	 */
-	public void addCar(String id, float x, float y, boolean specialColor, int radio) {
+	public void addCar(String id, float x, float y, 
+			           boolean specialColor, int radio) {
 
 		this.cars.put(id, new CarData(id, x, y, specialColor, radio));
 		interactingCars.put(id, new ArrayList<String>());
@@ -136,7 +137,8 @@ public class SegmentAgent extends Agent {
 	 * @param y New y coordinate
 	 * @param specialColor New specialcolor
 	 */
-	public void updateCar(String id, float x, float y, boolean specialColor) {
+	public void updateCar(String id, float x, float y, 
+			              boolean specialColor) {
 
 		CarData aux = cars.get(id);
 		aux.setX(x);
@@ -151,7 +153,6 @@ public class SegmentAgent extends Agent {
 	 * @return String with the information of this segment
 	 */
 	public String getDrawingInformation() {
-
 		JSONObject resp = new JSONObject();
 		JSONArray ret = new JSONArray();
 
@@ -181,21 +182,32 @@ public class SegmentAgent extends Agent {
 			int hours = (int)(totalMinutes / 60);
 			int minutes = (int)(totalMinutes % 60);
 
-			//It is far more efficient to use this rather than a simple String
+			//It is far more efficient to use this rather than a 
+			//   simple String
 			StringBuilder ret = new StringBuilder();
 
 			//The time properly formated
-			String time = String.format("%02d", hours) + ":" + String.format("%02d", minutes);
+			String time = String.format("%02d", hours) + ":" + 
+			              String.format("%02d", minutes);
 
-			ret.append(time + "," + this.getSegment().getMaxSpeed() + "," + this.segment.getCurrentAllowedSpeed() + "," + this.segment.getCurrentServiceLevel() + "," + cars.size() + '\n');
+			ret.append(time + "," + this.getSegment().getMaxSpeed() +
+					   "," + this.segment.getCurrentAllowedSpeed() + 
+					   "," + this.segment.getCurrentServiceLevel() + 
+					   "," + cars.size() + '\n');
 
 			//Check if file exists
-			File f = new File(Paths.get(this.segment.getLoggingDirectory() + "/" + this.getLocalName() + ".csv").toString());
+			File f = new File(Paths.get(
+					this.segment.getLoggingDirectory() + "/" + 
+			        this.getLocalName() + ".csv").toString());
 
 			if (!f.exists()) {
 				
 				try {
-					Files.write(Paths.get(this.segment.getLoggingDirectory() + "/" + this.getLocalName() + ".csv"), ("Time,Vmax,Vcurrent,Service,Num cars\n" + ret.toString()).getBytes());
+					Files.write(Paths.get(
+							this.segment.getLoggingDirectory() + "/" +
+					        this.getLocalName() + ".csv"), 
+							("Time,Vmax,Vcurrent,Service,Num cars\n" +
+					        ret.toString()).getBytes());
 				}catch (IOException e) {
 
 					e.printStackTrace();
@@ -204,7 +216,11 @@ public class SegmentAgent extends Agent {
 			} else 
 
 				try {
-					Files.write(Paths.get(this.segment.getLoggingDirectory() + "/" + this.getLocalName() + ".csv"), ret.toString().getBytes(), StandardOpenOption.APPEND);
+					Files.write(Paths.get(
+							this.segment.getLoggingDirectory() + "/" +
+					        this.getLocalName() + ".csv"), 
+							ret.toString().getBytes(), 
+							StandardOpenOption.APPEND);
 				}catch (IOException e) {
 
 					e.printStackTrace();
@@ -246,7 +262,8 @@ public class SegmentAgent extends Agent {
 		private int radio;
 		private boolean specialColor;
 
-		public CarData(String id, float x, float y, boolean specialColor, int radio) {
+		public CarData(String id, float x, float y, 
+				       boolean specialColor, int radio) {
 
 			this.id = id;
 			this.x = x;

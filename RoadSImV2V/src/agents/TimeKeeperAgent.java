@@ -17,11 +17,11 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
 /**
- * This agent is in charge of sending a Tick message to the rest of the
- * agents.
+ * This agent is in charge of sending a Tick message to the rest of
+ *  the agents.
  * 
- * EvenManagerAgent, CarAgents and SegmentAgents need a tick to start
- * its behaviour, otherwise they won't do anything.
+ * EvenManagerAgent, CarAgents and SegmentAgents need a tick to
+ *  start its behaviour, otherwise they won't do anything.
  *
  */
 public class TimeKeeperAgent extends Agent {
@@ -123,23 +123,26 @@ public class TimeKeeperAgent extends Agent {
 
 				//Send the topic "tick"
 				ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-				// if the delivery of a message fails, no failure handling
-				//    action must be performed.
+				// if the delivery of a message fails, no failure
+				//     handling action must be performed.
 				msg.addUserDefinedParameter(
 						ACLMessage.IGNORE_FAILURE, "true");
 				// if the delivery of a message fails, no FAILURE 
 				//    notification has to be sent back to the sender.				
 				msg.addUserDefinedParameter(
 						ACLMessage.DONT_NOTIFY_FAILURE, "true");
-				// This message must be stored for a given timeout (in ms)
-				//     in case it is sent to/from a temporarily 
-				//     disconnected split container. After that timeout a
-				//     FAILURE message will be sent back to the sender.
-				// 0 means store and forward disabled -1 means infinite 
+				// This message must be stored for a given timeout 
+				//     (in ms) in case it is sent to/from a  
+				//     temporarily disconnected split container. After
+				//      that timeout a FAILURE message will be sent 
+				//      back to the sender.
+				// 0 means store and forward disabled -1 is infinite 
 				//     timeout
-				msg.addUserDefinedParameter(ACLMessage.SF_TIMEOUT, "-1");
+				msg.addUserDefinedParameter(ACLMessage.SF_TIMEOUT,
+						                    "-1");
 				msg.addReceiver(finalTopic);
-				msg.setContent(Long.toString(timeKeeperAgent.currentTick));
+				msg.setContent(Long.toString(timeKeeperAgent.
+						                               currentTick));
 				myAgent.send(msg);
 
 				//If is necesary draw the GUI
@@ -155,7 +158,7 @@ public class TimeKeeperAgent extends Agent {
 
 					try {
 						cars = DFService.search(
-								timeKeeperAgent, getDefaultDF(), dfd, null);
+						  timeKeeperAgent, getDefaultDF(), dfd, null);
 					} catch (FIPAException e) { e.printStackTrace(); }
 
 
@@ -190,7 +193,8 @@ public class TimeKeeperAgent extends Agent {
 						8455875589611369392L;
 
 				MessageTemplate mt = MessageTemplate.and(
-						MessageTemplate.MatchPerformative(ACLMessage.INFORM), 
+						MessageTemplate.MatchPerformative(
+								ACLMessage.INFORM), 
 						MessageTemplate.MatchOntology(
 								"changeTickLengthOntology"));
 
@@ -202,9 +206,9 @@ public class TimeKeeperAgent extends Agent {
 
 					if (msg != null) {
 						JSONObject messageData = 
-								             new JSONObject(msg.getContent()); 
+								    new JSONObject(msg.getContent()); 
 						Long tickLength = 
-								        (long) (messageData.getInt("idTick"));
+							   (long) (messageData.getInt("idTick"));
 						System.out.println(tickLength);
 						((TimeKeeperAgent)this.myAgent).
 						setTickLength(tickLength);

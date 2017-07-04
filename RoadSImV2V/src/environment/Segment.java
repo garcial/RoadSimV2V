@@ -259,5 +259,4 @@ public class Segment implements Serializable{
 		this.direction = direction;
 	}
 	
-	
 }

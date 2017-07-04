@@ -41,6 +41,7 @@ public class Map implements Serializable {
 	//Parameters for the segments
 	private boolean segmentLogging;
 	private String loggingDirectory;
+	HashMap<String, Segment> segmentsAux;
 	
 	// Draw th GUI
 	private boolean drawGUI;
@@ -50,15 +51,19 @@ public class Map implements Serializable {
 	 * 
 	 * @param folder Folder where the files are stored.
 	 */
-	public Map(String folder, jade.wrapper.AgentContainer mainContainer,
-			   boolean segmentLogging, String loggingDirectory, boolean drawGUI) 
+	public Map(String folder, 
+			   jade.wrapper.AgentContainer mainContainer,
+			   boolean segmentLogging, String loggingDirectory, 
+			   boolean drawGUI) 
 		   throws IOException{
 
 		//For the agents
 		this.mainContainer = mainContainer;		
 		this.segmentLogging = segmentLogging;
 		this.loggingDirectory = loggingDirectory;
-		this.jgraht = new DefaultDirectedWeightedGraph<Intersection, Edge>(Edge.class);
+		this.jgraht = 
+				new DefaultDirectedWeightedGraph<Intersection, Edge>
+		                (Edge.class);
 
 		//Read the files
 		this.intersectionCount = 0;
@@ -67,7 +72,8 @@ public class Map implements Serializable {
 		this.drawGUI = drawGUI;
 
 		//Get all files from the given folder
-		String url = Map.class.getClassLoader().getResource(folder).getPath();
+		String url = Map.class.getClassLoader().getResource(folder).
+				                                getPath();
 		
 		File[] files = new File(url).listFiles();
 
@@ -104,9 +110,10 @@ public class Map implements Serializable {
 
 			try {
 
-				//This will be used later to append the segments in an efficient way
+				//This will be used later to append the segments in an
+				//     efficient way
 				HashMap<String, Intersection> intersectionsAux = new 
-						HashMap<String, Intersection>();
+						              HashMap<String, Intersection>();
 
 				String line = intersectionsReader.readLine();
 
@@ -120,14 +127,19 @@ public class Map implements Serializable {
 
 					Intersection intersection = new 
 							Intersection(inter.getString("id"), 
-									inter.getJSONObject("coordinates").getInt("x"),
-									inter.getJSONObject("coordinates").getInt("y"));
+							    inter.getJSONObject("coordinates").
+							          getInt("x"),
+								inter.getJSONObject("coordinates").
+								      getInt("y"));
 
 					this.intersections.add(intersection);
-					intersectionsAux.put(inter.getString("id"), intersection);
+					intersectionsAux.put(inter.getString("id"),
+							             intersection);
 					//JGRAPHT
 					this.jgraht.addVertex(intersection);
-					System.out.println("Map.java-- Add Vertex "+ intersection.getId() +" : [ " + intersection.toString() + " ]");
+					System.out.println("Map.java-- Add Vertex " + 
+					                  intersection.getId() +" : [ " +
+							          intersection.toString() + " ]");
 					line = intersectionsReader.readLine();
 					this.intersectionCount++;
 				}
@@ -135,8 +147,7 @@ public class Map implements Serializable {
 				line = segmentsReader.readLine();
 
 				//This will be used to add the steps later
-				HashMap<String, Segment> segmentsAux = 
-						    new HashMap<String, Segment>();
+				segmentsAux = new HashMap<String, Segment>();
 
 				//Read all the segments				
 				while(line != null){
@@ -147,13 +158,14 @@ public class Map implements Serializable {
 					Intersection destination = null;
 
 					//Origin
-					if(!seg.getString("origin").equals("null")){
+					if(!seg.getString("origin").equals("null")) {
 
-						origin = intersectionsAux.get(seg.getString("origin"));
+						origin = intersectionsAux.get(
+								          seg.getString("origin"));
 					}
 
 					//Destination
-					if(!seg.getString("destination").equals("null")){
+					if(!seg.getString("destination").equals("null")) {
 
 						destination = intersectionsAux.get(
 								seg.getString("destination"));
@@ -187,7 +199,9 @@ public class Map implements Serializable {
 					//Add an Edge to de Jgraph
 					if(origin != null && destination != null){
 						Edge e = new Edge(segment);
-						System.out.println("Map.java-- Add Edge " + segment.getId() + ": [ " + e.toString() + " ]");
+						System.out.println("Map.java-- Add Edge " + 
+						                   segment.getId() +": [ " +
+								           e.toString() + " ]");
 						this.jgraht.addEdge(origin, destination, e);
 					}
 
@@ -213,10 +227,14 @@ public class Map implements Serializable {
 					//Create the step
 					Step s = new Step(step.getString("id"), 
 						segmentsAux.get(idSegment), 
-						step.getJSONObject("originCoordinates").getInt("x"),
-						step.getJSONObject("originCoordinates").getInt("y"),
-						step.getJSONObject("destinationCoordinates").getInt("x"),
-						step.getJSONObject("destinationCoordinates").getInt("y"));
+						step.getJSONObject("originCoordinates").
+						     getInt("x"),
+						step.getJSONObject("originCoordinates").
+						     getInt("y"),
+						step.getJSONObject("destinationCoordinates").
+						     getInt("x"),
+						step.getJSONObject("destinationCoordinates").
+						     getInt("y"));
 
 					//Add the steps to the segment
 					segmentsAux.get(idSegment).addStep(s);				
@@ -280,7 +298,8 @@ public class Map implements Serializable {
 	/**
 	 * Returns the jgraph with the structure of the map
 	 * */
-	public DefaultDirectedWeightedGraph<Intersection, Edge> getJgraht() {
+	public DefaultDirectedWeightedGraph<Intersection, Edge> 
+	       getJgraht() {
 		return jgraht;
 	}
 
@@ -295,8 +314,8 @@ public class Map implements Serializable {
 	}
 
 	/**
-	 * This method moves the segment a given quantity, so two segments 
-	 * don't overlap.
+	 * This method moves the segment a given quantity, so two  
+	 * segments don't overlap.
 	 * 
 	 * @param seg
 	 * @param quantity
@@ -308,9 +327,12 @@ public class Map implements Serializable {
 		Step firstStep = steps.get(0);
 		Step lastSetp = steps.get(steps.size()-1);
 
-		//We will use this to check if the segment is more horizontal than vertical
-		int xIncrement = lastSetp.getOriginX() - firstStep.getDestinationX();
-		int yIncrement = lastSetp.getOriginY() - firstStep.getDestinationY();
+		//We will use this to check if the segment is more 
+		//   horizontal than vertical
+		int xIncrement = 
+			lastSetp.getOriginX() - firstStep.getDestinationX();
+		int yIncrement = 
+			lastSetp.getOriginY() - firstStep.getDestinationY();
 
 		if (xIncrement > yIncrement) { //The line is more horizontal
 
@@ -340,16 +362,14 @@ public class Map implements Serializable {
 			
 			Step step = stepList.get(i);
 			
-			if (i == 0) { //First, we don't move its origin
-				
-				step.setDestinationX(step.getDestinationX() + quantity);
-				
+			if (i == 0) { //First, we don't move its origin				
+				step.setDestinationX(step.getDestinationX()+quantity);
 			} else if (i == stepList.size()-1) { 
 				//Last, we don't move its destination
 				step.setOriginX(step.getOriginX() + quantity);
 			} else {
 				
-				step.setDestinationX(step.getDestinationX() + quantity);
+				step.setDestinationX(step.getDestinationX()+quantity);
 				step.setOriginX(step.getOriginX() + quantity);
 			}
 		}
@@ -363,16 +383,21 @@ public class Map implements Serializable {
 			
 			if (i == 0) { //First, we don't move its origin
 				
-				step.setDestinationY(step.getDestinationY() + quantity);
+				step.setDestinationY(step.getDestinationY()+quantity);
 				
-			} else if (i == stepList.size()) { //Last, we don't move its destination
-				
+			} else if (i == stepList.size()) { 
+				//Last, we don't move its destination			
 				step.setOriginY(step.getOriginY() + quantity);
 			} else {
 				
-				step.setDestinationY(step.getDestinationY() + quantity);
+				step.setDestinationY(step.getDestinationY()+quantity);
 				step.setOriginY(step.getOriginY() + quantity);
 			}
 		}
 	}
+	
+	public Segment getSegmentByID(String id) {
+		return segmentsAux.get(id);
+	}
+	
 }

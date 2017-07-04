@@ -20,13 +20,15 @@ public class InterfaceDrawBehaviour extends Behaviour {
 	private InterfaceAgent agent;
 
 	//Template to listen for drawing instructions
-	private MessageTemplate mt = MessageTemplate.and(MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-			MessageTemplate.or(MessageTemplate.or(MessageTemplate.or(MessageTemplate.or(
-					MessageTemplate.MatchOntology("drawOntology"),
-					MessageTemplate.MatchOntology("logOntology")),
-					MessageTemplate.MatchOntology("deleteCarOntology")),
-					MessageTemplate.MatchOntology("updateTimeOntology")),
-					MessageTemplate.MatchOntology("numberOfCarsOntology")));
+	private MessageTemplate mt = MessageTemplate.and(MessageTemplate.
+			                    MatchPerformative(ACLMessage.INFORM),
+			MessageTemplate.or(MessageTemplate.or(MessageTemplate.or(
+			 MessageTemplate.or(
+			 MessageTemplate.MatchOntology("drawOntology"),
+			 MessageTemplate.MatchOntology("logOntology")),
+			 MessageTemplate.MatchOntology("deleteCarOntology")),
+			 MessageTemplate.MatchOntology("updateTimeOntology")),
+			 MessageTemplate.MatchOntology("numberOfCarsOntology")));
 
 	public InterfaceDrawBehaviour(InterfaceAgent agent) {
 
@@ -48,24 +50,10 @@ public class InterfaceDrawBehaviour extends Behaviour {
 
 					@Override
 					public void run() {
-
-						
-						HashMap<String, Mobile> cars = agent.getMap().getCars();
-						
-						/*String parts[] = msg.getContent().split("#");
-						for (int i=1; i < parts.length; i+=4) {
-
-							Mobile m = cars.get(parts[i]);
-
-							if (m != null) {
-
-								m.setX(Float.parseFloat(parts[i+1]));
-								m.setY(Float.parseFloat(parts[i+2]));
-								m.setSpecialColor(Boolean.valueOf(parts[i+3]));
-							}
-						}*/
-						
-						JSONObject cont = new JSONObject(msg.getContent());
+						HashMap<String, Mobile> cars = 
+								         agent.getMap().getCars();					
+						JSONObject cont = 
+								    new JSONObject(msg.getContent());
 						JSONArray list = cont.getJSONArray("cars");
 						for(int i = 0; i < list.length(); i++){
 							JSONObject obj = list.getJSONObject(i);
@@ -75,14 +63,15 @@ public class InterfaceDrawBehaviour extends Behaviour {
 
 								m.setX((float) obj.getDouble("x"));
 								m.setY((float) obj.getDouble("y"));
-								m.setSpecialColor(obj.getBoolean("specialColor"));
+								m.setSpecialColor(
+									obj.getBoolean("specialColor"));
 							}
 						}
 
 						agent.getMap().setCars(cars);
 					}
 				});
-			} else if (msg.getOntology().equals("deleteCarOntology")) {
+			} else if (msg.getOntology().equals("deleteCarOntology")){
 
 				SwingUtilities.invokeLater(new Runnable() {
 
@@ -92,7 +81,8 @@ public class InterfaceDrawBehaviour extends Behaviour {
 					}
 				});
 
-			} else if (msg.getOntology().equals("updateTimeOntology")) {
+			} else if (msg.getOntology().
+					             equals("updateTimeOntology")) {
 
 				SwingUtilities.invokeLater(new Runnable() {
 
@@ -113,16 +103,17 @@ public class InterfaceDrawBehaviour extends Behaviour {
 					}
 				});
 
-			} else if (msg.getOntology().equals("numberOfCarsOntology")) {
+			} else if (msg.getOntology().
+					              equals("numberOfCarsOntology")) {
 				
 				SwingUtilities.invokeLater(new Runnable() {
 
 					@Override
 					public void run() {
-						
-						//agent.getMap().setNumberOfCars(Integer.parseInt(msg.getContent()));
-						JSONObject numberOfCarsData = new JSONObject(msg.getContent());
-						int numberOfCars = (int) numberOfCarsData.get("numberOfCars");
+						JSONObject numberOfCarsData = 
+								  new JSONObject(msg.getContent());
+						int numberOfCars = (int) 
+								numberOfCarsData.get("numberOfCars");
 						agent.getMap().setNumberOfCars(numberOfCars);	
 					}
 				}); 

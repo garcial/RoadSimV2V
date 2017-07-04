@@ -1,12 +1,9 @@
 package behaviours;
-
 import java.util.ArrayList;
 import java.util.Date;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.ToJSON;
-
 import agents.CarAgent;
 import environment.Segment;
 import environment.Step;
@@ -35,20 +32,21 @@ public class CarBehaviour extends CyclicBehaviour {
 	private CarAgent agent;
 	private AID topic;
 	private boolean done = false;
-	private long dateInitSegment;
-	private long dateFinalSegment;
 	private char serviceLevelSegment;
 	private boolean drawGUI;
+	private long previousTick;
 
 	public CarBehaviour(CarAgent a, long timeout, boolean drawGUI) {
 
 		this.agent = a;
 		this.drawGUI = drawGUI;
 		this.topic = null;
+		previousTick = agent.getTini() - 1;
 		
 		try {
-			TopicManagementHelper topicHelper = (TopicManagementHelper) 
-				this.agent.getHelper(TopicManagementHelper.SERVICE_NAME);
+			TopicManagementHelper topicHelper =(TopicManagementHelper) 
+				this.agent.getHelper(TopicManagementHelper.
+						                                SERVICE_NAME);
 			topic = topicHelper.createTopic("tick");
 			topicHelper.register(topic);
 			
@@ -69,27 +67,40 @@ public class CarBehaviour extends CyclicBehaviour {
 
 		if (msg != null) {
 			
+			long currentTick = Long.parseLong(msg.getContent());
 		    // Increase elapsed time
-			agent.increaseElapsedtime();
+			//agent.increaseElapsedtime();
 			//If I still have to move somewhere
 			if(this.agent.getPath().getGraphicalPath().size() > 0) {
 
 				//Get the path
-				Step next = this.agent.getPath().getGraphicalPath().get(0);
-				// First is to calculate the currentSpeed,Greenshield model
-				agent.setCurrentSpeed((int) Math.min(
-				               agent.getMaxSpeed(),
-				               agent.getCurrentSegment().getMaxSpeed() *
-	                           (1-agent.getCurrentTrafficDensity()/28.2)));
-				//The proportion of the map is 1px ~= 29m and one tick =1s
-				//Calculate the pixels per tick I have to move
-				//TODO: Revise formulas Are they by minute or second?
-				float increment = ((this.agent.getCurrentSpeed() * 0.2778f) 
-						* 0.035f);
+				Step next = this.agent.getPath().getGraphicalPath().
+						                         get(0);
+				// First calculate the currentSpeed,Greenshield model
+				int currentSpeed = (int) Math.min(
+				         agent.getMaxSpeed(),
+				         agent.getCurrentSegment().getMaxSpeed() *
+	                     (1-agent.getCurrentTrafficDensity()/28.2));
+				
+				agent.setCurrentSpeed(currentSpeed);
+				
+				float currentPk = this.agent.getCurrentPk();
+				// Update pkCurrent with this speed and the difference
+				//   between previousTick and currentTick
+				//   We transform km/h to k/s if divide it by 3600
+				float pkIncrement =(float) (currentSpeed / 3600) * (currentTick - this.previousTick) ;
+				System.out.println("PKCurrent: " + currentPk);
+				//The proportion of the map is 1px ~= 29m and one 
+				//  tick =1s. Calculate the pixels per tick I have to
+				//   move
+				float increment = this.agent.getCurrentSpeed() * 
+						            0.2778f	* 0.035f;
 
 				//Virtual position
 				float currentX = this.agent.getX();
 				float currentY = this.agent.getY();
+				
+				
 
 				float currentpk = this.agent.getCurrentPk();
 				//The distance between my current position and my next 
@@ -104,12 +115,14 @@ public class CarBehaviour extends CyclicBehaviour {
 				while (increment > distNext) {
 
 					//If there is still a node to go
-					if (this.agent.getPath().getGraphicalPath().size()>1){
+					if (this.agent.getPath().getGraphicalPath().size()
+							> 1) {
 
 						//Remove the already run path
 						increment -= distNext;
 
-						this.agent.getPath().getGraphicalPath().remove(0);
+						this.agent.getPath().getGraphicalPath().
+						                     remove(0);
 						next = this.agent.getPath().
 								getGraphicalPath().get(0);
 
@@ -133,7 +146,13 @@ public class CarBehaviour extends CyclicBehaviour {
 					
 					//Proportion inside the segment
 					float proportion = increment / distNext;
-
+					
+					//Update the current pk when update the x and y
+					if("up".compareTo(this.agent.getCurrentSegment().getDirection()) == 0){
+						this.agent.setCurrentPk(currentPk + proportion);
+					} else {
+						this.agent.setCurrentPk(currentPk - proportion);
+					}
 					this.agent.setX(((1 - proportion) * currentX + 
 							proportion * next.getDestinationX()));
 					this.agent.setY(((1 - proportion) * currentY + 
@@ -151,17 +170,25 @@ public class CarBehaviour extends CyclicBehaviour {
 					if (!this.agent.getCurrentSegment().
 							equals(next.getSegment())) {
 
-						//Calculate the information to the jgraph and Deregister from previous segment
-						this.dateFinalSegment = new Date().getTime();
-						this.serviceLevelSegment = this.agent.getCurrentSegment().getCurrentServiceLevel();
-						this.agent.getJgraht().addEdge(this.agent.getCurrentSegment().getOrigin(), next.getSegment().getOrigin(), new Edge(this.agent.getCurrentSegment(),this.serviceLevelSegment, this.dateInitSegment, this.dateFinalSegment));
-						//System.out.println(this.agent.getJgraht().toString());
+						long tfin = Long.parseLong(msg.getContent());
+						//Calculate the information to the jgraph 
+						//   and Deregister from previous segment
+						this.serviceLevelSegment = this.agent.
+								            getCurrentSegment().
+								            getCurrentServiceLevel();
+						this.agent.getJgraht().addEdge(
+						   this.agent.getCurrentSegment().getOrigin(),
+						   next.getSegment().getOrigin(), 
+						   new Edge(this.agent.getCurrentSegment(),
+							   	    this.serviceLevelSegment, 
+									agent.getTini(), 
+									tfin));
 						
-						// Modify the Traffic Data of the Segmenta that deregister
+						// Modify the Traffic Data of the Segment that deregister
 						TrafficDataOutStore pastTraffic = this.agent.getPastTraffic();
 						JSONObject traficInfo = new JSONObject();
-						traficInfo.put("tini", this.dateInitSegment);
-						traficInfo.put("tfin", this.dateFinalSegment);
+						traficInfo.put("tini", agent.getTini());
+						traficInfo.put("tfin", tfin);
 						//We need the numcars, its speed and position
 						traficInfo.put("numCars", 0);
 						traficInfo.put("positions", new JSONArray());
@@ -173,27 +200,34 @@ public class CarBehaviour extends CyclicBehaviour {
 						
 						//Deregister from previous segment
 						this.informSegment(
-							this.agent.getCurrentSegment(), "deregister");
+							this.agent.getCurrentSegment(), 
+							"deregister");
 
 						String previousSegmentId = agent.
-								              getCurrentSegment().getId();
+								         getCurrentSegment().getId();
 						//Set the new previous segment
-						this.agent.setCurrentSegment(next.getSegment());
+						this.agent.
+						        setCurrentSegment(next.getSegment());
 
 						//Register in the new segment
-						this.informSegment(next.getSegment(), "register");
+						this.informSegment(next.getSegment(),
+								           "register");
 						
-						//Update the currentpk when register in other segment
-						this.agent.setCurrentPk(next.getSegment().getPkIni());
-						//Calculate de information to remove the segment that you register
-						this.dateInitSegment = new Date().getTime();
-						//I don't know if remove the edge or if remove the content of the edge
-						this.agent.getJgraht().removeEdge(next.getSegment().getOrigin(), next.getSegment().getDestination());
+						//Calculate de information to remove the 
+						//   segment that you register
+						agent.setTini(tfin);
+						agent.setCurrentPk(next.getSegment().getPkIni());
+						//I don't know if remove the edge or if remove
+						//   the content of the edge
+						this.agent.getJgraht().removeEdge(
+								next.getSegment().getOrigin(), 
+								next.getSegment().getDestination());
 						
 						// TODO:If we are using the smart algorithm, 
-						//  recalculate all the traffic states on the map 
-						//  with the information provided from other 
-						//  carAgents, and then rerouting accordingly.
+						//  recalculate all the traffic states on the 
+						//  map with the information provided from 
+						//  othercarAgents, and then rerouting 
+						//  accordingly.
 						// TODO: futureTrafficStore analysis
 
 						if (this.agent.isSmart()) {
@@ -202,35 +236,38 @@ public class CarBehaviour extends CyclicBehaviour {
 								           getOrigin().getId());
 						}
 						
-						// Once rerouted, Delete data from futureTraffic 
-						//    related to this new segment
+						// Once rerouted, Delete data from future 
+						//     Traffic related to this new segment
 						agent.getFutureTraffic().
-						                delete(next.getSegment().getId());
+						           delete(next.getSegment().getId());
 						// Introducir el Tfin en TrafficData
 						agent.getSensorTrafficData().
-						                  setTfin(agent.getElapsedtime());
+						             setTfin(tfin);
 						// Introduce current TrafficData into 
 						//     the pastTraffic
 						// First give the number of cars detected
 						agent.getSensorTrafficData().
 						        setNumCars(agent.
-						        		     getSensorTrafficData().
-						        		     getCarsPositions().size());
+						        	    getSensorTrafficData().
+						        	    getCarsPositions().size());
 						agent.getPastTraffic().put(previousSegmentId, 
-								            agent.getSensorTrafficData());
+								        agent.getSensorTrafficData());
 						//Start a new current trafficData by myself
 						agent.setSensorTrafficData(new TrafficData());
-						agent.getSensorTrafficData().setTini(
-								                  agent.getElapsedtime());
+						agent.getSensorTrafficData().setTini(tfin);
 					}
 					
-					//If we are going under the maximum speed I'm allowed to go, or I can go, I am in a congestion, draw me differently
-					//I don't know if is necessary here but i change this in the destination
+					//If we are going under the maximum speed I'm 
+					//   allowed to go, or I can go, I am in a 
+					//   congestion, draw me differently
+					//I don't know if is necessary here but i 
+					//   change this in the destination
 					if(this.drawGUI){
 						if (this.agent.getCurrentSpeed() < 
 								Math.min(
-										this.agent.getMaxSpeed(),
-										this.agent.getCurrentSegment().getMaxSpeed())) {
+								  this.agent.getMaxSpeed(),
+								  this.agent.getCurrentSegment().
+								             getMaxSpeed())) {
 							
 							this.agent.setSpecialColor(true);
 						} else {
@@ -240,7 +277,9 @@ public class CarBehaviour extends CyclicBehaviour {
 					}
 
 					this.informSegment(next.getSegment(), "update");
-					agent.addBehaviour(new CarSendingDataBehaviour(agent));
+					agent.addBehaviour(
+							    new CarSendingDataBehaviour(agent));
+					previousTick = Long.parseLong(msg.getContent());
 				}
 			}
 		} else block();
@@ -257,7 +296,8 @@ public class CarBehaviour extends CyclicBehaviour {
 		carDataRegister.put("id", this.agent.getId());
 		carDataRegister.put("x", this.agent.getX());
 		carDataRegister.put("y", this.agent.getY());
-		carDataRegister.put("specialColor", this.agent.getSpecialColor());
+		carDataRegister.put("specialColor", 
+				            this.agent.getSpecialColor());
 		carDataRegister.put("radio", this.agent.getRatio());
 		
 		msg.setContent(carDataRegister.toString());
@@ -269,7 +309,8 @@ public class CarBehaviour extends CyclicBehaviour {
 		//Done flag
 		this.done = true;
 		//Deregister from previous segment
-		this.informSegment(this.agent.getCurrentSegment(), "deregister");
+		this.informSegment(this.agent.getCurrentSegment(),
+				           "deregister");
 
 		//Delete the car from the canvas
 		if (this.agent.getInterfaceAgent() != null && this.drawGUI) {

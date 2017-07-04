@@ -43,8 +43,7 @@ public class CarAgent extends Agent {
 	private int ratio = 10; // El radio es un valor fijo que dependerá del hardware
 	private int currentSpeed, maxSpeed;
 	private double currentTrafficDensity;
-	private long elapsedtime;
-	private long tini; // For measuring temporal intervals of traffic data
+	private long tini; // For measuring temporal intervals of traffic
 	private String id; 
 	private DFAgentDescription interfaceAgent;
 	private boolean drawGUI;
@@ -98,7 +97,8 @@ public class CarAgent extends Agent {
 		this.map = (Map) this.getArguments()[0];
 		//Get the jgraph from the map
 		this.jgraht = this.map.getJgraht();
-		System.out.println("CarAgent.java-- Get JgraphT: " + this.jgraht.toString());
+		System.out.println("CarAgent.java-- Get JgraphT: " + 
+		                   this.jgraht.toString());
 		//Get the starting and final points of my trip
 		this.initialIntersection = (String) this.getArguments()[1];
 		this.finalIntersection = (String) this.getArguments()[2];
@@ -132,15 +132,21 @@ public class CarAgent extends Agent {
 		}
 		
 		//Get the initial time tick from eventManager
-		elapsedtime = (long) this.getArguments()[6];
+		tini = (long) this.getArguments()[6];
+		
+		//Get the ratio of sensoring for this agentCar
+		ratio = (int) this.getArguments()[7];
 		
 		//Get the desired Path from the origin to the destination
 		this.path = alg.getPath(this.map, getInitialIntersection(), 
-				                getFinalIntersection(), this.maxSpeed);
+				                getFinalIntersection(), 
+				                this.maxSpeed);
 		
 		//Starting point
-		setX(map.getIntersectionByID(getInitialIntersection()).getX());
-		setY(map.getIntersectionByID(getInitialIntersection()).getY());
+		setX(map.getIntersectionByID(getInitialIntersection()).
+				                                          getX());
+		setY(map.getIntersectionByID(getInitialIntersection()).
+				                                          getY());
 		
 		//Store data received from other cars in a Map
 		futureTraffic = new TrafficDataInStore();
@@ -152,7 +158,7 @@ public class CarAgent extends Agent {
 		// Store current trafficData sensored by myself
 		sensorTrafficData = new TrafficData();
 		// Tini for measuring traffic data intervals in twin segments 
-		tini = elapsedtime;
+		//tini = elapsedtime;
 		
 		if(this.drawGUI){
 			//Find the interface agent
@@ -182,11 +188,12 @@ public class CarAgent extends Agent {
 		//An unique identifier for the car
 		this.id = getName().toString();
 
-		//We notify the interface about the new car
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+
 
 		
 		if(this.drawGUI){
+			//We notify the interface about the new car
+			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 			msg.addReceiver(interfaceAgent.getName());
 			JSONObject carData = new JSONObject();
 			carData.put("x", this.x);
@@ -204,7 +211,7 @@ public class CarAgent extends Agent {
 	    setCurrentSegment(next.getSegment());
 
 		//Register
-		msg = new ACLMessage(ACLMessage.INFORM);
+		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		msg.setOntology("carToSegmentOntology");
 		msg.setConversationId("register");
 		msg.addReceiver(next.getSegment().getSegmentAgent().getAID());
@@ -218,29 +225,26 @@ public class CarAgent extends Agent {
 		msg.setContent(carDataRegister.toString());
 		
 		send(msg);
-		// Receive the current traffic density from the current segment
+		// Receive the current traffic density from the current 
+		//    segment
 		msg = blockingReceive(MessageTemplate.
-				              MatchOntology("trafficDensityOntology"));
-		
+				             MatchOntology("trafficDensityOntology"));
 		JSONObject densityData = new JSONObject(msg.getContent());
-		
 		setCurrentTrafficDensity(densityData.getDouble("density"));
 
 		//Change my speed according to the maximum allowed speed
-
 	    setCurrentSpeed(Math.min(getMaxSpeed(), 
-	    				getCurrentSegment().getCurrentAllowedSpeed()));
+	    			getCurrentSegment().getCurrentAllowedSpeed()));
 		
 	    //The special color is useless without the interfaceAgent
 	    if(this.drawGUI){
-	    	//If we are going under the maximum speed I'm allowed to go,
-	    	//   or I can go, I am in a congestion, draw me differently
+	    	//If we are going under my absolute maximum speed or the
+	    	//   segment's maxSpeed => I am in a congestion, so
+	    	//   draw me differently
 		    if (getCurrentSpeed() < Math.min(this.getMaxSpeed(), 
 		    		       this.getCurrentSegment().getMaxSpeed())) {
-		    	
 		    	setSpecialColor(true);
 		    } else {
-
 		    	setSpecialColor(false);
 		    }
 	    }
@@ -351,11 +355,13 @@ public class CarAgent extends Agent {
 		return specialColor;
 	}
 	
-	public DefaultDirectedWeightedGraph<Intersection, Edge> getJgraht() {
+	public DefaultDirectedWeightedGraph<Intersection, Edge> 
+	                                                   getJgraht() {
 		return jgraht;
 	}
 
-	public void setJgraht(DefaultDirectedWeightedGraph<Intersection, Edge> jgraht) {
+	public void setJgraht(
+			  DefaultDirectedWeightedGraph<Intersection,Edge> jgraht){
 		this.jgraht = jgraht;
 	}
 
@@ -384,17 +390,17 @@ public class CarAgent extends Agent {
 		return currentTrafficDensity;
 	}
 
-	public void setCurrentTrafficDensity(double currentTrafficDensity) {
-		this.currentTrafficDensity = currentTrafficDensity;
+	public void setCurrentTrafficDensity(double currentTD) {
+		this.currentTrafficDensity = currentTD;
 	}
 
-	public long getElapsedtime() {
-		return elapsedtime;
-	}
-
-	public void increaseElapsedtime() {
-		this.elapsedtime++;
-	}
+//	public long getElapsedtime() {
+//		return elapsedtime;
+//	}
+//
+//	public void increaseElapsedtime() {
+//		this.elapsedtime++;
+//	}
 
 	public long getTini() {
 		return tini;

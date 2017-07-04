@@ -9,12 +9,13 @@ import jade.lang.acl.MessageTemplate;
 
 public class CarReceivingDataBehaviour extends CyclicBehaviour {
 
-
-	private static final long serialVersionUID = -8397872991964050209L;
+	private static final long serialVersionUID =-8397872991964050209L;
 	private MessageTemplate mtInform = 
 			MessageTemplate.and(
-					MessageTemplate.MatchPerformative(ACLMessage.INFORM),
-					MessageTemplate.MatchOntology("roadStateOntology"));
+					MessageTemplate.MatchPerformative(
+							ACLMessage.INFORM),
+					MessageTemplate.MatchOntology(
+							"roadStateOntology"));
 	private CarAgent carAgent;
 	
 	public CarReceivingDataBehaviour(CarAgent carAgent) {
@@ -39,8 +40,10 @@ public class CarReceivingDataBehaviour extends CyclicBehaviour {
 			                         add(datos.getDouble("speed"));
 			carAgent.getSensorTrafficData().getCarsPositions().
 			                         add(datos.getDouble("position"));
+			carAgent.getSensorTrafficData().getIds().add(datos.getString("id"));
 			
-			for(String key:datos.getJSONObject("futureTraffic").keySet()){
+			for(String key:datos.getJSONObject("futureTraffic").
+					             keySet()){
 				carAgent.getFutureTraffic().
 				         put(key, datos.getJSONObject(key));
 			}
