@@ -153,6 +153,22 @@ public class Main {
 		}
 
 		//Create the agents
+		
+		//Create a profile for the car container
+		profile = new ProfileImpl(null, 1099, null);
+		profile.setParameter(Profile.CONTAINER_NAME, "Car container");
+		
+		/*
+		 * This activates the Topic service, which allows us to 
+		 *    "broadcast" messages
+		 */
+		profile.setParameter(Profile.SERVICES,
+				        "jade.core.messaging.TopicManagementService");
+
+		//Container that will hold the agents
+		jade.wrapper.AgentContainer carContainer = 
+				                     rt.createAgentContainer(profile);
+		
 		//Interface if is necesary
 		if(drawGUI){
 			try {
@@ -170,6 +186,13 @@ public class Main {
 				e.printStackTrace();
 			}
 		}
+		
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e2) {
+			e2.printStackTrace();
+		}
+		
 		//TimeKeeper
 		try {
 			AgentController agent = 
@@ -186,27 +209,10 @@ public class Main {
 			e1.printStackTrace();
 		}
 
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e2) {
-			e2.printStackTrace();
-		}
+
 
 		//Cars
-		//Create a profile for the car container
-		profile = new ProfileImpl(null, 1099, null);
-		profile.setParameter(Profile.CONTAINER_NAME, "Car container");
-		
-		/*
-		 * This activates the Topic service, which allows us to 
-		 *    "broadcast" messages
-		 */
-		profile.setParameter(Profile.SERVICES,
-				        "jade.core.messaging.TopicManagementService");
 
-		//Container that will hold the agents
-		jade.wrapper.AgentContainer carContainer = 
-				                     rt.createAgentContainer(profile);
 
 		for (int i=0; i<numberOfCars; i++){
 			
