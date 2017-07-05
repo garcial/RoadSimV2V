@@ -49,7 +49,6 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 		ACLMessage msg = myAgent.receive(
 				                 MessageTemplate.MatchTopic(topic));
 		if (msg != null) {
-			
 			int totalMinutes = ((int) Long.parseLong(msg.getContent()))/60;
 			int hours = (int) (totalMinutes / 60);
 			int minutes = (int) (totalMinutes % 60);
@@ -79,13 +78,11 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 			long currentTick = Long.parseLong(msg.getContent());
 			//System.out.println(currentTick);
 			int counter = 0;
-			
-			//TODO: Check for events that need to be fired at this tick
-			// Los coches del primer minuto 0 no salen
+
+			//Check for events that need to be fired at this tick
 			if (events.containsKey(currentTick)) {
 				//Execute all the actions
 				List<String> actions = events.get(currentTick);
-				
 				StringBuilder str = new StringBuilder();
 								
 				for (String string : actions) {
