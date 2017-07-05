@@ -46,7 +46,7 @@ public class CarSendingDataBehaviour extends Behaviour {
 			//      from Strings
 			List<String> twins = carAgent.getCurrentSegment().
 					                      getTwinSegments();
-			for(int i = 1; i < twins.size(); i++) {
+			for(int i = 0; i < twins.size(); i++) {
 				msg.addReceiver(carAgent.getMap().
 						        getSegmentByID(twins.get(i)).
 						        getSegmentAgent().getAID());
@@ -68,12 +68,12 @@ public class CarSendingDataBehaviour extends Behaviour {
 			ACLMessage req = myAgent.receive(mtTwins);
 			//System.out.println(req);
 			if (req!= null){
-				System.out.println("CASO 1 de Car Sending");
 				JSONObject contenido = new JSONObject(req.getContent());
 
 				//Contenido tiene la siguiente estructura: 
 				//   {"ids": ["234242@232", "ferf234123@",...]}
 				JSONArray list = contenido.getJSONArray("ids");
+				//System.out.println("CarAgent AID CSDB: " + carAgent.getAID() + " ListaID: " + list.toString());
 				int numTwins = list.length();
 				// Ojo con pedir la misma información varias veces 
 				//     al mismo vehículo durante el tiempo en que  
@@ -83,9 +83,10 @@ public class CarSendingDataBehaviour extends Behaviour {
 				// Si al menos hay un vecino con el que comunicarse ..
 				ACLMessage msgInf = new ACLMessage(ACLMessage.INFORM);
 				msgInf.setOntology("roadStateOntology");
-				for(int i = 1; i < list.length(); i++) {
+				for(int i = 0; i < list.length(); i++) {
 					msgInf.addReceiver(new AID(list.get(i).toString(),
 							           true));
+					System.out.println(new AID(list.get(i).toString(),  true));
 				}
 				JSONObject json = new JSONObject();
 				json.put("speed", carAgent.getCurrentSpeed());
@@ -93,6 +94,7 @@ public class CarSendingDataBehaviour extends Behaviour {
 				json.put("id", carAgent.getId());
 				json.put("futureTraffic", 
 						          carAgent.getPastTraffic().toJSON());
+				System.out.println(carAgent.getPastTraffic().toString());
 				msgInf.setContent(json.toString());
 				// There are two options:
 				// 1) Do a request/answer cycle and do not imclude a 

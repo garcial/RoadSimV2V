@@ -40,8 +40,9 @@ public class SegmentAgent extends Agent {
 	private HashMap<String, ArrayList<String>> interactingCars;
 
 	public boolean isNewCommunication(String idCar, String otherCar) {
-		if (!interactingCars.get(idCar).contains(otherCar)) {
-			interactingCars.get(idCar).add(otherCar);
+		if (!interactingCars.get(otherCar).contains(idCar)) {
+			// Una vez ha habido una nueva interacción, esta deja de ser nueva por lo que se le añade a la lista de interacciones
+			interactingCars.get(otherCar).add(idCar);
 			return true;
 		}
 		return false;

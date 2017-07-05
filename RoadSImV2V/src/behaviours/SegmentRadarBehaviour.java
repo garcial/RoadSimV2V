@@ -36,7 +36,6 @@ public class SegmentRadarBehaviour extends CyclicBehaviour {
 		ACLMessage msg = mySegmentAgent.receive(mtCarRadar);
 		
 		if (msg != null) { //There is a message
-			//System.out.println("Ha llegado un paquete al segmento");	
 			JSONObject obj = new JSONObject(msg.getContent());
 			String idSolicitante = obj.getString("id");
 			int x = obj.getInt("x");
@@ -70,7 +69,6 @@ public class SegmentRadarBehaviour extends CyclicBehaviour {
 			for(String id:twins) {
 				if (mySegmentAgent.isNewCommunication(idSolicitante, id)) {
 					list.put(id);
-					mySegmentAgent.addInteractionCar(idSolicitante, id);
 				}
 			}
 			objres.put("ids", list);
@@ -78,7 +76,6 @@ public class SegmentRadarBehaviour extends CyclicBehaviour {
 
 			msgCarsOnRadio.setContent(objres.toString());
 			msgCarsOnRadio.addReceiver(msg.getSender());
-
 			mySegmentAgent.send(msgCarsOnRadio);
 
 		} else block();

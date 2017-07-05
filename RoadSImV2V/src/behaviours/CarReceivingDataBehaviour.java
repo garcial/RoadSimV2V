@@ -44,8 +44,10 @@ public class CarReceivingDataBehaviour extends CyclicBehaviour {
 			
 			for(String key:datos.getJSONObject("futureTraffic").
 					             keySet()){
-				carAgent.getFutureTraffic().
-				         put(key, datos.getJSONObject(key));
+				if(datos.getJSONObject(key) != null){
+					carAgent.getFutureTraffic().
+			         put(key, datos.getJSONObject(key));
+				}
 			}
 			
 		} else block();
