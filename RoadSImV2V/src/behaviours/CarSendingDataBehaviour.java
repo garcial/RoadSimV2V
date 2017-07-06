@@ -94,7 +94,7 @@ public class CarSendingDataBehaviour extends Behaviour {
 				json.put("id", carAgent.getId());
 				json.put("futureTraffic", 
 						          carAgent.getPastTraffic().toJSON());
-				System.out.println(carAgent.getPastTraffic().toString());
+				//System.out.println(carAgent.getPastTraffic().toString());
 				msgInf.setContent(json.toString());
 				// There are two options:
 				// 1) Do a request/answer cycle and do not imclude a 

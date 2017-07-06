@@ -28,7 +28,7 @@ public class CarReceivingDataBehaviour extends CyclicBehaviour {
 		ACLMessage msg = myAgent.receive(mtInform);
 		
 		if (msg != null) {		
-			System.out.println("RECIBIENDO información");
+			//System.out.println("RECIBIENDO información");
 			// Integrate JSON data received from other cars in my 
 			//       invision futureTraffic EDD for rerouting
 			JSONObject datos = new JSONObject(msg.getContent());
@@ -36,6 +36,7 @@ public class CarReceivingDataBehaviour extends CyclicBehaviour {
 			//   current position and pastTrafficState (that is to 
 			//   be added to futureTrafficState of the agent that
 			//   receives this msg)
+			// TODO: Además de introducir los datos tambien debería contar el coche no?
 			carAgent.getSensorTrafficData().getCarsSpeeds().
 			                         add(datos.getDouble("speed"));
 			carAgent.getSensorTrafficData().getCarsPositions().
@@ -44,12 +45,14 @@ public class CarReceivingDataBehaviour extends CyclicBehaviour {
 			
 			for(String key:datos.getJSONObject("futureTraffic").
 					             keySet()){
-				if(datos.getJSONObject(key) != null){
-					carAgent.getFutureTraffic().
-			         put(key, datos.getJSONObject(key));
-				}
-			}
+				//System.out.println(datos.getJSONObject("futureTraffic").get(key));
+				carAgent.getFutureTraffic().
+		         put(key, (JSONObject) datos.getJSONObject("futureTraffic").get(key));
+			}		
 			
+			for(String key:carAgent.getFutureTraffic().getData().keySet()){
+				System.out.println("CRDB Key: "+ key + " Data: " + carAgent.getFutureTraffic().getData().get(key));
+			}
 		} else block();
 
 	}

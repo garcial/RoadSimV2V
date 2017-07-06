@@ -65,6 +65,7 @@ public class SegmentListenBehaviour extends Behaviour {
 				} else {
 					if (msg.getConversationId().equals("register")) {
 						// Register
+						// TODO Hay que añadir los elementos que has recibido
 						this.agent.addCar(car.getString("id"), 
 								(float) car.getDouble("x"), 
 								(float) car.getDouble("y"), 
