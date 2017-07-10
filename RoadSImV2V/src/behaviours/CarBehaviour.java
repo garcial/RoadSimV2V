@@ -88,7 +88,7 @@ public class CarBehaviour extends CyclicBehaviour {
 				// Update pkCurrent with this speed and the difference
 				//   between previousTick and currentTick
 				//   We transform km/h to k/s if divide it by 3600
-				float pkIncrement =(float) (currentSpeed / 3600) * (currentTick - this.previousTick) ;
+				float pkIncrement =(float) (currentSpeed / 3600f) * (currentTick - this.previousTick) ;
 				//System.out.println("PKCurrent: " + currentPk);
 				//The proportion of the map is 1px ~= 29m and one 
 				//  tick =1s. Calculate the pixels per tick I have to
@@ -100,9 +100,6 @@ public class CarBehaviour extends CyclicBehaviour {
 				float currentX = this.agent.getX();
 				float currentY = this.agent.getY();
 				
-				
-
-				float currentpk = this.agent.getCurrentPk();
 				//The distance between my current position and my next 
 				//   desired position
 				float distNext = (float) Math.sqrt(
@@ -149,22 +146,18 @@ public class CarBehaviour extends CyclicBehaviour {
 					
 					//Update the current pk when update the x and y
 					if("up".compareTo(this.agent.getCurrentSegment().getDirection()) == 0){
-						this.agent.setCurrentPk(currentPk + proportion);
+						this.agent.setCurrentPk(currentPk + pkIncrement);
+						previousTick = this.agent.getCurrentTick() - 1;
+						this.agent.setCurrentPk(currentPk + pkIncrement);
 					} else {
-						this.agent.setCurrentPk(currentPk - proportion);
+						this.agent.setCurrentPk(currentPk - pkIncrement);
+						previousTick = this.agent.getCurrentTick() - 1;
+						this.agent.setCurrentPk(currentPk - pkIncrement);
 					}
 					this.agent.setX(((1 - proportion) * currentX + 
 							proportion * next.getDestinationX()));
 					this.agent.setY(((1 - proportion) * currentY + 
 							proportion * next.getDestinationY()));
-					
-					//Update the current pk when update the x and y
-					if("up".compareTo(this.agent.getCurrentSegment().getDirection()) == 0){
-						this.agent.setCurrentPk(currentpk + proportion);
-					} else {
-						this.agent.setCurrentPk(currentpk - proportion);
-					}
-					
 
 					//If I am in a new segment
 					if (!this.agent.getCurrentSegment().
@@ -280,7 +273,6 @@ public class CarBehaviour extends CyclicBehaviour {
 					this.informSegment(next.getSegment(), "update");
 					agent.addBehaviour(
 							    new CarSendingDataBehaviour(agent));
-					previousTick = Long.parseLong(msg.getContent());
 				}
 			}
 		} else block();
