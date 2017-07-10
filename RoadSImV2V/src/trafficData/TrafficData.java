@@ -15,8 +15,8 @@ public class TrafficData {
 	private JSONObject json;
 	
 	public TrafficData() {
-		this.tini = 0;
-		this.tfin = 0;
+		this.tini = 00;
+		this.tfin = 00;
 		this.numCars = 0;
 		this.carsPositions = new ArrayList<Double>();
 		this.carsSpeeds = new ArrayList<Double>();
@@ -37,9 +37,15 @@ public class TrafficData {
 		for(int i = 0; i<speeds.length(); i++)
 			carsSpeeds.add(speeds.getDouble(i));	
 		JSONArray idsReceived = json.getJSONArray("ids");
-		for(int i = 0; i< idsReceived.length(); i++)
+		this.ids = new ArrayList<String>();
+		for(int i = 0; i < idsReceived.length(); i++){
 			ids.add(idsReceived.getString(i));
+		}
 		this.json = json;
+	}
+	
+	public long getTime() {
+		return tfin - tini;
 	}
 	
 	public long getTini() {
@@ -73,6 +79,10 @@ public class TrafficData {
 
 	public void setNumCars(int numCars) {
 		this.numCars = numCars;
+	}
+	
+	public void addOneCar(){
+		this.numCars += 1;
 	}
 	
 

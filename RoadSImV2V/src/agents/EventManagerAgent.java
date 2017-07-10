@@ -155,7 +155,6 @@ public class EventManagerAgent extends Agent {
 		//Translate from hours to ticks, we will use that as the key 
 		//    to our dictionary
 		for (String event : aux) {
-			System.out.println(event);
 			String time = event.split(",")[1];
 			int hours = Integer.parseInt(time.split(":")[0]);
 			int minutes = Integer.parseInt(time.split(":")[1]);

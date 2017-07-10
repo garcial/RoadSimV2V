@@ -1,6 +1,4 @@
 package behaviours;
-import java.util.ArrayList;
-import java.util.Date;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.ToJSON;
@@ -35,6 +33,7 @@ public class CarBehaviour extends CyclicBehaviour {
 	private char serviceLevelSegment;
 	private boolean drawGUI;
 	private long previousTick;
+	private long currentTick;
 
 	public CarBehaviour(CarAgent a, long timeout, boolean drawGUI) {
 
@@ -67,7 +66,8 @@ public class CarBehaviour extends CyclicBehaviour {
 
 		if (msg != null) {
 			
-			long currentTick = Long.parseLong(msg.getContent());
+			this.currentTick = Long.parseLong(msg.getContent());
+			this.agent.setCurrentTick(currentTick);
 		    // Increase elapsed time
 			//agent.increaseElapsedtime();
 			//If I still have to move somewhere
@@ -292,6 +292,19 @@ public class CarBehaviour extends CyclicBehaviour {
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		msg.setOntology("carToSegmentOntology");
 		msg.setConversationId(type);
+		//TODO ACtualizar el pastTraficData y el futureData además del JGrapht
+		if ("deregister".compareTo(type) == 0) {
+			this.agent.getPastTraffic().put(segment.getId(), this.agent.getSensorTrafficData());
+			System.out.println("PAST TRAFFIC de " + this.agent.getId());
+			for (String key : this.agent.getPastTraffic().getData().keySet()){
+				System.out.println(key + " - " +this.agent.getPastTraffic().getData().get(key));
+			}
+			//Update the EDGE
+			/*Es decir tenemos que recorrer toda la lista buscando
+			 * el que tenga la diferencia de tiempos mayor y a partir de 
+			 * ahí generar un edge y guardarlo en el jgrapht.*/
+			//Calculate the better way
+		}
 		msg.addReceiver(segment.getSegmentAgent().getAID());
 		JSONObject carDataRegister = new JSONObject();
 		carDataRegister.put("id", this.agent.getId());

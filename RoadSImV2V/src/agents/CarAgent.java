@@ -56,7 +56,8 @@ public class CarAgent extends Agent {
 	private Algorithm alg;
 	private int algorithmType;
 	private DefaultDirectedWeightedGraph<Intersection, Edge> jgraht;
-   
+	private long currentTick;
+
 	// This object stores current traffic sensored data
 	// every time a car goes into a new segment, this object is
 	// reseting.
@@ -97,8 +98,8 @@ public class CarAgent extends Agent {
 		this.map = (Map) this.getArguments()[0];
 		//Get the jgraph from the map
 		this.jgraht = this.map.getJgraht();
-		System.out.println("CarAgent.java-- Get JgraphT: " + 
-		                   this.jgraht.toString());
+		/* System.out.println("CarAgent.java-- Get JgraphT: " + 
+		                   this.jgraht.toString()); */
 		//Get the starting and final points of my trip
 		this.initialIntersection = (String) this.getArguments()[1];
 		this.finalIntersection = (String) this.getArguments()[2];
@@ -147,7 +148,6 @@ public class CarAgent extends Agent {
 				                                          getX());
 		setY(map.getIntersectionByID(getInitialIntersection()).
 				                                          getY());
-		
 		//Store data received from other cars in a Map
 		futureTraffic = new TrafficDataInStore();
 		
@@ -187,9 +187,6 @@ public class CarAgent extends Agent {
 		
 		//An unique identifier for the car
 		this.id = getName().toString();
-
-
-
 		
 		if(this.drawGUI){
 			//We notify the interface about the new car
@@ -394,14 +391,6 @@ public class CarAgent extends Agent {
 		this.currentTrafficDensity = currentTD;
 	}
 
-//	public long getElapsedtime() {
-//		return elapsedtime;
-//	}
-//
-//	public void increaseElapsedtime() {
-//		this.elapsedtime++;
-//	}
-
 	public long getTini() {
 		return tini;
 	}
@@ -432,6 +421,14 @@ public class CarAgent extends Agent {
 
 	public void setFutureTraffic(TrafficDataInStore futureTraffic) {
 		this.futureTraffic = futureTraffic;
+	}
+	
+	public long getCurrentTick() {
+		return currentTick;
+	}
+
+	public void setCurrentTick(long currentTick) {
+		this.currentTick = currentTick;
 	}
 
 }

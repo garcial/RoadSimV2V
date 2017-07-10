@@ -65,14 +65,15 @@ public class SegmentListenBehaviour extends Behaviour {
 				} else {
 					if (msg.getConversationId().equals("register")) {
 						// Register
-						// TODO Hay que añadir los elementos que has recibido
 						this.agent.addCar(car.getString("id"), 
 								(float) car.getDouble("x"), 
 								(float) car.getDouble("y"), 
 								       car.getBoolean("specialColor"),
 									   car.getInt("radio"));						
-					} else             
+					} else {    
+						// Deregister  of the segment
 						this.agent.removeCar(car.getString("id"));
+					}
 					
 					Segment segment = this.agent.getSegment();
 					int numCars = this.agent.getCars().size();

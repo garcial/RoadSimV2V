@@ -36,12 +36,12 @@ public class CarSendingDataBehaviour extends Behaviour {
 	@Override
 	public void action() {
 		switch (step) {
+		// Ask to twin Segment of the current segment on other
+		//     cars in my sensor space
 		case 0:
 			ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
 			msg.setOntology("roadTwinsOntology");
 
-			// Ask to twin Segment of the current segment on other
-			//     cars in my sensor space
 			//TODO: Revise how to obtain the IAD of the twin segments
 			//      from Strings
 			List<String> twins = carAgent.getCurrentSegment().
@@ -62,6 +62,10 @@ public class CarSendingDataBehaviour extends Behaviour {
 			carAgent.send(msg);
 			step++;
 			break;
+		// Recibe los ids de los agentes coche que hay en el segmento opuesto
+		// Se les manda la información del coche en ese momento
+		// Esta información se basa en el id, velocidad, pk e
+		// información sobre el trafico que le interesa al vecino
 		case 1: 
 			//TODO: Revise how to manage all the responses from
 			//      all the twin segments
@@ -86,15 +90,16 @@ public class CarSendingDataBehaviour extends Behaviour {
 				for(int i = 0; i < list.length(); i++) {
 					msgInf.addReceiver(new AID(list.get(i).toString(),
 							           true));
-					System.out.println(new AID(list.get(i).toString(),  true));
 				}
 				JSONObject json = new JSONObject();
+				json.put("tini", carAgent.getTini());
+				json.put("tfin", carAgent.getCurrentTick());
 				json.put("speed", carAgent.getCurrentSpeed());
 				json.put("position", carAgent.getCurrentPk());
 				json.put("id", carAgent.getId());
 				json.put("futureTraffic", 
 						          carAgent.getPastTraffic().toJSON());
-				//System.out.println(carAgent.getPastTraffic().toString());
+				
 				msgInf.setContent(json.toString());
 				// There are two options:
 				// 1) Do a request/answer cycle and do not imclude a 
@@ -105,7 +110,6 @@ public class CarSendingDataBehaviour extends Behaviour {
 				//     radio then, this car doesn't have to wait for
 				//      a response.
 				// Choosing option 2: 
-				
 				carAgent.send(msgInf);
 				step++;
 			} else block();
