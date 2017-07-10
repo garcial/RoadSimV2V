@@ -288,7 +288,8 @@ public class CarBehaviour extends CyclicBehaviour {
 
 	//This method will send a message to a given segment
 	private void informSegment(Segment segment, String type) {
-
+		// TODO: La comunicación está bien pero por alguna razon los tiempos no coinciden
+		// 		Tenog que ponerme con ello pero poco a poco
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		msg.setOntology("carToSegmentOntology");
 		msg.setConversationId(type);
