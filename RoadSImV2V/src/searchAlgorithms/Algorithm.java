@@ -208,14 +208,15 @@ public abstract class Algorithm {
 		path = this.getIntersectionPath(dijks, destination);
 
 		List<Step> graphicalPath = new LinkedList<Step>();
-
+		List<String> intersectionVisited = new LinkedList<String>();
 		for( int i=0; i<path.size()-1; i++){
 
 			Intersection in = map.getIntersectionByID(path.get(i));
 			for(Segment seg: in.getOutSegments()){
 				
-				if (seg.getDestination().getId().equals(path.get(i+1))){
+				if (seg.getDestination().getId().equals(path.get(i+1)) && !intersectionVisited.contains(seg.getDestination().getId())){
 					graphicalPath.addAll(seg.getSteps());
+					intersectionVisited.add(seg.getDestination().getId());
 				}
 			}
 		}
