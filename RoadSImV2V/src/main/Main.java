@@ -37,7 +37,7 @@ public class Main {
 	
 	//Logging directory for the segments
 	private static final String loggingDirectory = 
-			"/home/usuario/Documents/SimulationResults";
+			"staticFiles/log/";
 
 	public static void main(String[] args) {
 		
@@ -240,6 +240,22 @@ public class Main {
 				e.printStackTrace();
 			}
 		}
+		
+		//LogManager
+				try {
+
+					AgentController agent = 
+							mainContainer.createNewAgent("logAgent",
+									"agents.LogAgent", 
+									new Object[]{loggingDirectory});
+					agent.start();
+
+				} catch (StaleProxyException e1) {
+
+					System.out.println(
+							        "Error starting the Log agent");
+					e1.printStackTrace();
+				}
 		
 		//EventManager
 		try {
