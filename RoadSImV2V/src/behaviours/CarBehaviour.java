@@ -122,7 +122,7 @@ public class CarBehaviour extends CyclicBehaviour {
 						                     remove(0);
 						next = this.agent.getPath().
 								getGraphicalPath().get(0);
-
+						System.out.println("CarB: " + this.agent.getPath().getGraphicalPath().toString());
 						currentX = next.getOriginX();
 						currentY = next.getOriginY();
 

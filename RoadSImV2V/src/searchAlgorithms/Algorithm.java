@@ -158,7 +158,6 @@ public abstract class Algorithm {
 			for(Segment seg: in.getOutSegments()){
 
 				if (seg.getDestination().getId().equals(path.get(i+1))){
-
 					graphicalPath.addAll(seg.getSteps());
 				}
 			}
@@ -213,11 +212,9 @@ public abstract class Algorithm {
 		for( int i=0; i<path.size()-1; i++){
 
 			Intersection in = map.getIntersectionByID(path.get(i));
-
 			for(Segment seg: in.getOutSegments()){
-
+				
 				if (seg.getDestination().getId().equals(path.get(i+1))){
-
 					graphicalPath.addAll(seg.getSteps());
 				}
 			}

@@ -144,7 +144,7 @@ public class Main {
 		//Load the map
 		try {
 			// The map load the segments that create the SegmentAgent
-			map = new Map("staticFiles/map", segmentContainer,
+			map = new Map("staticFiles/map/csbeni", segmentContainer,
 					      segmentLogging, loggingDirectory, drawGUI);
 		} catch (IOException e) {
 
