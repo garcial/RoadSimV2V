@@ -1,5 +1,10 @@
 package agents;
 
+import java.io.FileWriter;
+import java.io.PrintWriter;
+
+import org.json.JSONObject;
+
 import behaviours.LogCarBehaviour;
 import behaviours.LogSegmentBehaviour;
 import jade.core.Agent;
@@ -41,5 +46,54 @@ public class LogAgent extends Agent {
 		addBehaviour(new LogCarBehaviour(this));
 		addBehaviour(new LogSegmentBehaviour(this));
 	}
+	
+	public void writeCar(JSONObject json){
+		 FileWriter fichero = null;
+	        PrintWriter pw = null;
+	        try
+	        {
+	            fichero = new FileWriter(logginDirectory);
+	            pw = new PrintWriter(fichero);
 
+	            for (int i = 0; i < 10; i++)
+	                pw.println("Linea " + i);
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        } finally {
+	           try {
+	           // Nuevamente aprovechamos el finally para 
+	           // asegurarnos que se cierra el fichero.
+	           if (null != fichero)
+	              fichero.close();
+	           } catch (Exception e2) {
+	              e2.printStackTrace();
+	           }
+	        }
+	}
+	
+	public void writeSegment(JSONObject json){
+		FileWriter fichero = null;
+        PrintWriter pw = null;
+        try
+        {
+            fichero = new FileWriter(logginDirectory);
+            pw = new PrintWriter(fichero);
+
+            for (int i = 0; i < 10; i++)
+                pw.println("Linea " + i);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+           try {
+           // Nuevamente aprovechamos el finally para 
+           // asegurarnos que se cierra el fichero.
+           if (null != fichero)
+              fichero.close();
+           } catch (Exception e2) {
+              e2.printStackTrace();
+           }
+        }
+	}
 }

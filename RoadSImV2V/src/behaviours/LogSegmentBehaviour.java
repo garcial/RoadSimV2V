@@ -1,16 +1,22 @@
 package behaviours;
 
-import jade.core.Agent;
+import agents.LogAgent;
 import jade.core.behaviours.Behaviour;
 
 public class LogSegmentBehaviour extends Behaviour {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private LogAgent logAgent;
 	public LogSegmentBehaviour() {
 		// TODO Auto-generated constructor stub
 	}
 
-	public LogSegmentBehaviour(Agent a) {
-		super(a);
+	public LogSegmentBehaviour(LogAgent a) {
+		this.logAgent = a;
 		// TODO Auto-generated constructor stub
 	}
 

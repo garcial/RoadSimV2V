@@ -89,7 +89,7 @@ public class Edge extends DefaultWeightedEdge {
 
 	@Override
 	public String toString() {
-		return "Edge [segment=" + segment + ", weight=" + weight + ", tini=" + tini + ", tfin=" + tfin
+		return "Edge [segment=" + segment.getId() + ", weight=" + weight + ", tini=" + tini + ", tfin=" + tfin
 				+ ", serviceLevel=" + serviceLevel + "]";
 	}
 
