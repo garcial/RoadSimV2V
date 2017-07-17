@@ -37,7 +37,7 @@ public class Main {
 	
 	//Logging directory for the segments
 	private static final String loggingDirectory = 
-			"staticFiles/log/";
+			"D:/DOCS/Investigacion/codigo/api/RoadSimV2V/RoadSImV2V/src/staticFiles/log";
 
 	public static void main(String[] args) {
 		

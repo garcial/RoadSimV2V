@@ -34,10 +34,13 @@ public class SegmentAgent extends Agent {
 	//The segment this agent belongs to
 	private Segment segment;
 	private boolean drawGUI;
+	private DFAgentDescription logAgent;
 
 	//The cars that are currently on this segment
 	private HashMap<String, CarData> cars;
 	private HashMap<String, ArrayList<String>> interactingCars;
+	//TODO: Gestionar lo que se guarda en el log
+	private char serviceLevelPast;
 
 	public boolean isNewCommunication(String idCar, String otherCar) {
 		if (!interactingCars.get(otherCar).contains(idCar)) {
@@ -58,6 +61,8 @@ public class SegmentAgent extends Agent {
 		this.segment = (Segment) this.getArguments()[0];
 		this.drawGUI = (boolean) this.getArguments()[1];
 		this.segment.setSegmentAgent(this);
+		// X is a service level inexistent to obligate to log the first service level
+		this.serviceLevelPast = 'X';
 
 		this.cars = new HashMap<String, CarData>();
 
@@ -77,6 +82,28 @@ public class SegmentAgent extends Agent {
 		} catch (FIPAException fe) { 
 			fe.printStackTrace(); 
 		}
+		
+		//Find the log agent
+		dfd = new DFAgentDescription();
+		sd = new ServiceDescription();
+		sd.setType("logAgent");
+		dfd.addServices(sd);
+
+		DFAgentDescription[] result = null;
+
+		try {
+			result = DFService.searchUntilFound(
+					this, getDefaultDF(), dfd, null, 5000);
+		} catch (FIPAException e) { e.printStackTrace(); }
+
+		while (result == null || result[0] == null) {
+			try {
+				result = DFService.searchUntilFound(
+						this, getDefaultDF(), dfd, null, 5000);
+			} catch (FIPAException e) { e.printStackTrace(); }
+		}
+		
+		this.logAgent = result[0];
 
 		interactingCars = new HashMap<String, ArrayList<String>>();
 		
@@ -252,6 +279,24 @@ public class SegmentAgent extends Agent {
 		return cars;
 	}
 
+	public DFAgentDescription getLogAgent() {
+		return logAgent;
+	}
+
+	public void setLogAgent(DFAgentDescription logAgent) {
+		this.logAgent = logAgent;
+	}
+
+	public char getServiceLevelPast() {
+		return serviceLevelPast;
+	}
+
+	public void setServiceLevelPast(char serviceLevelPast) {
+		this.serviceLevelPast = serviceLevelPast;
+	}
+
+
+
 	/**
 	 * Auxiliary structure to keep track of the cars
 	 *
@@ -308,5 +353,7 @@ public class SegmentAgent extends Agent {
 		public void setSpecialColor(boolean specialColor) {
 			this.specialColor = specialColor;
 		}
+		
+		
 	}
 }

@@ -34,6 +34,7 @@ public class CarBehaviour extends CyclicBehaviour {
 	private boolean drawGUI;
 	private long previousTick;
 	private long currentTick;
+	private float currentSegmentCovered=0;
 
 	public CarBehaviour(CarAgent a, long timeout, boolean drawGUI) {
 
@@ -90,6 +91,7 @@ public class CarBehaviour extends CyclicBehaviour {
 				//   We transform km/h to k/s if divide it by 3600
 				float pkIncrement =(float) (currentSpeed / 3600f) * (currentTick - this.previousTick) ;
 				//System.out.println("PKCurrent: " + currentPk);
+				this.currentSegmentCovered += pkIncrement;
 				//The proportion of the map is 1px ~= 29m and one 
 				//  tick =1s. Calculate the pixels per tick I have to
 				//   move
@@ -164,34 +166,7 @@ public class CarBehaviour extends CyclicBehaviour {
 							equals(next.getSegment())) {
 
 						long tfin = Long.parseLong(msg.getContent());
-						//Calculate the information to the jgraph 
-						//   and Deregister from previous segment
-						this.serviceLevelSegment = this.agent.
-								            getCurrentSegment().
-								            getCurrentServiceLevel();
-						this.agent.getJgraht().addEdge(
-						   this.agent.getCurrentSegment().getOrigin(),
-						   next.getSegment().getOrigin(), 
-						   new Edge(this.agent.getCurrentSegment(),
-							   	    this.serviceLevelSegment, 
-									agent.getTini(), 
-									tfin));
-						
-						// Modify the Traffic Data of the Segment that deregister
-						TrafficDataOutStore pastTraffic = this.agent.getPastTraffic();
-						JSONObject traficInfo = new JSONObject();
-						traficInfo.put("tini", agent.getTini());
-						traficInfo.put("tfin", tfin);
-						//We need the numcars, its speed and position
-						traficInfo.put("numCars", 0);
-						traficInfo.put("positions", new JSONArray());
-						traficInfo.put("speeds", new JSONArray());
-						traficInfo.put("ids", new JSONArray());
-						TrafficData traficDataSegment = new TrafficData(traficInfo);
-						
-						pastTraffic.put(this.agent.getCurrentSegment().getId(), traficDataSegment);
-						
-						
+
 						//Deregister from previous segment
 						this.informSegment(
 							this.agent.getCurrentSegment(), 
@@ -234,21 +209,8 @@ public class CarBehaviour extends CyclicBehaviour {
 						//     Traffic related to this new segment
 						agent.getFutureTraffic().
 						           delete(next.getSegment().getId());
-						// Introducir el Tfin en TrafficData
-						agent.getSensorTrafficData().
-						             setTfin(tfin);
-						// Introduce current TrafficData into 
-						//     the pastTraffic
-						// First give the number of cars detected
-						agent.getSensorTrafficData().
-						        setNumCars(agent.
-						        	    getSensorTrafficData().
-						        	    getCarsPositions().size());
-						agent.getPastTraffic().put(previousSegmentId, 
-								        agent.getSensorTrafficData());
-						//Start a new current trafficData by myself
-						agent.setSensorTrafficData(new TrafficData());
-						agent.getSensorTrafficData().setTini(tfin);
+						//agent.getPastTraffic().put(previousSegmentId, 
+						//		        agent.getSensorTrafficData());
 					}
 					
 					//If we are going under the maximum speed I'm 
@@ -285,21 +247,50 @@ public class CarBehaviour extends CyclicBehaviour {
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		msg.setOntology("carToSegmentOntology");
 		msg.setConversationId(type);
+		
 		//TODO ACtualizar el pastTraficData y el futureData además del JGrapht
 		if ("deregister".compareTo(type) == 0) {
+			// Introducir el Tfin en TrafficData
+			this.agent.getSensorTrafficData().setTfin(this.currentTick);
+			// First give the number of cars detected
+			agent.getSensorTrafficData().
+			        setNumCars(agent.
+			        	    getSensorTrafficData().
+			        	    getCarsPositions().size());
+			
 			this.agent.getPastTraffic().put(segment.getId(), this.agent.getSensorTrafficData());
 			System.out.println("PAST TRAFFIC de " + this.agent.getId());
 			for (String key : this.agent.getPastTraffic().getData().keySet()){
-				System.out.println(key + " - " +this.agent.getPastTraffic().getData().get(key));
+				System.out.println("CBinfSeg: " + key + " - " +this.agent.getPastTraffic().getData().get(key));
 			}
+			System.out.println("Distancia: " + (float) segment.getLength() * 1000);
+			System.out.println("Distancia real: " + (float) this.currentSegmentCovered);
+			System.out.println("Tiempo: " + this.agent.getSensorTrafficData().getTfin() + " - " + this.agent.getSensorTrafficData().getTini() );
+			float vel = (((float) this.currentSegmentCovered) / (this.agent.getSensorTrafficData().getTfin() - this.agent.getSensorTrafficData().getTini()) * 3600);
+			this.agent.addLogData(segment.getId(), this.agent.getNumMsgRecibido(), this.agent.getNumMsgEnviados(), (float) segment.getLength(), vel);
+			//We reinicializate the number og messages
+			this.agent.setNumMsgEnviados(0);
+			this.agent.setNumMsgRecibido(0);
+			
 			//Update the EDGE
 			/*Es decir tenemos que recorrer toda la lista buscando
 			 * el que tenga la diferencia de tiempos mayor y a partir de 
 			 * ahí generar un edge y guardarlo en el jgrapht.*/
 			//Calculate the better way
+		}else if("register".compareTo(type) == 0){
+			//Start a new current trafficData by myself
+			this.currentSegmentCovered = 0;
+			agent.setSensorTrafficData(new TrafficData());
+			agent.getSensorTrafficData().setTini(this.currentTick);
+			//To log the info segment we need the initial tick
+		} else if("update".compareTo(type) == 0){
+			
 		}
+		
 		msg.addReceiver(segment.getSegmentAgent().getAID());
 		JSONObject carDataRegister = new JSONObject();
+		carDataRegister.put("tickInitial", this.agent.getSensorTrafficData().getTini());
+		carDataRegister.put("tickFinal", this.currentTick);
 		carDataRegister.put("id", this.agent.getId());
 		carDataRegister.put("x", this.agent.getX());
 		carDataRegister.put("y", this.agent.getY());
@@ -318,6 +309,14 @@ public class CarBehaviour extends CyclicBehaviour {
 		//Deregister from previous segment
 		this.informSegment(this.agent.getCurrentSegment(),
 				           "deregister");
+		this.agent.setLogEndTick(this.currentTick);
+		ACLMessage msgLog = new ACLMessage(ACLMessage.INFORM);
+		msgLog.setOntology("logCarOntology");
+		msgLog.addReceiver(this.agent.getLogAgent().getName());
+		msgLog.setContent(this.agent.getLogData().toString() + "," +
+		this.agent.getLogInitialTick() + "," + this.agent.getLogEndTick() +
+		"," + this.agent.getLogAlgorithm());
+		myAgent.send(msgLog);
 
 		//Delete the car from the canvas
 		if (this.agent.getInterfaceAgent() != null && this.drawGUI) {

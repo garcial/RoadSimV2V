@@ -6,7 +6,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.json.ToJSON;
+
 import agents.SegmentAgent;
+import jade.lang.acl.ACLMessage;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 
@@ -60,6 +63,9 @@ public class Segment implements Serializable{
 	
 	//List with the twins segments
 	private List<String> twinSegments;
+	
+	//Road Code
+	private String roadCode;
 
 	//Segment agent
 	private SegmentAgent segmentAgent;
@@ -100,6 +106,7 @@ public class Segment implements Serializable{
 		this.currentServiceLevel = 'A';
 		this.twinSegments = new LinkedList<String>();
 		this.drawGUI = true;
+		this.roadCode = "";
 	}
 
 	/**
@@ -113,7 +120,7 @@ public class Segment implements Serializable{
 			       double length, int maxSpeed, int capacity, int density, 
 			       int numberTracks, jade.wrapper.AgentContainer mainContainer, 
 			       boolean segmentLogging, String loggingDirectory, boolean drawGUI,
-			       String direction, double pkstart, LinkedList segTwinsList){
+			       String direction, double pkstart, LinkedList segTwinsList, String roadCode){
 
 		this.id = id;
 		this.origin = origin;
@@ -134,6 +141,7 @@ public class Segment implements Serializable{
 		this.direction = direction;
 		this.pkIni = (float) pkstart;
 		this.twinSegments = segTwinsList;
+		this.roadCode = roadCode;
 		
 		//Put the service levels
 		this.serviceLevels.put('A', 1.00f);
@@ -233,7 +241,7 @@ public class Segment implements Serializable{
 		return currentServiceLevel;
 	}
 
-	public void setCurrentServiceLevel(Character currentServiceLevel) {
+	public void setCurrentServiceLevel(Character currentServiceLevel) {	
 		this.currentServiceLevel = currentServiceLevel;
 		this.currentAllowedSpeed = (int) 
 				(this.maxSpeed * this.serviceLevels.get(currentServiceLevel));
@@ -258,5 +266,14 @@ public class Segment implements Serializable{
 	public void setDirection(String direction) {
 		this.direction = direction;
 	}
+
+	public String getRoadCode() {
+		return roadCode;
+	}
+
+	public void setRoadCode(String roadCode) {
+		this.roadCode = roadCode;
+	}
+	
 	
 }

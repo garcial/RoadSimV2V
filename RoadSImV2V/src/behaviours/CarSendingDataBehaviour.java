@@ -1,14 +1,11 @@
 package behaviours;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import agents.CarAgent;
-import agents.SegmentAgent;
-import environment.Segment;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
@@ -90,6 +87,7 @@ public class CarSendingDataBehaviour extends Behaviour {
 				for(int i = 0; i < list.length(); i++) {
 					msgInf.addReceiver(new AID(list.get(i).toString(),
 							           true));
+					carAgent.setNumMsgEnviados(carAgent.getNumMsgEnviados() + 1);
 				}
 				JSONObject json = new JSONObject();
 				json.put("tini", carAgent.getTini());

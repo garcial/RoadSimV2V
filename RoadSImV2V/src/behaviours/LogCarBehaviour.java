@@ -1,14 +1,17 @@
 package behaviours;
 
 import agents.LogAgent;
-import jade.core.Agent;
 import jade.core.behaviours.Behaviour;
+import jade.lang.acl.ACLMessage;
+import jade.lang.acl.MessageTemplate;
 
 public class LogCarBehaviour extends Behaviour {
-
-	/**
-	 * 
-	 */
+	
+	private MessageTemplate mtLogCar = 
+			MessageTemplate.and(
+				MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+				MessageTemplate.MatchOntology("logCarOntology"));
+	
 	private LogAgent logAgent;
 	private static final long serialVersionUID = 1L;
 
@@ -23,7 +26,11 @@ public class LogCarBehaviour extends Behaviour {
 
 	@Override
 	public void action() {
-		// TODO Auto-generated method stub
+		ACLMessage msg = logAgent.receive(mtLogCar);
+		
+		if (msg != null) { //There is a message
+			this.logAgent.writeCar(msg.getContent());
+		}
 
 	}
 

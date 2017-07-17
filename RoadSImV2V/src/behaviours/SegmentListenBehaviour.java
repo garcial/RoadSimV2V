@@ -101,6 +101,20 @@ public class SegmentListenBehaviour extends Behaviour {
 					} else 
 						segment.setCurrentServiceLevel('F');
 					
+					//TODO: Añadir una variable de nivel de servicio anterior y así guardamos el tickfinal
+					// Hay que ver donde se recoge el tick
+					if(segment.getCurrentServiceLevel().compareTo(this.agent.getServiceLevelPast()) != 0 && !msg.getConversationId().equals("register")){
+						ACLMessage msgLog = new ACLMessage(ACLMessage.INFORM);
+						msgLog.setOntology("logSegmentOntology");
+						msgLog.addReceiver(this.agent.getLogAgent().getName());
+						msgLog.setContent(segment.getId() + "," + segment.getCurrentServiceLevel() + "," + car.getLong("tickInitial") + "," +car.getLong("tickFinal"));
+						myAgent.send(msgLog);
+						
+						this.agent.setServiceLevelPast(segment.getCurrentServiceLevel());
+					}
+					
+					
+					
 					msg = new ACLMessage(ACLMessage.INFORM);
 					msg.setOntology("trafficDensityOntology");
 					//msg.setContent(""+density);

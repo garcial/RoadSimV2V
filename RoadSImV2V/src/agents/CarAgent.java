@@ -14,6 +14,9 @@ import trafficData.TrafficData;
 import trafficData.TrafficDataInStore;
 import trafficData.TrafficDataOutStore;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.json.JSONObject;
 
@@ -46,6 +49,7 @@ public class CarAgent extends Agent {
 	private long tini; // For measuring temporal intervals of traffic
 	private String id; 
 	private DFAgentDescription interfaceAgent;
+	private DFAgentDescription logAgent;
 	private boolean drawGUI;
 	private Map map;
 	private Path path;
@@ -57,6 +61,14 @@ public class CarAgent extends Agent {
 	private int algorithmType;
 	private DefaultDirectedWeightedGraph<Intersection, Edge> jgraht;
 	private long currentTick;
+	
+	private List<LogData> logData;
+	private long logInitialTick;
+	private long logEndTick;
+	private String logAlgorithm;
+	//TODO: Update the number of msg send a received
+	private int numMsgRecibido = 0;
+	private int numMsgEnviados = 0;
 
 	// This object stores current traffic sensored data
 	// every time a car goes into a new segment, this object is
@@ -132,6 +144,7 @@ public class CarAgent extends Agent {
 			this.smart = true;
 		}
 		
+		
 		//Get the initial time tick from eventManager
 		tini = (long) this.getArguments()[6];
 		
@@ -142,6 +155,11 @@ public class CarAgent extends Agent {
 		this.path = alg.getPath(this.map, getInitialIntersection(), 
 				                getFinalIntersection(), 
 				                this.maxSpeed);
+		
+		/* Generate the log parameters*/
+		//Asign the type of algorithm
+		this.logAlgorithm = routeType;
+		this.logInitialTick = tini;
 		
 		//Starting point
 		setX(map.getIntersectionByID(getInitialIntersection()).
@@ -154,6 +172,7 @@ public class CarAgent extends Agent {
 		//Store data to send to other cars in my route
 		pastTraffic = new TrafficDataOutStore();
 
+		this.logData = new ArrayList<LogData>();
 
 		// Store current trafficData sensored by myself
 		sensorTrafficData = new TrafficData();
@@ -175,7 +194,6 @@ public class CarAgent extends Agent {
 			} catch (FIPAException e) { e.printStackTrace(); }
 
 			while (result == null || result[0] == null) {
-				
 				try {
 					result = DFService.searchUntilFound(
 							this, getDefaultDF(), dfd, null, 5000);
@@ -184,6 +202,28 @@ public class CarAgent extends Agent {
 			
 			this.interfaceAgent = result[0];
 		}
+		
+		//Find the log agent
+		dfd = new DFAgentDescription();
+		sd = new ServiceDescription();
+		sd.setType("logAgent");
+		dfd.addServices(sd);
+
+		DFAgentDescription[] result = null;
+
+		try {
+			result = DFService.searchUntilFound(
+					this, getDefaultDF(), dfd, null, 5000);
+		} catch (FIPAException e) { e.printStackTrace(); }
+
+		while (result == null || result[0] == null) {
+			try {
+				result = DFService.searchUntilFound(
+						this, getDefaultDF(), dfd, null, 5000);
+			} catch (FIPAException e) { e.printStackTrace(); }
+		}
+		
+		this.logAgent = result[0];
 		
 		//An unique identifier for the car
 		this.id = getName().toString();
@@ -208,6 +248,9 @@ public class CarAgent extends Agent {
 	    setCurrentSegment(next.getSegment());
 
 		//Register
+	    //Add the tini of the first segment
+	    this.sensorTrafficData.setTini(this.tini);
+	    
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		msg.setOntology("carToSegmentOntology");
 		msg.setConversationId("register");
@@ -218,6 +261,8 @@ public class CarAgent extends Agent {
 		carDataRegister.put("y", getY());
 		carDataRegister.put("specialColor", getSpecialColor());
 		carDataRegister.put("radio", getRatio());
+		carDataRegister.put("tickInitial", this.sensorTrafficData.getTini());
+		carDataRegister.put("tickFinal", 1001001);
 		
 		msg.setContent(carDataRegister.toString());
 		
@@ -429,6 +474,129 @@ public class CarAgent extends Agent {
 
 	public void setCurrentTick(long currentTick) {
 		this.currentTick = currentTick;
+	}
+
+	public DFAgentDescription getLogAgent() {
+		return logAgent;
+	}
+
+	public void setLogAgent(DFAgentDescription logAgent) {
+		this.logAgent = logAgent;
+	}
+	
+	public List<LogData> getLogData() {
+		return logData;
+	}
+
+	public void setLogData(List<LogData> logData) {
+		this.logData = logData;
+	}
+
+	public long getLogInitialTick() {
+		return logInitialTick;
+	}
+
+	public void setLogInitialTick(long logInitialTick) {
+		this.logInitialTick = logInitialTick;
+	}
+
+	public long getLogEndTick() {
+		return logEndTick;
+	}
+
+	public void setLogEndTick(long logEndTick) {
+		this.logEndTick = logEndTick;
+	}
+
+	public String getLogAlgorithm() {
+		return logAlgorithm;
+	}
+
+	public void setLogAlgorithm(String logAlgorithm) {
+		this.logAlgorithm = logAlgorithm;
+	}
+	
+	public int getNumMsgRecibido() {
+		return numMsgRecibido;
+	}
+
+	public void setNumMsgRecibido(int numMsgRecibido) {
+		this.numMsgRecibido = numMsgRecibido;
+	}
+
+	public int getNumMsgEnviados() {
+		return numMsgEnviados;
+	}
+
+	public void setNumMsgEnviados(int numMsgEnviados) {
+		this.numMsgEnviados = numMsgEnviados;
+	}
+
+	public void addLogData(String idSegment, int numMsgRecibido, int numMsgEnviados, float distSegment, float velMedia){
+		this.logData.add(new LogData(idSegment,numMsgRecibido,numMsgEnviados,distSegment,velMedia));
+	}
+
+	private class LogData{
+		private String idSegment;
+		private int numMsgRecibido;
+		private int numMsgEnviados;
+		private float distSegment;
+		private float velMedia;
+		
+		public LogData(String idSegment, int numMsgRecibido, int numMsgEnviados, float distSegment, float velMedia) {
+			super();
+			this.idSegment = idSegment;
+			this.numMsgRecibido = numMsgRecibido;
+			this.numMsgEnviados = numMsgEnviados;
+			this.distSegment = distSegment;
+			this.velMedia = velMedia;
+		}
+
+		public String getIdSegment() {
+			return idSegment;
+		}
+
+		public void setIdSegment(String idSegment) {
+			this.idSegment = idSegment;
+		}
+
+		public int getNumMsgRecibido() {
+			return numMsgRecibido;
+		}
+
+		public void setNumMsgRecibido(int numMsgRecibido) {
+			this.numMsgRecibido = numMsgRecibido;
+		}
+
+		public int getNumMsgEnviados() {
+			return numMsgEnviados;
+		}
+
+		public void setNumMsgEnviados(int numMsgEnviados) {
+			this.numMsgEnviados = numMsgEnviados;
+		}
+
+		public float getDistSegment() {
+			return distSegment;
+		}
+
+		public void setDistSegment(float distSegment) {
+			this.distSegment = distSegment;
+		}
+
+		public float getVelMedia() {
+			return velMedia;
+		}
+
+		public void setVelMedia(float velMedia) {
+			this.velMedia = velMedia;
+		}
+
+		@Override
+		public String toString() {
+			return idSegment + "," + numMsgRecibido + ","+ numMsgEnviados + "," + distSegment + "," + velMedia;
+		}
+		
 	}
 
 }

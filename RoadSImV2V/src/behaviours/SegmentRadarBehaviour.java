@@ -2,7 +2,6 @@ package behaviours;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -13,7 +12,6 @@ import agents.SegmentAgent.CarData;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import sun.applet.resources.MsgAppletViewer_sv;
 
 public class SegmentRadarBehaviour extends CyclicBehaviour {
 

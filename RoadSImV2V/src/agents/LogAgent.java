@@ -1,9 +1,13 @@
 package agents;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-
-import org.json.JSONObject;
+import java.io.Writer;
 
 import behaviours.LogCarBehaviour;
 import behaviours.LogSegmentBehaviour;
@@ -18,9 +22,8 @@ public class LogAgent extends Agent {
 	private static final long serialVersionUID = 1L;
 
 	private String logginDirectory;
-	
 	protected void setup() {
-
+		
 		//Register the agent
 		DFAgentDescription dfd = new DFAgentDescription();
 		dfd.setName(getAID());
@@ -47,53 +50,29 @@ public class LogAgent extends Agent {
 		addBehaviour(new LogSegmentBehaviour(this));
 	}
 	
-	public void writeCar(JSONObject json){
-		 FileWriter fichero = null;
-	        PrintWriter pw = null;
-	        try
-	        {
-	            fichero = new FileWriter(logginDirectory);
-	            pw = new PrintWriter(fichero);
+	public void writeCar(String logData){
+		FileWriter fichero = null;
+		try {
+			fichero = new FileWriter(logginDirectory + "/logcar.txt", true);
+			// Escribimos linea a linea en el fichero
+			fichero.write(logData + "\n");
+			fichero.close();
 
-	            for (int i = 0; i < 10; i++)
-	                pw.println("Linea " + i);
-
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        } finally {
-	           try {
-	           // Nuevamente aprovechamos el finally para 
-	           // asegurarnos que se cierra el fichero.
-	           if (null != fichero)
-	              fichero.close();
-	           } catch (Exception e2) {
-	              e2.printStackTrace();
-	           }
-	        }
+		} catch (Exception ex) {
+			System.out.println("Mensaje de la excepción: " + ex.getMessage());
+		}
 	}
 	
-	public void writeSegment(JSONObject json){
+	public void writeSegment(String logData){
 		FileWriter fichero = null;
-        PrintWriter pw = null;
-        try
-        {
-            fichero = new FileWriter(logginDirectory);
-            pw = new PrintWriter(fichero);
+		try {
+			fichero = new FileWriter(logginDirectory + "/logsegment.txt", true);
+			// Escribimos linea a linea en el fichero
+			fichero.write(logData + "\n");
+			fichero.close();
 
-            for (int i = 0; i < 10; i++)
-                pw.println("Linea " + i);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-           try {
-           // Nuevamente aprovechamos el finally para 
-           // asegurarnos que se cierra el fichero.
-           if (null != fichero)
-              fichero.close();
-           } catch (Exception e2) {
-              e2.printStackTrace();
-           }
-        }
+		} catch (Exception ex) {
+			System.out.println("Mensaje de la excepción: " + ex.getMessage());
+		}
 	}
 }

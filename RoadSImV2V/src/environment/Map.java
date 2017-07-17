@@ -186,7 +186,8 @@ public class Map implements Serializable {
 							          this.mainContainer, this.segmentLogging, 
 							          this.loggingDirectory, this.drawGUI,
 							          seg.getString("direction"),
-							          seg.getDouble("pkstart"), segTwinsList);
+							          seg.getDouble("pkstart"), segTwinsList,
+							          seg.getString("roadCode"));
 
 					if(origin != null){
 						origin.addOutSegment(segment);

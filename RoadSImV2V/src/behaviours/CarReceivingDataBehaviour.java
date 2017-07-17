@@ -39,12 +39,16 @@ public class CarReceivingDataBehaviour extends CyclicBehaviour {
 			//   mientras que el past traffic que me pasa lo meto dentro de mi future que
 			//   es lo que decidirá
 			carAgent.getSensorTrafficData().addOneCar();
+			carAgent.setNumMsgRecibido(carAgent.getNumMsgRecibido() + 1);
 			carAgent.getSensorTrafficData().getCarsSpeeds().
 			                         add(datos.getDouble("speed"));
 			carAgent.getSensorTrafficData().getCarsPositions().
 			                         add(datos.getDouble("position"));
 			carAgent.getSensorTrafficData().getIds().add(datos.getString("id"));
 			carAgent.getSensorTrafficData().setTini(datos.getLong("tini"));
+			//Datos de las comunicaciones
+			System.out.println("Tiempo inicial del CarReceivingData: " + datos.getLong("tini"));
+			System.out.println("Tiempo final del CarReceivingData: " + datos.getLong("tfin"));
 			carAgent.getSensorTrafficData().setTfin(datos.getLong("tfin"));
 			
 			for(String key:datos.getJSONObject("futureTraffic").keySet()){
