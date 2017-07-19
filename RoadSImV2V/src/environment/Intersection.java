@@ -117,5 +117,12 @@ public class Intersection implements Serializable{
 
 	public int getY() {
 		return y;
+	}
+
+	@Override
+	public String toString() {
+		return "Intersection [id=" + id + ", in=" + in + ", out=" + out + ", x=" + x + ", y=" + y + "]";
 	}	
+	
+	
 }

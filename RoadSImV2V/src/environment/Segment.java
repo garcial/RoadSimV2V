@@ -274,6 +274,18 @@ public class Segment implements Serializable{
 	public void setRoadCode(String roadCode) {
 		this.roadCode = roadCode;
 	}
+
+	@Override
+	public String toString() {
+		return "Segment [id=" + id + ", origin=" + origin.getId() + ", destination=" + destination.getId() + ", length=" + length
+				+ ", capacity=" + capacity + ", density=" + density + ", numberTracks=" + numberTracks + ", steps="
+				+ steps + ", maxSpeed=" + maxSpeed + ", currentAllowedSpeed=" + currentAllowedSpeed + ", pkIni=" + pkIni
+				+ ", direction=" + direction + ", drawGUI=" + drawGUI + ", twinSegments=" + twinSegments + ", roadCode="
+				+ roadCode + ", segmentAgent=" + segmentAgent + ", serviceLevels=" + serviceLevels
+				+ ", currentServiceLevel=" + currentServiceLevel + ", segmentLogging=" + segmentLogging
+				+ ", loggingDirectory=" + loggingDirectory + "]";
+	}
+	
 	
 	
 }

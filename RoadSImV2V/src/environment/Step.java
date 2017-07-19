@@ -19,6 +19,8 @@ public class Step implements Serializable {
 	
 	//Coordinates of the line
 	private int originX, originY, destinationX, destinationY;
+	private float stepLength;
+	private float stepGraphicalLength;
 	
 	//Default constructor
 	public Step(){
@@ -29,6 +31,7 @@ public class Step implements Serializable {
 		this.originY = 0;
 		this.destinationX = 0;
 		this.destinationY = 0;
+		
 	}
 	
 	//Constructor
@@ -41,6 +44,11 @@ public class Step implements Serializable {
 		this.originY = originY;
 		this.destinationX = destinationX;
 		this.destinationY = destinationY;
+		this.stepGraphicalLength = (float) Math.sqrt(
+				(originX - destinationX) *
+				(originX - destinationX) + 
+				(originY - destinationY) *
+				(originY - destinationY));
 	}
 	
 	//Setters and getters
@@ -91,6 +99,22 @@ public class Step implements Serializable {
 	public void setDestinationY(int destinationY) {
 		this.destinationY = destinationY;
 	}
+	
+	public float getStepLength() {
+		return stepLength;
+	}
+
+	public void setStepLength(float stepLength) {
+		this.stepLength = stepLength;
+	}
+
+	public float getStepGraphicalLength() {
+		return stepGraphicalLength;
+	}
+
+	public void setStepGraphicalLength(float stepGraphicalLength) {
+		this.stepGraphicalLength = stepGraphicalLength;
+	}	
 
 	@Override
 	public String toString() {

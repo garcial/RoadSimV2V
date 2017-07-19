@@ -462,8 +462,8 @@ public class CanvasWorld extends JFrame
 
 				g.setStroke(new BasicStroke(1));
 
-				//Windows
-				rect.setFrame(x - 2, y - 2, 4, 2); 
+				//Windows 
+				rect.setFrame(x - 2, y - 2, 4, 2);
 
 				g.setColor(c);
 				g.fill(rect);

@@ -46,9 +46,6 @@ public class CarReceivingDataBehaviour extends CyclicBehaviour {
 			                         add(datos.getDouble("position"));
 			carAgent.getSensorTrafficData().getIds().add(datos.getString("id"));
 			carAgent.getSensorTrafficData().setTini(datos.getLong("tini"));
-			//Datos de las comunicaciones
-			System.out.println("Tiempo inicial del CarReceivingData: " + datos.getLong("tini"));
-			System.out.println("Tiempo final del CarReceivingData: " + datos.getLong("tfin"));
 			carAgent.getSensorTrafficData().setTfin(datos.getLong("tfin"));
 			
 			for(String key:datos.getJSONObject("futureTraffic").keySet()){

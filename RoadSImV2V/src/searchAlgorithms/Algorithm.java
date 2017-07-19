@@ -59,16 +59,14 @@ public abstract class Algorithm {
 			q.remove(u);
 
 			for(Intersection v: getNeighbours(u)){ //Each neighbour
-
 				if(v == null){
 
 					break;
 				}
 
 				double alt = time.get(u) + getMetric(u, v, maxSpeed);
-
+				
 				if(alt < time.get(v)){
-
 					time.put(v, alt);
 					prev.put(v, u);
 				}
@@ -174,7 +172,6 @@ public abstract class Algorithm {
 	 * @return
 	 */
 	public List<Segment> getSegmentPath(Map map, HashMap<Intersection, Intersection> dijks, Intersection destination){
-
 		List<String> path = this.getIntersectionPath(dijks, destination);
 
 		List<Segment> segmentPath = new LinkedList<Segment>();
@@ -275,7 +272,9 @@ public abstract class Algorithm {
 
 		//Calculate the segment path
 		List<Segment> segmentPath = this.getSegmentPath(map, dijks, map.getIntersectionByID(finalIntersection), intersectionPath);
-
+		/*System.out.println("SegmentPATH: " + segmentPath.toString());
+		System.out.println("InteractionPATH: " + intersectionPath.toString());
+		System.out.println("GraphicPATH: " + graphicalPath.toString());*/
 		return new Path(intersectionPath, graphicalPath, segmentPath);
 	}
 

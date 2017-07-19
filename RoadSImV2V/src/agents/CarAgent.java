@@ -110,8 +110,6 @@ public class CarAgent extends Agent {
 		this.map = (Map) this.getArguments()[0];
 		//Get the jgraph from the map
 		this.jgraht = this.map.getJgraht();
-		System.out.println("CarAgent.java-- Get JgraphT: " + 
-		                   this.jgraht.toString());
 		//Get the starting and final points of my trip
 		this.initialIntersection = (String) this.getArguments()[1];
 		this.finalIntersection = (String) this.getArguments()[2];

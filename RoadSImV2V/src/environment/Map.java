@@ -33,7 +33,7 @@ public class Map implements Serializable {
 	private Integer segmentCount;
 	private List<Intersection> intersections;
 	// JGRAPHT
-	private DefaultDirectedWeightedGraph<Intersection, Edge> jgraht;
+	private DefaultDirectedWeightedGraph<Intersection, Edge> jgrapht;
 
 	//The container where the segment agents will be created
 	private transient jade.wrapper.AgentContainer mainContainer;
@@ -42,8 +42,9 @@ public class Map implements Serializable {
 	private boolean segmentLogging;
 	private String loggingDirectory;
 	HashMap<String, Segment> segmentsAux;
+	HashMap<String, Edge> edgesAux;
 	
-	// Draw th GUI
+	// Draw the GUI
 	private boolean drawGUI;
 
 	/**
@@ -61,7 +62,7 @@ public class Map implements Serializable {
 		this.mainContainer = mainContainer;		
 		this.segmentLogging = segmentLogging;
 		this.loggingDirectory = loggingDirectory;
-		this.jgraht = 
+		this.jgrapht = 
 				new DefaultDirectedWeightedGraph<Intersection, Edge>
 		                (Edge.class);
 
@@ -136,7 +137,7 @@ public class Map implements Serializable {
 					intersectionsAux.put(inter.getString("id"),
 							             intersection);
 					//JGRAPHT
-					this.jgraht.addVertex(intersection);
+					this.jgrapht.addVertex(intersection);
 					System.out.println("Map.java-- Add Vertex " + 
 					                  intersection.getId() +" : [ " +
 							          intersection.toString() + " ]");
@@ -148,6 +149,7 @@ public class Map implements Serializable {
 
 				//This will be used to add the steps later
 				segmentsAux = new HashMap<String, Segment>();
+				edgesAux = new HashMap<String, Edge>();
 
 				//Read all the segments				
 				while(line != null){
@@ -197,13 +199,17 @@ public class Map implements Serializable {
 						destination.addInSegment(segment);
 					}
 					
-					//Add an Edge to de Jgraph
+					//Add an Edge to the Jgraph
 					if(origin != null && destination != null){
 						Edge e = new Edge(segment);
 						System.out.println("Map.java-- Add Edge " + 
 						                   segment.getId() +": [ " +
 								           e.toString() + " ]");
-						this.jgraht.addEdge(origin, destination, e);
+						this.jgrapht.addEdge(origin, destination, e);
+						this.jgrapht.setEdgeWeight(e, 
+								segment.getLength() /
+								segment.getMaxSpeed());
+						this.edgesAux.put(segment.getId(), e);
 					}
 
 					segmentsAux.put(segment.getId(), segment);
@@ -247,6 +253,20 @@ public class Map implements Serializable {
 				for (String string : segmentsAux.keySet()) {
 					
 					this.move(segmentsAux.get(string), 4);
+				}
+				
+				//Compute the length of the step according to the
+				//   length of the segment
+				for(Segment segment:segmentsAux.values()) {
+					double length = 0.0;
+					for(Step step:segment.getSteps()) {
+						length += step.getStepGraphicalLength(); 
+					}
+					for(Step step:segment.getSteps()) {
+						step.setStepLength((float) 
+								(step.getStepGraphicalLength() *
+								 segment.getLength() / length));
+					}
 				}
 
 			}catch(Exception e){
@@ -301,7 +321,7 @@ public class Map implements Serializable {
 	 * */
 	public DefaultDirectedWeightedGraph<Intersection, Edge> 
 	       getJgraht() {
-		return jgraht;
+		return jgrapht;
 	}
 
 	/**
@@ -399,6 +419,14 @@ public class Map implements Serializable {
 	
 	public Segment getSegmentByID(String id) {
 		return segmentsAux.get(id);
+	}
+	
+	public Edge getEdgeBySegmentID(String id) {
+		return edgesAux.get(id);
+	}
+
+	public HashMap<String, Segment> getSegmentsAux() {
+		return segmentsAux;
 	}
 	
 }

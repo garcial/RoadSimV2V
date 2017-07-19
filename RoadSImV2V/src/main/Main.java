@@ -18,10 +18,10 @@ public class Main {
 	private static final long tickLength = 1L;
 	
 	//Start at specific tick: 7:59 that in seconds is ..
-	private static final long startingTick = 7*3600 + 59*60;
+	private static long startingTick = 7*3600 + 59*60;
 	
 	//Finish the simulation at specific tick: 00:00
-	private static final long finishingTick = 24*3600;
+	private static long finishingTick = 24*3600;
 	
 	//Random smart cars from the beginning
 	private static final int numberOfCars = 0;
@@ -36,8 +36,12 @@ public class Main {
 	private static final boolean segmentLogging = false;
 	
 	//Logging directory for the segments
-	private static final String loggingDirectory = 
+	private static String loggingDirectory = 
 			"D:/DOCS/Investigacion/codigo/api/RoadSimV2V/RoadSImV2V/src/staticFiles/log";
+	
+	private static String carFile = "logcar.txt";
+	
+	private static String segmentFile = "logsegment.txt";
 
 	public static void main(String[] args) {
 		
@@ -140,6 +144,17 @@ public class Main {
 		//Container that will hold the agents
 		jade.wrapper.AgentContainer segmentContainer = 
 				                     rt.createAgentContainer(profile);
+		
+		if(args.length < 5){
+			System.out.println("The variables startingTick, finishingTick, loggingDirectory, carFile and"
+					+ " segmentFile are created by default. You can pass it like arguments");
+		}else{
+			startingTick = Long.parseLong(args[0]);
+			finishingTick = Long.parseLong(args[1]);
+			loggingDirectory = args[2];
+			carFile = args[3];
+			segmentFile = args[4];
+		}
 
 		//Load the map
 		try {
@@ -247,7 +262,7 @@ public class Main {
 					AgentController agent = 
 							mainContainer.createNewAgent("logAgent",
 									"agents.LogAgent", 
-									new Object[]{loggingDirectory});
+									new Object[]{loggingDirectory, carFile, segmentFile});
 					agent.start();
 
 				} catch (StaleProxyException e1) {

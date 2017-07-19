@@ -1,13 +1,8 @@
 package agents;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.Writer;
 
 import behaviours.LogCarBehaviour;
 import behaviours.LogSegmentBehaviour;
@@ -22,6 +17,8 @@ public class LogAgent extends Agent {
 	private static final long serialVersionUID = 1L;
 
 	private String logginDirectory;
+	private String nameCarLogFile = "logcar.txt";
+	private String nameSegmentLogFile = "logsegment.txt";
 	protected void setup() {
 		
 		//Register the agent
@@ -44,6 +41,28 @@ public class LogAgent extends Agent {
 		
 		//Get the containers
 		this.logginDirectory = (String) this.getArguments()[0];
+		this.nameCarLogFile = (String) this.getArguments()[1];
+		this.nameSegmentLogFile = (String) this.getArguments()[2];
+		
+		//Write the header of the carLog
+		File fileCar = new File (logginDirectory,nameCarLogFile);
+		try {
+			FileWriter fwc = new FileWriter(fileCar);
+			fwc.write("[idSegmento,numMsgRecibido, numMsgEnviado,distanciaSeg,velocidad],tickInicial,tickFinal,algoritmo\n");
+			fwc.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		//Write the header of the segmentLog
+		File fileSegment = new File (logginDirectory,nameSegmentLogFile);
+		try {
+			FileWriter fws = new FileWriter(fileSegment);
+			fws.write("idSegmento,nivelServicio,tickInicial,tickFinal\n");
+			fws.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		//Comportamientos de loggear
 		addBehaviour(new LogCarBehaviour(this));
@@ -53,7 +72,7 @@ public class LogAgent extends Agent {
 	public void writeCar(String logData){
 		FileWriter fichero = null;
 		try {
-			fichero = new FileWriter(logginDirectory + "/logcar.txt", true);
+			fichero = new FileWriter(logginDirectory + "/" + nameCarLogFile, true);
 			// Escribimos linea a linea en el fichero
 			fichero.write(logData + "\n");
 			fichero.close();
@@ -66,7 +85,7 @@ public class LogAgent extends Agent {
 	public void writeSegment(String logData){
 		FileWriter fichero = null;
 		try {
-			fichero = new FileWriter(logginDirectory + "/logsegment.txt", true);
+			fichero = new FileWriter(logginDirectory + "/" + nameSegmentLogFile, true);
 			// Escribimos linea a linea en el fichero
 			fichero.write(logData + "\n");
 			fichero.close();
