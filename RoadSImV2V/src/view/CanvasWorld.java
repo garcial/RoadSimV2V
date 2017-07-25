@@ -391,27 +391,27 @@ public class CanvasWorld extends JFrame
 
 				for (Segment s: in.getOutSegments()){
 
-					if (s.getCurrentServiceLevel().equals('A')) {
+					if (s.getCurrentServiceLevel() == 0) {
 
 						g.setColor(Color.GREEN);
 
-					} else if (s.getCurrentServiceLevel().equals('B')) {
+					} else if (s.getCurrentServiceLevel() == 1) {
 
 						g.setColor(Color.YELLOW);
 
-					} else if (s.getCurrentServiceLevel().equals('C')) {
+					} else if (s.getCurrentServiceLevel() == 2) {
 
 						g.setColor(Color.ORANGE);
 
-					} else if (s.getCurrentServiceLevel().equals('D')) {
+					} else if (s.getCurrentServiceLevel() == 3) {
 
 						g.setColor(Color.RED);
 
-					} else if (s.getCurrentServiceLevel().equals('E')) {
+					} else if (s.getCurrentServiceLevel() == 4) {
 
 						g.setColor(Color.RED);
 
-					} else if (s.getCurrentServiceLevel().equals('F')) {
+					} else if (s.getCurrentServiceLevel() == 5) {
 
 						g.setColor(Color.BLACK);
 					}
@@ -441,25 +441,14 @@ public class CanvasWorld extends JFrame
 				float x = m.getX();
 				float y = m.getY();
 
-				if (m.specialColor) {
-
-					c = Color.RED;
-				} else {
-
-					if (m.getAlgorithmType() == Method.SHORTEST.value) {
-
-						c = Color.WHITE;
-
-					} else if (m.getAlgorithmType() == Method.FASTEST.value) {
-
-						c = Color.CYAN;
-
-					}else if (m.getAlgorithmType() == Method.SMARTEST.value) {
-
-						c = Color.PINK;
-					}
-				}
-
+				if (m.getAlgorithmType() == Method.SHORTEST.value) {
+					c = Color.WHITE;
+				} else if (m.getAlgorithmType() == Method.FASTEST.value) {
+					c = Color.CYAN;
+				} else if (m.getAlgorithmType() == Method.DYNAMICSMART.value) {
+					c = Color.PINK;
+				} else if (m.getAlgorithmType() == Method.STARTSMART.value) 
+					c = Color.ORANGE;
 				g.setStroke(new BasicStroke(1));
 
 				//Windows 

@@ -43,7 +43,7 @@ public class InterfaceAddCarBehaviour extends CyclicBehaviour {
 			final String id = cont.getString("id");
 			final float x = (float) cont.getInt("x");
 			final float y = (float) cont.getInt("y");
-			final int algorithmType = cont.getInt("algorithmType");
+			final int algorithmType = cont.getInt("type");
 			
 			//Add the car to the scene
 			SwingUtilities.invokeLater(new Runnable() {

@@ -6,7 +6,8 @@ package searchAlgorithms;
  */
 public enum Method {
 
-	SHORTEST(0), FASTEST(1), SMARTEST(2);
+	SHORTEST(0), FASTEST(1), STARTSMART(2), DYNAMICSMART(3),
+    A_STAR(4), DIJKSTRA(5), KSHORTEST(6);
 	
     public final int value;
 

@@ -1,82 +1,89 @@
 package jgrapht;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.jgrapht.graph.DefaultWeightedEdge;
-import environment.Segment;
+import environment.EdgeData;
 
 public class Edge extends DefaultWeightedEdge {
 
 	/**
-	 * The edge was composed by the segment and its density in a 
-	 * moment segment -- The segment that represent this Edge
-	 * weight -- Time to go to the destination
-	 * edgeDataList -- List of data of others cars about this 
-	 * segment
+	 * The edge was composed by the segment and its current  
+	 * density in a segment -- The segment that represent 
+	 * this Edge weight -- Time to go to the 
+	 * destinationedgeDataList -- List of data of others 
+	 * cars about this segment
 	 */
-	private Segment segment;
-	private float weight;
-	private long tini;
-	private long tfin;
+	private String idSegment;
+	private double length;
+	private int maxSpeed;
 	private int serviceLevel;
+	private List<EdgeData> edgeDataList;
 	private static final long serialVersionUID = 17455L;
 
-	public Edge() {
-		// TODO Auto-generated constructor stub
-	}
 	
-	public Edge(Segment segment) {
-		this.segment = segment;
-		this.weight = (float) 0.0;
+	public Edge(String idSegment, double length, int maxSpeed) {
+		this.edgeDataList = new ArrayList<EdgeData>();
+		this.idSegment = idSegment;
+		this.length = length;
+		this.maxSpeed = maxSpeed;
+		this.edgeDataList = new ArrayList<EdgeData>();
 	}
 
-	public Edge(Segment segment, char serviceLevel, 
-			    long initialDate, long finalDate) {
+	public Edge(String idSegment, char serviceLevel, double weight,
+			    long initialDate, long finalDate, double length, int maxSpeed) {
 		super();
-		this.segment = segment;
-		this.weight = 0.0f;
+		this.edgeDataList = new ArrayList<EdgeData>();
+		this.idSegment = idSegment;
 		this.serviceLevel = serviceLevel;
-		this.tini = initialDate;
-		this.tfin = finalDate;
+		this.edgeDataList.add(
+				new EdgeData(serviceLevel, weight, initialDate, finalDate));
+		this.length = length;
+		this.maxSpeed = maxSpeed;
 		
 	}
 	
-	@Override
-	/**
-	 * The objective is return the time estimated to do the travel
-	 * */
-	public double getWeight(){
-		return weight;
+//	public void updateList(long n_k){
+//		for(EdgeData elem:this.edgeDataList){
+//			if(elem.getFinalDate() < n_k){
+//				this.edgeDataList.remove(elem);
+//			} else if (elem.getInitialDate() < n_k){
+//				this.tini = n_k;
+//			}
+//		}
+//	}
+
+	public String getIdSegment() {
+		return idSegment;
 	}
 
-	public Segment getSegment() {
-		return segment;
+
+	public List<EdgeData> getEdgeDataList() {
+		return edgeDataList;
 	}
 
-	public void setSegment(Segment segment) {
-		this.segment = segment;
-	}
-	
-	public static long getSerialversionuid() {
-		return serialVersionUID;
+	public void setEdgeDataList(List<EdgeData> edgeDataList) {
+		this.edgeDataList = edgeDataList;
 	}
 
-	public void setWeight(float weight) {
-		this.weight = weight;
+	public double getLength() {
+		return length;
 	}
 
-	public long getTini() {
-		return tini;
+	public void setLength(double length) {
+		this.length = length;
 	}
 
-	public void setTini(long tini) {
-		this.tini = tini;
+	public int getMaxSpeed() {
+		return maxSpeed;
 	}
 
-	public long getTfin() {
-		return tfin;
+	public void setMaxSpeed(int maxSpeed) {
+		this.maxSpeed = maxSpeed;
 	}
 
-	public void setTfin(long tfin) {
-		this.tfin = tfin;
+	public void setIdSegment(String idSegment) {
+		this.idSegment = idSegment;
 	}
 
 	public int getServiceLevel() {
@@ -89,12 +96,8 @@ public class Edge extends DefaultWeightedEdge {
 
 	@Override
 	public String toString() {
-		return "Edge [segment=" + segment.getId() + ", weight=" + weight + ", tini=" + tini + ", tfin=" + tfin
-				+ ", serviceLevel=" + serviceLevel + "]";
+		return "Edge [idSegment=" + idSegment + ", weight=" + getWeight() +
+			   ", serviceLevel=" + serviceLevel + ", edgeDataList=" +
+			   edgeDataList + "]";
 	}
-
-	
-
-	
-
 }

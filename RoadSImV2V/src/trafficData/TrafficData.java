@@ -28,19 +28,28 @@ public class TrafficData {
 		this.tini = json.getInt("tini");
 		this.tfin = json.getInt("tfin");
 		this.setNumCars(json.getInt("numCars"));
+		
 		JSONArray carPos = json.getJSONArray("positions");
 		this.carsPositions = new ArrayList<Double>();
-		for(int i = 0; i<carPos.length(); i++) 
+		
+		for(int i = 0; i < carPos.length(); i++) 
+			
 			carsPositions.add(carPos.getDouble(i));
+		
 		JSONArray speeds = json.getJSONArray("speeds");
 		this.carsSpeeds = new ArrayList<Double>();
-		for(int i = 0; i<speeds.length(); i++)
+		
+		for(int i = 0; i < speeds.length(); i++)
+			
 			carsSpeeds.add(speeds.getDouble(i));	
+		
 		JSONArray idsReceived = json.getJSONArray("ids");
 		this.ids = new ArrayList<String>();
-		for(int i = 0; i < idsReceived.length(); i++){
+		
+		for(int i = 0; i < idsReceived.length(); i++)
+			
 			ids.add(idsReceived.getString(i));
-		}
+		
 		this.json = json;
 	}
 	

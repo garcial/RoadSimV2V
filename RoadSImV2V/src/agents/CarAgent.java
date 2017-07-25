@@ -7,17 +7,18 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import searchAlgorithms.Algorithm;
-import searchAlgorithms.AlgorithmFactory;
 import searchAlgorithms.Method;
 import trafficData.TrafficData;
 import trafficData.TrafficDataInStore;
 import trafficData.TrafficDataOutStore;
+import vehicles.CarData;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jgrapht.graph.DefaultDirectedWeightedGraph;
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
+import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.json.JSONObject;
 
 import behaviours.CarBehaviour;
@@ -40,26 +41,24 @@ public class CarAgent extends Agent {
 
 	private static final long serialVersionUID = 1L;
 
-	private float x, y;
+	private CarData carData;
 	private float currentPk;
 	private int direction;
 	private int ratio = 10; // El radio es un valor fijo que dependerá del hardware
 	private int currentSpeed, maxSpeed;
 	private double currentTrafficDensity;
 	private long tini; // For measuring temporal intervals of traffic
-	private String id; 
 	private DFAgentDescription interfaceAgent;
 	private DFAgentDescription logAgent;
 	private boolean drawGUI;
+	private boolean useLog;
 	private Map map;
 	private Path path;
 	private Segment currentSegment;
 	private String initialIntersection, finalIntersection;
-	private boolean specialColor = false;
 	private boolean smart = false;
-	private Algorithm alg;
 	private int algorithmType;
-	private DefaultDirectedWeightedGraph<Intersection, Edge> jgraht;
+	private DirectedWeightedMultigraph<Intersection, Edge> jgrapht;
 	private long currentTick;
 	
 	private List<LogData> logData;
@@ -103,13 +102,12 @@ public class CarAgent extends Agent {
 			this.takeDown();
 		}
 		
-		//Is necessary draw the gui
-		this.drawGUI = (boolean) this.getArguments()[5];
-
 		//Get the map from an argument
 		this.map = (Map) this.getArguments()[0];
+		
 		//Get the jgraph from the map
-		this.jgraht = this.map.getJgraht();
+		this.jgrapht = this.map.getJgrapht();
+		
 		//Get the starting and final points of my trip
 		this.initialIntersection = (String) this.getArguments()[1];
 		this.finalIntersection = (String) this.getArguments()[2];
@@ -118,55 +116,35 @@ public class CarAgent extends Agent {
 		this.maxSpeed = (int) this.getArguments()[3];
 		this.currentSpeed = 0; //Se gestiona en el comportamiento 
 		                       // (int) this.getArguments()[4];
-
-		//Get the method we want
-		AlgorithmFactory factory = new AlgorithmFactory();
-		this.alg = null;
 		
 		String routeType = (String) this.getArguments()[4];
-		
-		if (routeType.equals("fastest")) {
-			
-			this.algorithmType = Method.FASTEST.value;
-			this.alg = factory.getAlgorithm(Method.FASTEST);
-			
-		} else if (routeType.equals("shortest")) {
-			 
-			this.algorithmType = Method.SHORTEST.value;
-			this.alg = factory.getAlgorithm(Method.SHORTEST);
-			
-		} else if (routeType.equals("smartest")) {
-			
-			this.algorithmType = Method.SMARTEST.value;
-			this.alg = factory.getAlgorithm(Method.SMARTEST);
-			this.smart = true;
-		}
-		
+		//Is necessary draw the gui
+		this.drawGUI = (boolean) this.getArguments()[5];
 		
 		//Get the initial time tick from eventManager
 		tini = (long) this.getArguments()[6];
-		
+
 		//Get the ratio of sensoring for this agentCar
 		ratio = (int) this.getArguments()[7];
 		
-		//Get the desired Path from the origin to the destination
-		this.path = alg.getPath(this.map, getInitialIntersection(), 
-				                getFinalIntersection(), 
-				                this.maxSpeed);
+		//It is requested to do Logs?
+		useLog = (boolean) this.getArguments()[8];
+
+
+		this.path = getPathOnMethod(initialIntersection, 
+			       finalIntersection);
 		
+		Step currentStep = path.getGraphicalPath().get(0);
+	    setCurrentSegment(currentStep.getSegment());
+
 		/* Generate the log parameters*/
 		//Asign the type of algorithm
 		this.logAlgorithm = routeType;
 		this.logInitialTick = tini;
-		
-		//Starting point
-		setX(map.getIntersectionByID(getInitialIntersection()).
-				                                          getX());
-		setY(map.getIntersectionByID(getInitialIntersection()).
-				                                          getY());
+
 		//Store data received from other cars in a Map
 		futureTraffic = new TrafficDataInStore();
-		
+
 		//Store data to send to other cars in my route
 		pastTraffic = new TrafficDataOutStore();
 
@@ -176,6 +154,51 @@ public class CarAgent extends Agent {
 		sensorTrafficData = new TrafficData();
 		// Tini for measuring traffic data intervals in twin segments 
 		//tini = elapsedtime;
+		
+		if (routeType.equals("fastest")) 
+			this.algorithmType = Method.FASTEST.value;
+		else if (routeType.equals("shortest"))
+			this.algorithmType = Method.SHORTEST.value;
+		else if (routeType.equals("dynamicSmart"))
+			this.algorithmType = Method.DYNAMICSMART.value;
+		else this.algorithmType = Method.STARTSMART.value;
+		
+		//Create new CarData object
+		carData = new CarData(
+				getName().toString(),  // Id
+				currentStep.getOriginX(),  // X
+				currentStep.getOriginY(),  // Y
+				Math.min(getMaxSpeed()/4, // CurrentSpeed at the beginning
+						getCurrentSegment().getCurrentAllowedSpeed()), 
+				this.algorithmType,
+				0,   // Segment distance covered
+				this.ratio, this.tini, //Ratio and initialTick
+				this.tini // Current tick
+				);
+		
+		if (useLog) {
+			//Find the log agent
+			dfd = new DFAgentDescription();
+			sd = new ServiceDescription();
+			sd.setType("logAgent");
+			dfd.addServices(sd);
+
+			DFAgentDescription[] result = null;
+
+			try {
+				result = DFService.searchUntilFound(
+						this, getDefaultDF(), dfd, null, 5000);
+			} catch (FIPAException e) { e.printStackTrace(); }
+
+			while (result == null || result[0] == null) {
+				try {
+					result = DFService.searchUntilFound(
+							this, getDefaultDF(), dfd, null, 5000);
+				} catch (FIPAException e) { e.printStackTrace(); }
+			}
+
+			this.logAgent = result[0];
+		}
 		
 		if(this.drawGUI){
 			//Find the interface agent
@@ -199,52 +222,14 @@ public class CarAgent extends Agent {
 			}
 			
 			this.interfaceAgent = result[0];
-		}
 		
-		//Find the log agent
-		dfd = new DFAgentDescription();
-		sd = new ServiceDescription();
-		sd.setType("logAgent");
-		dfd.addServices(sd);
-
-		DFAgentDescription[] result = null;
-
-		try {
-			result = DFService.searchUntilFound(
-					this, getDefaultDF(), dfd, null, 5000);
-		} catch (FIPAException e) { e.printStackTrace(); }
-
-		while (result == null || result[0] == null) {
-			try {
-				result = DFService.searchUntilFound(
-						this, getDefaultDF(), dfd, null, 5000);
-			} catch (FIPAException e) { e.printStackTrace(); }
-		}
-		
-		this.logAgent = result[0];
-		
-		//An unique identifier for the car
-		this.id = getName().toString();
-		
-		if(this.drawGUI){
 			//We notify the interface about the new car
 			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 			msg.addReceiver(interfaceAgent.getName());
-			JSONObject carData = new JSONObject();
-			carData.put("x", this.x);
-			carData.put("y", this.y);
-			carData.put("id", this.id);
-			carData.put("algorithmType", this.algorithmType);
-			msg.setContent(carData.toString());
+			msg.setContent(this.carData.toJSON().toString());
 			msg.setOntology("newCarOntology");
 			send(msg);
 		}
-
-
-		// Set the initial values for the carAgent on the road
-		Step next = getPath().getGraphicalPath().get(0);
-	    setCurrentSegment(next.getSegment());
-
 		//Register
 	    //Add the tini of the first segment
 	    this.sensorTrafficData.setTini(this.tini);
@@ -252,17 +237,17 @@ public class CarAgent extends Agent {
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		msg.setOntology("carToSegmentOntology");
 		msg.setConversationId("register");
-		msg.addReceiver(next.getSegment().getSegmentAgent().getAID());
-		JSONObject carDataRegister = new JSONObject();
+		msg.addReceiver(currentStep.getSegment().getSegmentAgent().getAID());
+/*		JSONObject carDataRegister = new JSONObject();
 		carDataRegister.put("id", getId());
 		carDataRegister.put("x", getX());
 		carDataRegister.put("y", getY());
 		carDataRegister.put("specialColor", getSpecialColor());
 		carDataRegister.put("radio", getRatio());
 		carDataRegister.put("tickInitial", this.sensorTrafficData.getTini());
-		carDataRegister.put("tickFinal", 1001001);
+		carDataRegister.put("tickFinal", 1001001);*/
 		
-		msg.setContent(carDataRegister.toString());
+		msg.setContent(carData.toJSON().toString());
 		
 		send(msg);
 		// Receive the current traffic density from the current 
@@ -276,18 +261,6 @@ public class CarAgent extends Agent {
 	    setCurrentSpeed(Math.min(getMaxSpeed(), 
 	    			getCurrentSegment().getCurrentAllowedSpeed()));
 		
-	    //The special color is useless without the interfaceAgent
-	    if(this.drawGUI){
-	    	//If we are going under my absolute maximum speed or the
-	    	//   segment's maxSpeed => I am in a congestion, so
-	    	//   draw me differently
-		    if (getCurrentSpeed() < Math.min(this.getMaxSpeed(), 
-		    		       this.getCurrentSegment().getMaxSpeed())) {
-		    	setSpecialColor(true);
-		    } else {
-		    	setSpecialColor(false);
-		    }
-	    }
 		//Runs the agent
 		addBehaviour(new CarBehaviour(this, 50, this.drawGUI));
 		addBehaviour(new CarReceivingDataBehaviour(this));
@@ -306,8 +279,7 @@ public class CarAgent extends Agent {
 		//     received by other cars in the twin segment of the 
 		//     current segment where the car is going.
 		// TODO:
-		this.path = this.alg.getPath(this.map, origin, 
-				               getFinalIntersection(), this.maxSpeed);
+		this.path = getPathOnMethod(origin, finalIntersection);
 	}
 
 	//Setters and getters
@@ -315,22 +287,14 @@ public class CarAgent extends Agent {
 		return direction;
 	}
 
-	public float getX() {
-		return x;
+	public CarData getCarData() {
+		return carData;
 	}
 
-	public void setX(float x) {
-		this.x = x;
+	public void setCarData(CarData carData) {
+		this.carData = carData;
 	}
-
-	public float getY() {
-		return y;
-	}
-
-	public void setY(float y) {
-		this.y = y;
-	}
-
+	
 	public float getCurrentPk() {
 		return currentPk;
 	}
@@ -371,10 +335,6 @@ public class CarAgent extends Agent {
 		return path;
 	}
 
-	public String getId() {
-		return id;
-	}
-
 	public Segment getCurrentSegment() {
 		return currentSegment;
 	}
@@ -390,23 +350,15 @@ public class CarAgent extends Agent {
 	public String getFinalIntersection() {
 		return finalIntersection;
 	}
-
-	public boolean getSpecialColor() {
-		return specialColor;
-	}
 	
-	public DefaultDirectedWeightedGraph<Intersection, Edge> 
-	                                                   getJgraht() {
-		return jgraht;
+	public DirectedWeightedMultigraph<Intersection, Edge> 
+	                                                   getJgrapht() {
+		return jgrapht;
 	}
 
-	public void setJgraht(
-			  DefaultDirectedWeightedGraph<Intersection,Edge> jgraht){
-		this.jgraht = jgraht;
-	}
-
-	public void setSpecialColor(boolean specialColor) {
-		this.specialColor = specialColor;
+	public void setjgrapht(
+			DirectedWeightedMultigraph<Intersection,Edge> jgrapht){
+		this.jgrapht = jgrapht;
 	}
 	
 	public boolean isSmart() {
@@ -440,6 +392,10 @@ public class CarAgent extends Agent {
 
 	public void setTini(long tini) {
 		this.tini = tini;
+	}
+	
+	public boolean getUseLog(){
+		return useLog;
 	}
 
 	public TrafficData getSensorTrafficData() {
@@ -532,6 +488,59 @@ public class CarAgent extends Agent {
 
 	public void addLogData(String idSegment, int numMsgRecibido, int numMsgEnviados, float distSegment, float velMedia){
 		this.logData.add(new LogData(idSegment,numMsgRecibido,numMsgEnviados,distSegment,velMedia));
+	}
+	
+	public Path getPathOnMethod(String initialInterseccion,
+            String finalIntersection) {
+
+		GraphPath<Intersection, Edge> pathJGrapht = null;
+		if (algorithmType == Method.DYNAMICSMART.value || 
+				algorithmType == Method.STARTSMART.value) {
+			pathJGrapht = DijkstraShortestPath.findPathBetween(jgrapht, 
+					map.getIntersectionByID(initialInterseccion),
+					map.getIntersectionByID(finalIntersection));
+		} else if (algorithmType == Method.SHORTEST.value) {
+			@SuppressWarnings("unchecked")
+			DirectedWeightedMultigraph<Intersection, Edge> jgraphtClone = 
+			(DirectedWeightedMultigraph<Intersection, Edge>) jgrapht.clone();
+			putWeightsAsDistancesOnGraph(jgraphtClone);
+			pathJGrapht = DijkstraShortestPath.findPathBetween(jgraphtClone, 
+					map.getIntersectionByID(initialInterseccion),
+					map.getIntersectionByID(finalIntersection));
+		} else if (algorithmType == Method.FASTEST.value) {
+			@SuppressWarnings("unchecked")
+			DirectedWeightedMultigraph<Intersection, Edge> jgraphtClone = 
+			(DirectedWeightedMultigraph<Intersection, Edge>) jgrapht.clone();
+			putWeightAsTripMaxSpeedOnGraph(jgraphtClone);
+			pathJGrapht = DijkstraShortestPath.findPathBetween(jgraphtClone, 
+					map.getIntersectionByID(initialInterseccion),
+					map.getIntersectionByID(finalIntersection));
+		}
+
+		List<Step> steps = new ArrayList<Step>();
+		List<Segment> segments = new ArrayList<Segment>();
+		
+		for(Edge e: pathJGrapht.getEdgeList()){
+			steps.addAll(map.getSegmentByID(e.getIdSegment()).getSteps());
+			segments.add(map.getSegmentByID(e.getIdSegment()));
+		}
+		return new Path(pathJGrapht.getVertexList(),
+				steps, segments);
+	}
+
+	private void putWeightsAsDistancesOnGraph(
+			DirectedWeightedMultigraph<Intersection, Edge> jgrapht2) {
+		for(Edge e: jgrapht2.edgeSet()) {
+			jgrapht2.setEdgeWeight(e, e.getLength());
+		}
+	}
+
+	private void putWeightAsTripMaxSpeedOnGraph(
+			DirectedWeightedMultigraph<Intersection, Edge> jgraphtClone) {
+		for(Edge e: jgraphtClone.edgeSet()) {
+			jgraphtClone.setEdgeWeight(e, e.getLength() /
+					e.getMaxSpeed());
+		}
 	}
 
 	private class LogData{

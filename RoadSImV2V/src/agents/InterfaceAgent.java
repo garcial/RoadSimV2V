@@ -28,7 +28,7 @@ public class InterfaceAgent extends Agent{
 	public static final int MAXWORLDX = 2000;
 	public static final int MAXWORLDY = 900;
 
-	private CanvasWorld map;
+	private CanvasWorld canvasMap;
 	
 	private DFAgentDescription timeKeeperAgent;
 
@@ -77,7 +77,7 @@ public class InterfaceAgent extends Agent{
 
 				@Override
 				public void run() {
-					map = new CanvasWorld(me, MAXWORLDX, MAXWORLDY,
+					canvasMap = new CanvasWorld(me, MAXWORLDX, MAXWORLDY,
 							              graphicalMap);	
 				}
 			});
@@ -110,6 +110,6 @@ public class InterfaceAgent extends Agent{
 
 	//Setters and getters
 	public CanvasWorld getMap() {
-		return map;
+		return canvasMap;
 	}
 }

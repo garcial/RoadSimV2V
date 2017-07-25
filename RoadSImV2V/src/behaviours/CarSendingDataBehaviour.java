@@ -39,8 +39,6 @@ public class CarSendingDataBehaviour extends Behaviour {
 			ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
 			msg.setOntology("roadTwinsOntology");
 
-			//TODO: Revise how to obtain the IAD of the twin segments
-			//      from Strings
 			List<String> twins = carAgent.getCurrentSegment().
 					                      getTwinSegments();
 			for(int i = 0; i < twins.size(); i++) {
@@ -50,10 +48,10 @@ public class CarSendingDataBehaviour extends Behaviour {
 			}
 
 			JSONObject content = new JSONObject();
-			content.put("x", carAgent.getX());
-			content.put("y", carAgent.getY());
+			content.put("x", carAgent.getCarData().getX());
+			content.put("y", carAgent.getCarData().getY());
 			content.put("radio", carAgent.getRatio());
-			content.put("id", carAgent.getId());
+			content.put("id", carAgent.getCarData().getId());
 			msg.setContent(content.toString());
 			
 			carAgent.send(msg);
@@ -94,7 +92,7 @@ public class CarSendingDataBehaviour extends Behaviour {
 				json.put("tfin", carAgent.getCurrentTick());
 				json.put("speed", carAgent.getCurrentSpeed());
 				json.put("position", carAgent.getCurrentPk());
-				json.put("id", carAgent.getId());
+				json.put("id", carAgent.getCarData().getId());
 				json.put("futureTraffic", 
 						          carAgent.getPastTraffic().toJSON());
 				

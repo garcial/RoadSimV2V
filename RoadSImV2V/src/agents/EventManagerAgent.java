@@ -30,8 +30,6 @@ public class EventManagerAgent extends Agent {
 
 	private int previousMinute;
 	
-//	private long timeElapsed;
-
 	private Set<String> aux;
 
 	// First parameter: Tick in seconds
@@ -46,6 +44,8 @@ public class EventManagerAgent extends Agent {
 	private DFAgentDescription interfaceAgent;
 	
 	private boolean drawGUI;
+	
+	private boolean useLog;
 
 	protected void setup() {
 
@@ -63,11 +63,13 @@ public class EventManagerAgent extends Agent {
 
 		//Get the folder
 		String folder = (String) this.getArguments()[3];
-		//Get starting tick
-		//this.timeElapsed = (long) this.getArguments()[4];
 
 		//Draw the gui or not
 		this.drawGUI = (boolean) this.getArguments()[5];
+		
+		//Use of the log
+		this.useLog = (boolean) this.getArguments()[6];
+		
 		//Previous minute will be used to know when to send a msg to  
 		// the interface, when the minute changes
 		this.previousMinute = -1;
@@ -110,7 +112,7 @@ public class EventManagerAgent extends Agent {
 		//       Maybe as a parameter received from the Main
 		BufferedReader eventsReader = null;
 
-		for(int i=0; i<files.length; i++){
+		for(int i=0; i < files.length; i++){
 
 			if(files[i].getName().equals("events.csv")){
 				try {
@@ -172,22 +174,9 @@ public class EventManagerAgent extends Agent {
 		}
 
 		//Start the behaviour
-		addBehaviour(new EventManagerBehaviour(this, this.drawGUI));
+		addBehaviour(new EventManagerBehaviour(this, this.drawGUI, this.useLog));
 	}
 
-	//Getters and setter
-//	public long getTimeElapsed() {
-//		return timeElapsed;
-//	}
-//
-//	public void setTimeElapsed(long timeElapsed) {
-//		this.timeElapsed = timeElapsed;
-//	}
-//
-//	public void incrementeTimeElapsed() {
-//
-//		this.timeElapsed += 1;
-//	}
 
 	public HashMap<Long, List<String>> getEvents() {
 		return events;
@@ -222,3 +211,12 @@ public class EventManagerAgent extends Agent {
 		this.interfaceAgent = interfaceAgent;
 	}
 }
+
+/*public void updateMap(JSONObject mapData) {
+	jgrapht = map.getJgrapht();
+	for(String segmentID:mapData.keySet()) {
+		jgrapht.setEdgeWeight(map.getEdgeBySegmentID(segmentID), 
+				mapData.getDouble(segmentID));
+	}
+
+}*/

@@ -3,11 +3,14 @@ package behaviours;
 import org.json.JSONObject;
 
 import agents.SegmentAgent;
+import environment.EdgeData;
 import environment.Segment;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import jgrapht.Edge;
+import vehicles.CarData;
 
 /**
  * This behaviour is used by the SegmentAgent and listens to messages
@@ -35,10 +38,11 @@ public class SegmentListenBehaviour extends Behaviour {
              MessageTemplate.or(mtCarControl, mtEventManagerControl);
 
 	private SegmentAgent agent;
+	private int previousServiceLevel = 0;
 
 	//Constructor
 	public SegmentListenBehaviour(SegmentAgent agent) {
-
+		this.previousServiceLevel = 0;
 		this.agent = agent;
 	}
 
@@ -52,24 +56,16 @@ public class SegmentListenBehaviour extends Behaviour {
 			if (msg.getOntology().equals("carToSegmentOntology")) {
 
 				JSONObject car = new JSONObject(msg.getContent());
-				//System.out.println("coche recibido: " + car);
 
 				//Register
 				if (msg.getConversationId().equals("update")) { 
 					//Update position
 
-					this.agent.updateCar(car.getString("id"), 
-							(float) car.getDouble("x"), 
-							(float) car.getDouble("y"), 
-							car.getBoolean("specialColor"));
+					this.agent.updateCar(car);
 				} else {
 					if (msg.getConversationId().equals("register")) {
 						// Register
-						this.agent.addCar(car.getString("id"), 
-								(float) car.getDouble("x"), 
-								(float) car.getDouble("y"), 
-								       car.getBoolean("specialColor"),
-									   car.getInt("radio"));						
+						this.agent.addCar(car);							
 					} else {    
 						// Deregister  of the segment
 						this.agent.removeCar(car.getString("id"));
@@ -83,50 +79,71 @@ public class SegmentListenBehaviour extends Behaviour {
 					segment.setDensity(density);
 					
 					//Set the service level
-					if (density < 6.2) {
-						
-						segment.setCurrentServiceLevel('A');
+					int currentSL;
+					if (density < 6.2) {						
+						currentSL = 0; // 'A';
 					} else if (density < 10.0) {
-						
-						segment.setCurrentServiceLevel('B');
+						currentSL = 1; // 'B';
 					} else if (density < 15.0) {
-						
-						segment.setCurrentServiceLevel('C');
+						currentSL = 2; // 'C';
 					} else if (density < 20.0) {
-						
-						segment.setCurrentServiceLevel('D');
+						currentSL = 3; // 'D';
 					} else if (density < 22.8) {
-						
-						segment.setCurrentServiceLevel('E');
+						currentSL = 4; // 'E';
 					} else 
-						segment.setCurrentServiceLevel('F');
+						currentSL = 5; // 'F';
+					
+					ACLMessage msg2 = new ACLMessage(ACLMessage.INFORM);
+					msg2.setOntology("trafficDensityOntology");
+					
+					JSONObject densityData = new JSONObject();
+					densityData.put("density", density);
+					msg2.setContent(densityData.toString());
+					
+					for (String id:agent.getCars().keySet()) {
+						msg2.addReceiver(new AID(id, true));;			
+					}
+					agent.send(msg2);	
 					
 					//TODO: Añadir una variable de nivel de servicio anterior y así guardamos el tickfinal
 					// Hay que ver donde se recoge el tick
-					if(segment.getCurrentServiceLevel().compareTo(this.agent.getServiceLevelPast()) != 0 && !msg.getConversationId().equals("register")){
+					if(segment.getCurrentServiceLevel() != this.agent.getServiceLevelPast() && !msg.getConversationId().equals("register")){
 						ACLMessage msgLog = new ACLMessage(ACLMessage.INFORM);
 						msgLog.setOntology("logSegmentOntology");
 						msgLog.addReceiver(this.agent.getLogAgent().getName());
-						msgLog.setContent(segment.getId() + "," + segment.getCurrentServiceLevel() + "," + car.getLong("tickInitial") + "," +car.getLong("tickFinal"));
+						msgLog.setContent(segment.getId() + "," + segment.getCurrentServiceLevel() + "," + car.getLong("initialTick") + "," +car.getLong("tick"));
 						myAgent.send(msgLog);
 						
 						this.agent.setServiceLevelPast(segment.getCurrentServiceLevel());
 					}
 					
-					
-					
-					msg = new ACLMessage(ACLMessage.INFORM);
-					msg.setOntology("trafficDensityOntology");
-					//msg.setContent(""+density);
-					
-					JSONObject densityData = new JSONObject();
-					densityData.put("density", density);
-					msg.setContent(densityData.toString());
-					
-					for (String id:agent.getCars().keySet()) {
-						msg.addReceiver(new AID(id, true));;			
+					if (currentSL != previousServiceLevel) {
+						//Store current data of the edge in the list of 
+						// previous data
+						Edge myEdge = agent.getSegment().getMyEdge();
+						myEdge.getEdgeDataList().add(
+								new EdgeData(previousServiceLevel,
+										agent.getJgrapht().getEdgeWeight(myEdge),
+										agent.getTini(),
+										car.getLong("tick")	
+								));
+						agent.setTini(car.getLong("tick"));
+						//Change the weight of this edge in the 
+						//  jgrapht
+						//Start computing the average speed
+						double averageSpeed = 0.0;
+						for(CarData cd:agent.getCars().values()) {
+							averageSpeed += cd.getCurrentSpeed();
+						}
+						averageSpeed = averageSpeed / numCars;
+						//Update the weight in the jgraph of the map
+						agent.getJgrapht().setEdgeWeight(
+								myEdge,
+								segment.getLength() /  averageSpeed );
+
+						previousServiceLevel = currentSL;
+						agent.getSegment().setCurrentServiceLevel(currentSL);
 					}
-					agent.send(msg);	
 					
 				}
 

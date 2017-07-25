@@ -17,23 +17,20 @@ public class Main {
 	//Initial tick length, this value is ignored if the GUI is drawn
 	private static final long tickLength = 1L;
 	
-	//Start at specific tick: 7:59 that in seconds is ..
-	private static long startingTick = 7*3600 + 59*60;
+	//Start at specific tick: 17:59 that in seconds is ..
+	private static long startingTick = 17*3600 + 59*60;
 	
-	//Finish the simulation at specific tick: 00:00
-	private static long finishingTick = 24*3600;
-	
-	//Random smart cars from the beginning
-	private static final int numberOfCars = 0;
+	//Finish the simulation at specific tick: 21:00
+	private static long finishingTick = 21*3600;
 	
 	//Draw the GUI
-	private static final boolean drawGUI = true;
+	private static boolean drawGUI = true;
 	
 	//Start the RMA
 	private static final boolean startRMA = false;
 	
 	//Activate segment logging
-	private static final boolean segmentLogging = false;
+	private static boolean useLog = true;
 	
 	//Logging directory for the segments
 	private static String loggingDirectory = 
@@ -145,22 +142,24 @@ public class Main {
 		jade.wrapper.AgentContainer segmentContainer = 
 				                     rt.createAgentContainer(profile);
 		
-		if(args.length < 5){
-			System.out.println("The variables startingTick, finishingTick, loggingDirectory, carFile and"
-					+ " segmentFile are created by default. You can pass it like arguments");
+		if(args.length < 7){
+			System.out.println("The variables startingTick, finishingTick, loggingDirectory, carFile,"
+					+ " segmentFile, useLog and drawLog are created by default. You can pass it like arguments");
 		}else{
 			startingTick = Long.parseLong(args[0]);
 			finishingTick = Long.parseLong(args[1]);
 			loggingDirectory = args[2];
 			carFile = args[3];
 			segmentFile = args[4];
+			useLog = Boolean.parseBoolean(args[5]);
+			drawGUI = Boolean.parseBoolean(args[6]);
 		}
 
 		//Load the map
 		try {
 			// The map load the segments that create the SegmentAgent
 			map = new Map("staticFiles/map/csbeni", segmentContainer,
-					      segmentLogging, loggingDirectory, drawGUI);
+					      useLog, loggingDirectory, drawGUI, startingTick);
 		} catch (IOException e) {
 
 			System.out.println("Error reading the maps file.");
@@ -183,6 +182,14 @@ public class Main {
 		//Container that will hold the agents
 		jade.wrapper.AgentContainer carContainer = 
 				                     rt.createAgentContainer(profile);
+		
+		// Wait for 1 second to finishing the starting all the 
+		//    containers (by the flyes)
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e3) {
+			e3.printStackTrace();
+		}
 		
 		//Interface if is necesary
 		if(drawGUI){
@@ -208,6 +215,46 @@ public class Main {
 			e2.printStackTrace();
 		}
 		
+		//EventManager
+		try {
+
+			AgentController agent = 
+					mainContainer.createNewAgent("eventManagerAgent",
+							"agents.EventManagerAgent", 
+							new Object[]{map, carContainer, 
+									segmentContainer,
+									"staticFiles/events", 
+									startingTick, drawGUI,
+									useLog});
+
+
+			agent.start();
+
+		} catch (StaleProxyException e1) {
+
+			System.out.println(
+					"Error starting the EventManager agent");
+			e1.printStackTrace();
+		}
+		
+		//LogManager
+		if(useLog){
+			try {
+
+				AgentController agent = 
+						mainContainer.createNewAgent("logAgent",
+								"agents.LogAgent", 
+								new Object[]{loggingDirectory, carFile, segmentFile});
+				agent.start();
+
+			} catch (StaleProxyException e1) {
+
+				System.out.println(
+						        "Error starting the Log agent");
+				e1.printStackTrace();
+			}
+		}	
+		
 		//TimeKeeper
 		try {
 			AgentController agent = 
@@ -223,74 +270,6 @@ public class Main {
 			System.out.println("Error starting the TimeKeeper agent");
 			e1.printStackTrace();
 		}
-
-
-
-		//Cars
-
-
-		for (int i=0; i<numberOfCars; i++){
-			
-			String initialintersection = map.getRandomIntersection();
-			
-			String finalIntersection = map.getRandomIntersection();
-			
-			while (initialintersection.equals(finalIntersection)) {
-				
-				finalIntersection = map.getRandomIntersection();
-			}
-
-			try {
-
-				AgentController agent = 
-						carContainer.createNewAgent("car" + 
-				              Integer.toString(i) +
-						      "Agent", "agents.CarAgent", 
-						       new Object[]{map, initialintersection,
-						        		    finalIntersection, 120, 
-						        		    "fastest", drawGUI});
-				agent.start();				
-			} catch (StaleProxyException e) {
-				System.out.println("Error starting a car agent");
-				e.printStackTrace();
-			}
-		}
 		
-		//LogManager
-				try {
-
-					AgentController agent = 
-							mainContainer.createNewAgent("logAgent",
-									"agents.LogAgent", 
-									new Object[]{loggingDirectory, carFile, segmentFile});
-					agent.start();
-
-				} catch (StaleProxyException e1) {
-
-					System.out.println(
-							        "Error starting the Log agent");
-					e1.printStackTrace();
-				}
-		
-		//EventManager
-		try {
-
-			AgentController agent = 
-					mainContainer.createNewAgent("eventManagerAgent",
-							"agents.EventManagerAgent", 
-							new Object[]{map, carContainer, 
-									     segmentContainer,
-									    "staticFiles/events", 
-									    startingTick, drawGUI});
-
-
-			agent.start();
-
-		} catch (StaleProxyException e1) {
-
-			System.out.println(
-					        "Error starting the EventManager agent");
-			e1.printStackTrace();
-		}
 	}
 }

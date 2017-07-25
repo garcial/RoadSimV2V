@@ -8,19 +8,22 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import behaviours.SegmentListenBehaviour;
 import behaviours.SegmentRadarBehaviour;
 import behaviours.SegmentSendToDrawBehaviour;
+import environment.Intersection;
 import environment.Segment;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
-import jade.domain.FIPANames.InteractionProtocol;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
+import jgrapht.Edge;
+import vehicles.CarData;
 
 /**
  * This agent will keep track of the cars that are inside between two
@@ -34,32 +37,27 @@ public class SegmentAgent extends Agent {
 	//The segment this agent belongs to
 	private Segment segment;
 	private boolean drawGUI;
+	//The log agent if it is requested on main
+	private boolean useLog;
 	private DFAgentDescription logAgent;
 
 	//The cars that are currently on this segment
 	private HashMap<String, CarData> cars;
+	private DirectedWeightedMultigraph<Intersection, Edge> jgrapht;
 	private HashMap<String, ArrayList<String>> interactingCars;
 	//TODO: Gestionar lo que se guarda en el log
-	private char serviceLevelPast;
+	private int serviceLevelPast;
+	private long tini;
 
-	public boolean isNewCommunication(String idCar, String otherCar) {
-		if (!interactingCars.get(otherCar).contains(idCar)) {
-			// Una vez ha habido una nueva interacción, esta deja de ser nueva por lo que se le añade a la lista de interacciones
-			interactingCars.get(otherCar).add(idCar);
-			return true;
-		}
-		return false;
-	}
 	
-	public void addInteractionCar(String idSolicitante, String id) {
-		interactingCars.get(idSolicitante).add(id);
-	}
-
 	protected void setup() {
 
 		//Get the segment from parameter
 		this.segment = (Segment) this.getArguments()[0];
 		this.drawGUI = (boolean) this.getArguments()[1];
+		this.jgrapht = (DirectedWeightedMultigraph<Intersection, Edge>) this.getArguments()[2];
+		this.useLog = (boolean) this.getArguments()[3];
+		this.setTini((long) this.getArguments()[4]);
 		this.segment.setSegmentAgent(this);
 		// X is a service level inexistent to obligate to log the first service level
 		this.serviceLevelPast = 'X';
@@ -83,28 +81,30 @@ public class SegmentAgent extends Agent {
 			fe.printStackTrace(); 
 		}
 		
-		//Find the log agent
-		dfd = new DFAgentDescription();
-		sd = new ServiceDescription();
-		sd.setType("logAgent");
-		dfd.addServices(sd);
-
-		DFAgentDescription[] result = null;
-
-		try {
-			result = DFService.searchUntilFound(
-					this, getDefaultDF(), dfd, null, 5000);
-		} catch (FIPAException e) { e.printStackTrace(); }
-
-		while (result == null || result[0] == null) {
+		if (useLog) { //Find the log agent
+			dfd = new DFAgentDescription();
+			sd = new ServiceDescription();
+			sd.setType("logAgent");
+			dfd.addServices(sd);
+	
+			DFAgentDescription[] result = null;
+	
 			try {
 				result = DFService.searchUntilFound(
 						this, getDefaultDF(), dfd, null, 5000);
 			} catch (FIPAException e) { e.printStackTrace(); }
+	
+			while (result == null || result[0] == null) {
+				try {
+					result = DFService.searchUntilFound(
+							this, getDefaultDF(), dfd, null, 5000);
+				} catch (FIPAException e) { e.printStackTrace(); }
+			}
+			
+			this.logAgent = result[0];
 		}
 		
-		this.logAgent = result[0];
-
+		//The id of the car and its id cars comunication
 		interactingCars = new HashMap<String, ArrayList<String>>();
 		
 		//This behaviour will keep the cars updated	
@@ -128,11 +128,27 @@ public class SegmentAgent extends Agent {
 	 * @param specialColor If we have to paint it specially
 	 * @param radio is the radio of its sensor
 	 */
-	public void addCar(String id, float x, float y, 
-			           boolean specialColor, int radio) {
+	/**
+	 * Add a car to this segment
+	 * 
+	 * @param id ID of the car (getName() of the carAgent
+	 * @param x X coordinate of the car
+	 * @param y Y coordinate of the car
+	 * @param specialColor If we have to paint it specially
+	 * @param radio is the radio of its sensor
+	 */
+	public void addCar(JSONObject car) {
 
-		this.cars.put(id, new CarData(id, x, y, specialColor, radio));
-		interactingCars.put(id, new ArrayList<String>());
+		this.cars.put(car.getString("id"), 
+				new CarData(car.getString("id"), 
+						    (float) car.getDouble("x"),
+						    (float) car.getDouble("y"),
+						    (float) car.getDouble("speed"),
+						    (int) car.getInt("type"),
+						    (float) car.getDouble("segmentDistanceCovered"),
+						    (int) car.getInt("radio"),
+						    (long) car.getLong("initialTick"),
+						    car.getLong("tick")));
 	}
 
 	/**
@@ -160,18 +176,19 @@ public class SegmentAgent extends Agent {
 	/**
 	 * Updates the information of a car
 	 * 
-	 * @param id ID of the car to update
-	 * @param x New x coordinate
-	 * @param y New y coordinate
-	 * @param specialColor New specialcolor
+	 * @param JSONObject of a CarData objetc
 	 */
-	public void updateCar(String id, float x, float y, 
-			              boolean specialColor) {
+	public void updateCar(JSONObject car) {
 
-		CarData aux = cars.get(id);
-		aux.setX(x);
-		aux.setY(y);
-		aux.setSpecialColor(specialColor);
+		CarData aux = cars.get(car.getString("id"));
+		aux.setX((float) car.getDouble("x"));
+		aux.setY((float) car.getDouble("y"));
+		aux.setCurrentSpeed((float) car.getDouble("speed"));
+		aux.setSegmentDistanceCovered(
+				(float) car.getDouble("segmentDistanceCovered"));
+		aux.setRadio((int) car.getInt("radio"));
+		aux.setInitialTick((long) car.getLong("initialTick"));
+		aux.setCurrentTick(car.getLong("tick"));
 	}
 
 	/**
@@ -189,7 +206,7 @@ public class SegmentAgent extends Agent {
 			ret2.put("id", car.getId());
 			ret2.put("x", car.getX());
 			ret2.put("y", car.getY());
-			ret2.put("specialColor", car.getSpecialColor());
+			ret2.put("algorithmType", car.getTypeOfAlgorithm());
 			ret.put(ret2);
 		}
 		
@@ -203,57 +220,37 @@ public class SegmentAgent extends Agent {
 	 * @return
 	 */
 	public void doLog(long currentTick) {
+		//System.out.println("Falta implementar el log del segment");
+		/*if (currentTick % 15 == 0) {
 
-		if (currentTick % 60 == 0) {
+			if (currentTick % 15 == 0) {
 
-			int totalMinutes = (int)currentTick / 60;
-			int hours = (int)(totalMinutes / 60);
-			int minutes = (int)(totalMinutes % 60);
-
-			//It is far more efficient to use this rather than a 
-			//   simple String
-			StringBuilder ret = new StringBuilder();
-
-			//The time properly formated
-			String time = String.format("%02d", hours) + ":" + 
-			              String.format("%02d", minutes);
-
-			ret.append(time + "," + this.getSegment().getMaxSpeed() +
-					   "," + this.segment.getCurrentAllowedSpeed() + 
-					   "," + this.segment.getCurrentServiceLevel() + 
-					   "," + cars.size() + '\n');
-
-			//Check if file exists
-			File f = new File(Paths.get(
-					this.segment.getLoggingDirectory() + "/" + 
-			        this.getLocalName() + ".csv").toString());
-
-			if (!f.exists()) {
+				JSONObject data = new JSONObject();
+				data.put("id", getLocalName());
+				data.put("time", currentTick);
+				data.put("currentSpeed", segment.getCurrentAllowedSpeed());
+				data.put("maxSpeed", segment.getMaxSpeed());
 				
-				try {
-					Files.write(Paths.get(
-							this.segment.getLoggingDirectory() + "/" +
-					        this.getLocalName() + ".csv"), 
-							("Time,Vmax,Vcurrent,Service,Num cars\n" +
-					        ret.toString()).getBytes());
-				}catch (IOException e) {
+				List<CarData> lista = 
+						new ArrayList<CarData>(cars.values());
+				java.util.Map<Integer, Long> counted = 
+						lista.stream().
+			            collect(Collectors.groupingBy(	            		
+			            		(x->x.getTypeOfAlgorithm()), 
+			            		Collectors.counting()));
 
-					e.printStackTrace();
-				}
-
-			} else 
-
-				try {
-					Files.write(Paths.get(
-							this.segment.getLoggingDirectory() + "/" +
-					        this.getLocalName() + ".csv"), 
-							ret.toString().getBytes(), 
-							StandardOpenOption.APPEND);
-				}catch (IOException e) {
-
-					e.printStackTrace();
-				}
-		}
+				data.put("shortest", counted.get(0)==null?0:counted.get(0));
+				data.put("fastest", counted.get(1)==null?0:counted.get(1));
+				data.put("startSmart", counted.get(2)==null?0:counted.get(2));
+				data.put("dynamicSmart", counted.get(3)==null?0:counted.get(3));
+				ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+				msg.setOntology("segmentToLog");
+				msg.addReceiver(logAgent.getName());
+//				System.out.println("msg: " + data.toString());
+				msg.setContent(data.toString());
+				send(msg);
+			}
+		}*/
 	}
 
 	/**
@@ -287,73 +284,55 @@ public class SegmentAgent extends Agent {
 		this.logAgent = logAgent;
 	}
 
-	public char getServiceLevelPast() {
+	public int getServiceLevelPast() {
 		return serviceLevelPast;
 	}
 
-	public void setServiceLevelPast(char serviceLevelPast) {
+	public void setServiceLevelPast(int serviceLevelPast) {
 		this.serviceLevelPast = serviceLevelPast;
 	}
 
-
-
-	/**
-	 * Auxiliary structure to keep track of the cars
-	 *
-	 */
-	public class CarData {
-
-		private String id; // The getName() of the carAgent
-		private float x, y;
-		private int radio;
-		private boolean specialColor;
-
-		public CarData(String id, float x, float y, 
-				       boolean specialColor, int radio) {
-
-			this.id = id;
-			this.x = x;
-			this.y = y;
-			this.specialColor = specialColor;
-			this.radio = radio;
-		}
-
-		public int getRadio() {
-			return radio;
-		}
-
-		public void setRadio(int radio) {
-			this.radio = radio;
-		}
-
-		public String getId() {
-			return id;
-		}
-
-		public float getX() {
-			return x;
-		}
-
-		public void setX(float x) {
-			this.x = x;
-		}
-
-		public float getY() {
-			return y;
-		}
-
-		public void setY(float y) {
-			this.y = y;
-		}
-
-		public boolean getSpecialColor() {
-			return specialColor;
-		}
-
-		public void setSpecialColor(boolean specialColor) {
-			this.specialColor = specialColor;
-		}
-		
-		
+	public boolean isUseLog() {
+		return useLog;
 	}
+
+	public void setUseLog(boolean useLog) {
+		this.useLog = useLog;
+	}
+
+	public DirectedWeightedMultigraph<Intersection, Edge> getJgrapht() {
+		return jgrapht;
+	}
+
+	public void setJgrapht(DirectedWeightedMultigraph<Intersection, Edge> jgrapht) {
+		this.jgrapht = jgrapht;
+	}
+
+	public long getTini() {
+		return tini;
+	}
+
+	public void setTini(long tini) {
+		this.tini = tini;
+	}
+
+	public boolean isNewCommunication(String idCar, String otherCar) {
+		if(interactingCars.get(otherCar) == null){
+			ArrayList<String> aux = new ArrayList<String>();
+			aux.add(idCar);
+			interactingCars.put(otherCar, aux);
+			return true;
+			
+		} else if (!interactingCars.get(otherCar).contains(idCar)) {
+			// Una vez ha habido una nueva interacción, esta deja de ser nueva por lo que se le añade a la lista de interacciones
+			interactingCars.get(otherCar).add(idCar);
+			return true;
+		}
+		return false;
+	}
+	
+	public void addInteractionCar(String idSolicitante, String id) {
+		interactingCars.get(idSolicitante).add(id);
+	}
+		
 }

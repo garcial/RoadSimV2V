@@ -21,12 +21,14 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 	private EventManagerAgent agent;
 	private boolean drawGUI;
 	private AID topic;
+	private boolean useLog;
 
 	public EventManagerBehaviour(EventManagerAgent agent, 
-			                     boolean drawGUI) {
+			                     boolean drawGUI, boolean useLog) {
 
 		this.agent = agent;
 		this.drawGUI = drawGUI;
+		this.useLog = useLog;
 		this.topic = null;		
 		try {
 			TopicManagementHelper topicHelper =(TopicManagementHelper) 
@@ -68,9 +70,6 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 						toString());
 				myAgent.send(timeMsg);
 			}
-
-			//Increment the elapsed time
-			//this.agent.incrementeTimeElapsed();
 			
 			HashMap<Long, List<String>> events = 
 					                           this.agent.getEvents();
@@ -104,7 +103,7 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 			/* alg type */				parts[5],
 			/* drawGUI */				this.drawGUI,
 			/* Initial time */          currentTick, 
-			/* sensor ratio */          10});
+			/* sensor ratio */          10, this.useLog});
 
 							agent.start();
 							

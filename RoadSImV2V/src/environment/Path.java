@@ -8,7 +8,7 @@ public class Path implements Serializable {
 	private static final long serialVersionUID =-5385591092178183277L;
 
 	//The list of intersections of this path
-	List<String> intersectionPath;
+	List<Intersection> intersectionPath;
 	
 	//The graphical lines of this path
 	List<Step> graphicalPath;
@@ -23,7 +23,7 @@ public class Path implements Serializable {
 	 * @param graphicalPath
 	 * @param segmentPath
 	 */
-	public Path(List<String> intersetcionPath, 
+	public Path(List<Intersection> intersetcionPath, 
 			    List<Step> graphicalPath, 
 			    List<Segment> segmentPath) {
 		
@@ -33,7 +33,7 @@ public class Path implements Serializable {
 	}
 
 	//Getters
-	public List<String> getIntersectionPath() {
+	public List<Intersection> getIntersectionPath() {
 		return intersectionPath;
 	}
 

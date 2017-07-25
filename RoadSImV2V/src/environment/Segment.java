@@ -1,17 +1,16 @@
 package environment;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.json.ToJSON;
+import org.jgrapht.graph.DirectedWeightedMultigraph;
 
 import agents.SegmentAgent;
-import jade.lang.acl.ACLMessage;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
+import jgrapht.Edge;
 
 /**
  * Represents a section of a road in a single direction.
@@ -66,6 +65,9 @@ public class Segment implements Serializable{
 	
 	//Road Code
 	private String roadCode;
+	
+	//My edge of the jgrapht
+	Edge myEdge;
 
 	//Segment agent
 	private SegmentAgent segmentAgent;
@@ -75,10 +77,10 @@ public class Segment implements Serializable{
 	private transient jade.wrapper.AgentContainer mainContainer;
 	
 	//This dictionary contains the different service levels
-	private HashMap<Character, Float> serviceLevels;
+	private HashMap<Integer, Float> serviceLevels;
 	
 	//The current service level
-	private Character currentServiceLevel;
+	private int currentServiceLevel;
 	
 	//Logging info
 	private boolean segmentLogging;
@@ -102,8 +104,9 @@ public class Segment implements Serializable{
 		this.direction = "up";
 		this.mainContainer = null;
 		this.currentAllowedSpeed = this.maxSpeed;
-		this.serviceLevels = new HashMap<Character, Float>();
-		this.currentServiceLevel = 'A';
+		this.serviceLevels = new HashMap<Integer, Float>();
+		this.currentServiceLevel = 0;
+		this.segmentLogging = true;
 		this.twinSegments = new LinkedList<String>();
 		this.drawGUI = true;
 		this.roadCode = "";
@@ -116,11 +119,13 @@ public class Segment implements Serializable{
 	 * @param  destination {@link Intersection} where this {@link Segment} ends.
 	 * @param  length The length of this {@link Segment} in Km.
 	 */
-	public Segment(String id, Intersection origin, Intersection destination, 
-			       double length, int maxSpeed, int capacity, int density, 
-			       int numberTracks, jade.wrapper.AgentContainer mainContainer, 
-			       boolean segmentLogging, String loggingDirectory, boolean drawGUI,
-			       String direction, double pkstart, LinkedList segTwinsList, String roadCode){
+	public Segment(DirectedWeightedMultigraph<Intersection, Edge> jgrapht,
+			String id, Intersection origin, Intersection destination, 
+	       double length, int maxSpeed, int capacity, int density, 
+	       int numberTracks, jade.wrapper.AgentContainer mainContainer, 
+	       boolean segmentLogging, String loggingDirectory, boolean drawGUI,
+	       String direction, double pkstart,
+	       LinkedList segTwinsList, String roadCode, long tick){
 
 		this.id = id;
 		this.origin = origin;
@@ -133,8 +138,8 @@ public class Segment implements Serializable{
 		this.steps = new LinkedList<Step>();
 		this.mainContainer = mainContainer;
 		this.currentAllowedSpeed = this.maxSpeed;
-		this.serviceLevels = new HashMap<Character, Float>();
-		this.currentServiceLevel = 'A';
+		this.serviceLevels = new HashMap<Integer, Float>();
+		this.currentServiceLevel = 0;
 		this.segmentLogging = segmentLogging;
 		this.loggingDirectory = loggingDirectory;
 		this.drawGUI = drawGUI;
@@ -144,19 +149,20 @@ public class Segment implements Serializable{
 		this.roadCode = roadCode;
 		
 		//Put the service levels
-		this.serviceLevels.put('A', 1.00f);
-		this.serviceLevels.put('B', 0.95f);
-		this.serviceLevels.put('C', 0.80f);
-		this.serviceLevels.put('D', 0.65f);
-		this.serviceLevels.put('E', 0.50f);
-		this.serviceLevels.put('F', 0.10f);
+		this.serviceLevels.put(0, 1.00f);
+		this.serviceLevels.put(1, 0.95f);
+		this.serviceLevels.put(2, 0.80f);
+		this.serviceLevels.put(3, 0.65f);
+		this.serviceLevels.put(4, 0.50f);
+		this.serviceLevels.put(5, 0.10f);
 
 		//Create the agents
 		try {
 
 			//Agent Controller to segments with Interface
 			AgentController agent = mainContainer.createNewAgent(
-					this.id, "agents.SegmentAgent", new Object[]{this, this.drawGUI});
+					this.id, "agents.SegmentAgent", new Object[]{this, this.drawGUI,
+							 jgrapht, this.segmentLogging, tick});
 
 			agent.start();
 			
@@ -237,11 +243,11 @@ public class Segment implements Serializable{
 		this.currentAllowedSpeed = currentAllowedSpeed;
 	}
 
-	public Character getCurrentServiceLevel() {
+	public int getCurrentServiceLevel() {
 		return currentServiceLevel;
 	}
 
-	public void setCurrentServiceLevel(Character currentServiceLevel) {	
+	public void setCurrentServiceLevel(int  currentServiceLevel) {	
 		this.currentServiceLevel = currentServiceLevel;
 		this.currentAllowedSpeed = (int) 
 				(this.maxSpeed * this.serviceLevels.get(currentServiceLevel));
@@ -274,16 +280,18 @@ public class Segment implements Serializable{
 	public void setRoadCode(String roadCode) {
 		this.roadCode = roadCode;
 	}
+	
+	public void setMyEdge(Edge e) {
+		myEdge = e;		
+	}
+	
+	public Edge getMyEdge() {
+		return myEdge;
+	}
 
 	@Override
 	public String toString() {
-		return "Segment [id=" + id + ", origin=" + origin.getId() + ", destination=" + destination.getId() + ", length=" + length
-				+ ", capacity=" + capacity + ", density=" + density + ", numberTracks=" + numberTracks + ", steps="
-				+ steps + ", maxSpeed=" + maxSpeed + ", currentAllowedSpeed=" + currentAllowedSpeed + ", pkIni=" + pkIni
-				+ ", direction=" + direction + ", drawGUI=" + drawGUI + ", twinSegments=" + twinSegments + ", roadCode="
-				+ roadCode + ", segmentAgent=" + segmentAgent + ", serviceLevels=" + serviceLevels
-				+ ", currentServiceLevel=" + currentServiceLevel + ", segmentLogging=" + segmentLogging
-				+ ", loggingDirectory=" + loggingDirectory + "]";
+		return "Segment [id=" + id + "]";
 	}
 	
 	

@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import org.jgrapht.graph.DefaultDirectedWeightedGraph;
+import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import jgrapht.Edge;
@@ -33,13 +33,13 @@ public class Map implements Serializable {
 	private Integer segmentCount;
 	private List<Intersection> intersections;
 	// JGRAPHT
-	private DefaultDirectedWeightedGraph<Intersection, Edge> jgrapht;
+	private DirectedWeightedMultigraph<Intersection, Edge> jgrapht;
 
 	//The container where the segment agents will be created
 	private transient jade.wrapper.AgentContainer mainContainer;
 	
 	//Parameters for the segments
-	private boolean segmentLogging;
+	private boolean useLog;
 	private String loggingDirectory;
 	HashMap<String, Segment> segmentsAux;
 	HashMap<String, Edge> edgesAux;
@@ -54,16 +54,16 @@ public class Map implements Serializable {
 	 */
 	public Map(String folder, 
 			   jade.wrapper.AgentContainer mainContainer,
-			   boolean segmentLogging, String loggingDirectory, 
-			   boolean drawGUI) 
+			   boolean useLog, String loggingDirectory, 
+			   boolean drawGUI, long tick) 
 		   throws IOException{
 
 		//For the agents
 		this.mainContainer = mainContainer;		
-		this.segmentLogging = segmentLogging;
+		this.useLog = useLog;
 		this.loggingDirectory = loggingDirectory;
 		this.jgrapht = 
-				new DefaultDirectedWeightedGraph<Intersection, Edge>
+				new DirectedWeightedMultigraph<Intersection, Edge>
 		                (Edge.class);
 
 		//Read the files
@@ -83,7 +83,7 @@ public class Map implements Serializable {
 				       segmentsReader = null, 
 				       stepsReader = null;
 
-		for(int i=0; i<files.length; i++){
+		for(int i=0; i < files.length; i++){
 			
 			if(files[i].getName().equals("intersections")){
 
@@ -108,9 +108,7 @@ public class Map implements Serializable {
 
 			throw new IOException("Couldn't find the files.");
 		} else {
-
 			try {
-
 				//This will be used later to append the segments in an
 				//     efficient way
 				HashMap<String, Intersection> intersectionsAux = new 
@@ -138,9 +136,6 @@ public class Map implements Serializable {
 							             intersection);
 					//JGRAPHT
 					this.jgrapht.addVertex(intersection);
-					System.out.println("Map.java-- Add Vertex " + 
-					                  intersection.getId() +" : [ " +
-							          intersection.toString() + " ]");
 					line = intersectionsReader.readLine();
 					this.intersectionCount++;
 				}
@@ -179,17 +174,19 @@ public class Map implements Serializable {
 					for (int i = 0; i < segTwinsJSON.length(); i++){
 						segTwinsList.add((String)segTwinsJSON.get(i));
 					}
-					Segment segment = new Segment(seg.getString("id"), 
+					
+					//Make the segment
+					Segment segment = new Segment(this.jgrapht, seg.getString("id"), 
 							          origin, destination, seg.getDouble("length"),
 							          seg.getInt("maxSpeed"), 
 							          seg.getInt("capacity"),
 							          seg.getInt("density"), 
 							          seg.getInt("numberTracks"), 
-							          this.mainContainer, this.segmentLogging, 
+							          this.mainContainer, this.useLog, 
 							          this.loggingDirectory, this.drawGUI,
 							          seg.getString("direction"),
 							          seg.getDouble("pkstart"), segTwinsList,
-							          seg.getString("roadCode"));
+							          seg.getString("roadCode"),tick);
 
 					if(origin != null){
 						origin.addOutSegment(segment);
@@ -201,14 +198,15 @@ public class Map implements Serializable {
 					
 					//Add an Edge to the Jgraph
 					if(origin != null && destination != null){
-						Edge e = new Edge(segment);
-						System.out.println("Map.java-- Add Edge " + 
-						                   segment.getId() +": [ " +
-								           e.toString() + " ]");
+						Edge e = new Edge(segment.getId(), 
+						          segment.getLength(), 
+						          segment.getMaxSpeed());
+						//Print the edges of the map
 						this.jgrapht.addEdge(origin, destination, e);
 						this.jgrapht.setEdgeWeight(e, 
 								segment.getLength() /
 								segment.getMaxSpeed());
+						segment.setMyEdge(e);
 						this.edgesAux.put(segment.getId(), e);
 					}
 
@@ -234,14 +232,10 @@ public class Map implements Serializable {
 					//Create the step
 					Step s = new Step(step.getString("id"), 
 						segmentsAux.get(idSegment), 
-						step.getJSONObject("originCoordinates").
-						     getInt("x"),
-						step.getJSONObject("originCoordinates").
-						     getInt("y"),
-						step.getJSONObject("destinationCoordinates").
-						     getInt("x"),
-						step.getJSONObject("destinationCoordinates").
-						     getInt("y"));
+						step.getJSONObject("originCoordinates").getInt("x"),
+						step.getJSONObject("originCoordinates").getInt("y"),
+						step.getJSONObject("destinationCoordinates").getInt("x"),
+						step.getJSONObject("destinationCoordinates").getInt("y"));
 
 					//Add the steps to the segment
 					segmentsAux.get(idSegment).addStep(s);				
@@ -270,8 +264,8 @@ public class Map implements Serializable {
 				}
 
 			}catch(Exception e){
-
 				e.printStackTrace();
+				
 			}finally{
 
 				intersectionsReader.close();
@@ -319,8 +313,9 @@ public class Map implements Serializable {
 	/**
 	 * Returns the jgraph with the structure of the map
 	 * */
-	public DefaultDirectedWeightedGraph<Intersection, Edge> 
-	       getJgraht() {
+	public DirectedWeightedMultigraph<Intersection, Edge> 
+	       getJgrapht() {
+		
 		return jgrapht;
 	}
 
@@ -383,11 +378,15 @@ public class Map implements Serializable {
 			
 			Step step = stepList.get(i);
 			
-			if (i == 0) { //First, we don't move its origin				
+			if (i == 0) { //First, we don't move its origin	
+				
 				step.setDestinationX(step.getDestinationX()+quantity);
+				
 			} else if (i == stepList.size()-1) { 
+				
 				//Last, we don't move its destination
 				step.setOriginX(step.getOriginX() + quantity);
+				
 			} else {
 				
 				step.setDestinationX(step.getDestinationX()+quantity);

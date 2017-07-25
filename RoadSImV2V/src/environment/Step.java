@@ -118,8 +118,7 @@ public class Step implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Step [id=" + id + ", segmentID=" + segment.getId() + ", originX=" + originX + ", originY=" + originY
-				+ ", destinationX=" + destinationX + ", destinationY=" + destinationY + "]";
+		return "Step [id=" + id + "]";
 	}	
 	
 	
