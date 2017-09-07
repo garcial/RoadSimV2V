@@ -29,15 +29,17 @@ public class Main {
 	//Start the RMA
 	private static final boolean startRMA = false;
 	
-	//Activate segment logging
+	//Activate the log
 	private static boolean useLog = true;
 	
-	//Logging directory for the segments
+	//Logging directory for the segments and carAgent by default
 	private static String loggingDirectory = 
 			"D:/DOCS/Investigacion/codigo/api/RoadSimV2V/RoadSImV2V/src/staticFiles/log";
 	
+	//The name of the car files by default
 	private static String carFile = "logcar.txt";
 	
+	//The name of the segment files by default
 	private static String segmentFile = "logsegment.txt";
 
 	public static void main(String[] args) {
@@ -145,6 +147,14 @@ public class Main {
 		if(args.length < 7){
 			System.out.println("The variables startingTick, finishingTick, loggingDirectory, carFile,"
 					+ " segmentFile, useLog and drawLog are created by default. You can pass it like arguments");
+			System.out.println("StartingTick: " + startingTick);
+			System.out.println("FinishingTick: " + finishingTick);
+			System.out.println("loggingDirectory: " + loggingDirectory);
+			System.out.println("carFile: " + carFile);
+			System.out.println("segmentFile: " + segmentFile);
+			System.out.println("useLog: " + useLog);
+			System.out.println("drawGUI: " + drawGUI);
+			
 		}else{
 			startingTick = Long.parseLong(args[0]);
 			finishingTick = Long.parseLong(args[1]);
@@ -226,8 +236,7 @@ public class Main {
 									"staticFiles/events", 
 									startingTick, drawGUI,
 									useLog});
-
-
+			
 			agent.start();
 
 		} catch (StaleProxyException e1) {

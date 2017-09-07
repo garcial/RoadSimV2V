@@ -211,12 +211,3 @@ public class EventManagerAgent extends Agent {
 		this.interfaceAgent = interfaceAgent;
 	}
 }
-
-/*public void updateMap(JSONObject mapData) {
-	jgrapht = map.getJgrapht();
-	for(String segmentID:mapData.keySet()) {
-		jgrapht.setEdgeWeight(map.getEdgeBySegmentID(segmentID), 
-				mapData.getDouble(segmentID));
-	}
-
-}*/

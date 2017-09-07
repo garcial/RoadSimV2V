@@ -74,7 +74,7 @@ public class Map implements Serializable {
 
 		//Get all files from the given folder
 		String url = Map.class.getClassLoader().getResource(folder).
-				                                getPath();
+				                                getPath().replaceAll("(!|file:/)", "");
 		
 		File[] files = new File(url).listFiles();
 
@@ -82,6 +82,17 @@ public class Map implements Serializable {
 		BufferedReader intersectionsReader = null, 
 				       segmentsReader = null, 
 				       stepsReader = null;
+		
+		System.out.println("/***************************/");
+		System.out.println("folder: " + folder);
+		System.out.println("URL: " + url);
+		System.out.println("useLog: " + useLog);
+		System.out.println("loggingDirectory: " + loggingDirectory);
+		System.out.println("drawGUI: " + drawGUI);
+		System.out.println("tick: " + tick);
+		System.out.println("Files Length: " + files.length);
+		System.out.println("Files: " + files.toString());
+		System.out.println("/***************************/");
 
 		for(int i=0; i < files.length; i++){
 			

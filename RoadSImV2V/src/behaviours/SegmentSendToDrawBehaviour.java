@@ -68,12 +68,6 @@ public class SegmentSendToDrawBehaviour extends CyclicBehaviour {
 
 		if (msg != null) {
 			
-			//Log
-			if (this.agent.getSegment().isSegmentLogging()) {
-				
-				//this.agent.doLog(Long.parseLong(msg.getContent()));
-			}
-
 			if (this.agent.carsSize() > 0) {
 
 				//Send the data to the InterfaceAgent

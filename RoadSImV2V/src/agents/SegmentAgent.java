@@ -1,10 +1,5 @@
 package agents;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -212,45 +207,6 @@ public class SegmentAgent extends Agent {
 		
 		resp.put("cars", ret);
 		return resp.toString();
-	}
-
-	/**
-	 * This method logs the information of the segment.
-	 * 
-	 * @return
-	 */
-	public void doLog(long currentTick) {
-		//System.out.println("Falta implementar el log del segment");
-		/*if (currentTick % 15 == 0) {
-
-			if (currentTick % 15 == 0) {
-
-				JSONObject data = new JSONObject();
-				data.put("id", getLocalName());
-				data.put("time", currentTick);
-				data.put("currentSpeed", segment.getCurrentAllowedSpeed());
-				data.put("maxSpeed", segment.getMaxSpeed());
-				
-				List<CarData> lista = 
-						new ArrayList<CarData>(cars.values());
-				java.util.Map<Integer, Long> counted = 
-						lista.stream().
-			            collect(Collectors.groupingBy(	            		
-			            		(x->x.getTypeOfAlgorithm()), 
-			            		Collectors.counting()));
-
-				data.put("shortest", counted.get(0)==null?0:counted.get(0));
-				data.put("fastest", counted.get(1)==null?0:counted.get(1));
-				data.put("startSmart", counted.get(2)==null?0:counted.get(2));
-				data.put("dynamicSmart", counted.get(3)==null?0:counted.get(3));
-				ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-				msg.setOntology("segmentToLog");
-				msg.addReceiver(logAgent.getName());
-//				System.out.println("msg: " + data.toString());
-				msg.setContent(data.toString());
-				send(msg);
-			}
-		}*/
 	}
 
 	/**

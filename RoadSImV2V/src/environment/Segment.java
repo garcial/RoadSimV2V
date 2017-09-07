@@ -125,7 +125,7 @@ public class Segment implements Serializable{
 	       int numberTracks, jade.wrapper.AgentContainer mainContainer, 
 	       boolean segmentLogging, String loggingDirectory, boolean drawGUI,
 	       String direction, double pkstart,
-	       LinkedList segTwinsList, String roadCode, long tick){
+	       LinkedList<String> segTwinsList, String roadCode, long tick){
 
 		this.id = id;
 		this.origin = origin;

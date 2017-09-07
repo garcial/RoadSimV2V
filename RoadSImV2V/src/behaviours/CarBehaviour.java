@@ -73,8 +73,7 @@ public class CarBehaviour extends CyclicBehaviour {
 			this.agent.setCurrentTick(currentTick);
 			
 			this.agent.getCarData().setCurrentTick(currentTick);
-		    // Increase elapsed time
-			//agent.increaseElapsedtime();
+
 			//If I still have to move somewhere
 			if(this.agent.getPath().getGraphicalPath().size() > 0) {
 				//Get the path
