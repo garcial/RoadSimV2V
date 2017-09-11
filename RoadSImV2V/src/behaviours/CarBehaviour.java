@@ -82,9 +82,9 @@ public class CarBehaviour extends CyclicBehaviour {
 				// First calculate the currentSpeed,Greenshield model
 				int currentSpeed = (int) Math.min(
 						this.agent.getMaxSpeed(),
-					     (this.agent.getCurrentTrafficDensity() >= 28.2)? 5:
+					     (this.agent.getCurrentTrafficDensity() >= 43f)? 5:
 					    	 this.agent.getCurrentSegment().getMaxSpeed() *
-		                 (1-this.agent.getCurrentTrafficDensity()/28.2));
+		                 (1-this.agent.getCurrentTrafficDensity()/43f));
 				
 				agent.setCurrentSpeed(currentSpeed);
 				agent.getCarData().setCurrentSpeed(currentSpeed);
