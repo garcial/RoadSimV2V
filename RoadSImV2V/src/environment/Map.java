@@ -84,6 +84,7 @@ public class Map implements Serializable {
 				       stepsReader = null;
 		
 		System.out.println("/***************************/");
+		System.out.println("MapJava: Constructor");
 		System.out.println("folder: " + folder);
 		System.out.println("URL: " + url);
 		System.out.println("useLog: " + useLog);

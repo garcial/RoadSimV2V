@@ -21,7 +21,7 @@ public class Main {
 	private static long startingTick = 17*3600 + 59*60;
 	
 	//Finish the simulation at specific tick: 21:00
-	private static long finishingTick = 21*3600;
+	private static long finishingTick = 19*3600;
 	
 	//Draw the GUI
 	private static boolean drawGUI = true;
@@ -34,7 +34,7 @@ public class Main {
 	
 	//Logging directory for the segments and carAgent by default
 	private static String loggingDirectory = 
-			"D:/DOCS/Investigacion/codigo/api/RoadSimV2V/RoadSImV2V/src/staticFiles/log";
+			"C:/Users/usuario/workspaceDavidNeon/RoadSimV2V/RoadSImV2V/src/staticFiles/log";
 	
 	//The name of the car files by default
 	private static String carFile = "logcar.txt";
@@ -225,7 +225,7 @@ public class Main {
 			e2.printStackTrace();
 		}
 		
-		//EventManager
+		//EventManager - Manage the start of the agent
 		try {
 
 			AgentController agent = 
@@ -264,7 +264,7 @@ public class Main {
 			}
 		}	
 		
-		//TimeKeeper
+		//TimeKeeper - Manage the time of the system and send the time to update the roadsim data
 		try {
 			AgentController agent = 
 					mainContainer.createNewAgent("timeKeeperAgent",

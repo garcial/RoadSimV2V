@@ -25,7 +25,7 @@ public class InterfaceAgent extends Agent{
 
 	private static final long serialVersionUID = 1L;
 
-	public static final int MAXWORLDX = 2000;
+	public static final int MAXWORLDX = 1800;
 	public static final int MAXWORLDY = 900;
 
 	private CanvasWorld canvasMap;
