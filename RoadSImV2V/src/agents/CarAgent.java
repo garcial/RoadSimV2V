@@ -45,7 +45,7 @@ public class CarAgent extends Agent {
 	private float currentPk;
 	private int direction;
 	private int ratio = 10; // El radio es un valor fijo que dependerá del hardware
-	private int currentSpeed, maxSpeed;
+	private int maxSpeed;
 	private double currentTrafficDensity;
 	private long tini; // For measuring temporal intervals of traffic
 	private DFAgentDescription interfaceAgent;
@@ -114,8 +114,6 @@ public class CarAgent extends Agent {
 		
 		//Get the speeds
 		this.maxSpeed = (int) this.getArguments()[3];
-		this.currentSpeed = 0; //Se gestiona en el comportamiento 
-		                       // (int) this.getArguments()[4];
 		
 		String routeType = (String) this.getArguments()[4];
 		//Is necessary draw the gui
@@ -256,10 +254,6 @@ public class CarAgent extends Agent {
 				             MatchOntology("trafficDensityOntology"));
 		JSONObject densityData = new JSONObject(msg.getContent());
 		setCurrentTrafficDensity(densityData.getDouble("density"));
-
-		//Change my speed according to the maximum allowed speed
-	    setCurrentSpeed(Math.min(getMaxSpeed(), 
-	    			getCurrentSegment().getCurrentAllowedSpeed()));
 		
 		//Runs the agent
 		addBehaviour(new CarBehaviour(this, 50, this.drawGUI));
@@ -305,14 +299,6 @@ public class CarAgent extends Agent {
 
 	public void setDirection(int direction) {
 		this.direction = direction;
-	}
-
-	public int getCurrentSpeed() {
-		return currentSpeed;
-	}
-
-	public void setCurrentSpeed(int currentSpeed) {
-		this.currentSpeed = currentSpeed;
 	}
 
 	public int getMaxSpeed() {

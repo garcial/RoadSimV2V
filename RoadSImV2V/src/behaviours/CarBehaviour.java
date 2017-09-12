@@ -30,8 +30,8 @@ public class CarBehaviour extends CyclicBehaviour {
 	private boolean drawGUI;
 	private long previousTick;
 	private long currentTick;
-	private float currentSegmentCovered=0;
 	//For recording how many km has been covered yet of the current
+	private float currentSegmentCovered=0;
 	// Step
 	private float stepDistanceCovered;
 
@@ -69,9 +69,6 @@ public class CarBehaviour extends CyclicBehaviour {
 		if (msg != null) {
 			
 			this.currentTick = Long.parseLong(msg.getContent());
-			//I dont know if this line is necessary
-			this.agent.setCurrentTick(currentTick);
-			
 			this.agent.getCarData().setCurrentTick(currentTick);
 
 			//If I still have to move somewhere
@@ -85,8 +82,8 @@ public class CarBehaviour extends CyclicBehaviour {
 					     (this.agent.getCurrentTrafficDensity() >= 43f)? 5:
 					    	 this.agent.getCurrentSegment().getMaxSpeed() *
 		                 (1-this.agent.getCurrentTrafficDensity()/43f));
-				
-				agent.setCurrentSpeed(currentSpeed);
+				//TODO: Delete the agent variables to export it to carData
+				//agent.setCurrentSpeed(currentSpeed);
 				agent.getCarData().setCurrentSpeed(currentSpeed);
 				
 				float currentPk = this.agent.getCurrentPk();
@@ -273,7 +270,7 @@ public class CarBehaviour extends CyclicBehaviour {
 		carDataRegister.put("id", this.agent.getCarData().getId());
 		carDataRegister.put("x", this.agent.getCarData().getX());
 		carDataRegister.put("y", this.agent.getCarData().getY());
-		carDataRegister.put("speed", this.agent.getCurrentSpeed());
+		carDataRegister.put("speed", this.agent.getCarData().getCurrentSpeed());
 		carDataRegister.put("type", this.agent.getAlgorithmType());
 		carDataRegister.put("segmentDistanceCovered", this.stepDistanceCovered);
 		carDataRegister.put("tick", this.currentTick);

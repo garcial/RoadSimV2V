@@ -90,7 +90,7 @@ public class CarSendingDataBehaviour extends Behaviour {
 				JSONObject json = new JSONObject();
 				json.put("tini", carAgent.getTini());
 				json.put("tfin", carAgent.getCurrentTick());
-				json.put("speed", carAgent.getCurrentSpeed());
+				json.put("speed", carAgent.getCarData().getCurrentSpeed());
 				json.put("position", carAgent.getCurrentPk());
 				json.put("id", carAgent.getCarData().getId());
 				json.put("futureTraffic", 

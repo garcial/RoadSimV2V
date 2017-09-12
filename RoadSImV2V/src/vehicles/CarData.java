@@ -6,6 +6,7 @@ public class CarData {
 	private String id; // The getName() of the carAgent
 	private float x, y;
 	private float currentSpeed;
+	//TODO CarData needs typeOfAlgorithm if the car has this variable yet
 	private int typeOfAlgorithm;
 	private float segmentDistanceCovered;
 	private long currentTick;
