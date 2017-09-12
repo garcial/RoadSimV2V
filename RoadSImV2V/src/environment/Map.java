@@ -62,6 +62,7 @@ public class Map implements Serializable {
 		this.mainContainer = mainContainer;		
 		this.useLog = useLog;
 		this.loggingDirectory = loggingDirectory;
+		// Create JGRAPHT - Multigrapht directed
 		this.jgrapht = 
 				new DirectedWeightedMultigraph<Intersection, Edge>
 		                (Edge.class);
@@ -146,7 +147,7 @@ public class Map implements Serializable {
 					this.intersections.add(intersection);
 					intersectionsAux.put(inter.getString("id"),
 							             intersection);
-					//JGRAPHT
+					//JGRAPHT - Add Vertex
 					this.jgrapht.addVertex(intersection);
 					line = intersectionsReader.readLine();
 					this.intersectionCount++;
@@ -189,16 +190,16 @@ public class Map implements Serializable {
 					
 					//Make the segment
 					Segment segment = new Segment(this.jgrapht, seg.getString("id"), 
-							          origin, destination, seg.getDouble("length"),
-							          seg.getInt("maxSpeed"), 
-							          seg.getInt("capacity"),
-							          seg.getInt("density"), 
-							          seg.getInt("numberTracks"), 
-							          this.mainContainer, this.useLog, 
-							          this.loggingDirectory, this.drawGUI,
-							          seg.getString("direction"),
-							          seg.getDouble("pkstart"), segTwinsList,
-							          seg.getString("roadCode"),tick);
+									          origin, destination, seg.getDouble("length"),
+									          seg.getInt("maxSpeed"), 
+									          seg.getInt("capacity"),
+									          seg.getInt("density"), 
+									          seg.getInt("numberTracks"), 
+									          this.mainContainer, this.useLog, 
+									          this.loggingDirectory, this.drawGUI,
+									          seg.getString("direction"),
+									          seg.getDouble("pkstart"), segTwinsList,
+									          seg.getString("roadCode"),tick);
 
 					if(origin != null){
 						origin.addOutSegment(segment);
@@ -214,7 +215,11 @@ public class Map implements Serializable {
 						          segment.getLength(), 
 						          segment.getMaxSpeed());
 						//Print the edges of the map
+						/* System.out.println("Map -- Add Edge " + 
+											segment.getId() + " : [ "
+											+ e.toString() + " ]"); */
 						this.jgrapht.addEdge(origin, destination, e);
+						/* The weight is hours in double (0.xx) */
 						this.jgrapht.setEdgeWeight(e, 
 								segment.getLength() /
 								segment.getMaxSpeed());
@@ -257,7 +262,6 @@ public class Map implements Serializable {
 				
 				//Move the segments
 				for (String string : segmentsAux.keySet()) {
-					
 					this.move(segmentsAux.get(string), 4);
 				}
 				
@@ -277,9 +281,7 @@ public class Map implements Serializable {
 
 			}catch(Exception e){
 				e.printStackTrace();
-				
 			}finally{
-
 				intersectionsReader.close();
 				segmentsReader.close();
 				stepsReader.close();

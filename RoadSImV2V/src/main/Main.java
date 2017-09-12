@@ -144,6 +144,7 @@ public class Main {
 		jade.wrapper.AgentContainer segmentContainer = 
 				                     rt.createAgentContainer(profile);
 		
+		// Initialization of the main variables
 		if(args.length < 7){
 			System.out.println("The variables startingTick, finishingTick, loggingDirectory, carFile,"
 					+ " segmentFile, useLog and drawLog are created by default. You can pass it like arguments");
@@ -175,8 +176,6 @@ public class Main {
 			System.out.println("Error reading the maps file.");
 			e.printStackTrace();
 		}
-
-		//Create the agents
 		
 		//Create a profile for the car container
 		profile = new ProfileImpl(null, 1099, null);
@@ -201,11 +200,11 @@ public class Main {
 			e3.printStackTrace();
 		}
 		
-		//Interface if is necesary
+		//Interface if is necessary
 		if(drawGUI){
 			try {
 
-			AgentController agent = 
+				AgentController agent = 
 					mainContainer.createNewAgent("interfaceAgent",
 							             "agents.InterfaceAgent", 
 							             new Object[]{map, drawGUI});
