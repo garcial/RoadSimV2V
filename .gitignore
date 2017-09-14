@@ -9,7 +9,7 @@ MTPs-Main container.txt
 .\RoadSImV2V\.classpath
 RoadSImV2V\.classpath
 RoadSImV2V/src/staticFiles/log/
-
+RoadSImV2V\src\staticFiles\log\
 # Log file
 *.log
 
