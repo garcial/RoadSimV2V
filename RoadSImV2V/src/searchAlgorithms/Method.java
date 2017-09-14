@@ -2,7 +2,7 @@ package searchAlgorithms;
 
 /**
  * Enumeration for the different types of algorithms
- *
+ *	TODO: Make differences between Startsmart , dynamicsmart and dijkstra
  */
 public enum Method {
 

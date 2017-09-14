@@ -514,13 +514,15 @@ public class CarAgent extends Agent {
 				steps, segments);
 	}
 
+	//Used with the shortest method. The road speed is not important
 	private void putWeightsAsDistancesOnGraph(
 			DirectedWeightedMultigraph<Intersection, Edge> jgrapht2) {
 		for(Edge e: jgrapht2.edgeSet()) {
 			jgrapht2.setEdgeWeight(e, e.getLength());
 		}
 	}
-
+	
+	//Used with the fastest method. The fast method depends of the distance and the speed
 	private void putWeightAsTripMaxSpeedOnGraph(
 			DirectedWeightedMultigraph<Intersection, Edge> jgraphtClone) {
 		for(Edge e: jgraphtClone.edgeSet()) {

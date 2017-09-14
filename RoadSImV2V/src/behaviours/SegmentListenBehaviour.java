@@ -152,7 +152,7 @@ public class SegmentListenBehaviour extends Behaviour {
 					        equals("eventManagerToSegmentOntology")) {
 				
 				Segment segment = this.agent.getSegment();
-				
+				// TODO Service level era un char pero ahora en teoria no es así
 				char serviceLevel = msg.getContent().charAt(0);
 				
 				segment.setCurrentServiceLevel(serviceLevel);
