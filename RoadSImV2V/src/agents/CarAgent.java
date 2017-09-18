@@ -7,6 +7,8 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
+import searchAlgorithms.Algorithm;
+import searchAlgorithms.AlgorithmFactory;
 import searchAlgorithms.Method;
 import trafficData.TrafficData;
 import trafficData.TrafficDataInStore;
@@ -53,6 +55,7 @@ public class CarAgent extends Agent {
 	private boolean drawGUI;
 	private boolean useLog;
 	private Map map;
+	private Algorithm alg;
 	private Path path;
 	private Segment currentSegment;
 	private String initialIntersection, finalIntersection;
@@ -153,13 +156,22 @@ public class CarAgent extends Agent {
 		// Tini for measuring traffic data intervals in twin segments 
 		//tini = elapsedtime;
 		
-		if (routeType.equals("fastest")) 
+		AlgorithmFactory factory = new AlgorithmFactory();
+		this.alg = null;
+		
+		if (routeType.equals("fastest")){
+			this.alg = factory.getAlgorithm(Method.FASTEST);
 			this.algorithmType = Method.FASTEST.value;
-		else if (routeType.equals("shortest"))
+		} else if (routeType.equals("shortest")){
+			this.alg = factory.getAlgorithm(Method.SHORTEST);
 			this.algorithmType = Method.SHORTEST.value;
-		else if (routeType.equals("dynamicSmart"))
+		} else if (routeType.equals("dynamicSmart")) {
+			this.alg = factory.getAlgorithm(Method.DYNAMICSMART);
 			this.algorithmType = Method.DYNAMICSMART.value;
-		else this.algorithmType = Method.STARTSMART.value;
+		} else {
+			this.alg = factory.getAlgorithm(Method.STARTSMART);
+			this.algorithmType = Method.STARTSMART.value;
+		}
 		
 		//Create new CarData object
 		carData = new CarData(
@@ -476,13 +488,14 @@ public class CarAgent extends Agent {
 		this.logData.add(new LogData(idSegment,numMsgRecibido,numMsgEnviados,distSegment,velMedia));
 	}
 	
+	// TODO: Cambiar este método pata implementar los de hay en algorithms
 	public Path getPathOnMethod(String initialInterseccion,
             String finalIntersection) {
 
-		GraphPath<Intersection, Edge> pathJGrapht = null;
+		GraphPath<Intersection, Edge> pathGrapht = null;
 		if (algorithmType == Method.DYNAMICSMART.value || 
 				algorithmType == Method.STARTSMART.value) {
-			pathJGrapht = DijkstraShortestPath.findPathBetween(jgrapht, 
+			pathGrapht = DijkstraShortestPath.findPathBetween(jgrapht, 
 					map.getIntersectionByID(initialInterseccion),
 					map.getIntersectionByID(finalIntersection));
 		} else if (algorithmType == Method.SHORTEST.value) {
@@ -490,7 +503,7 @@ public class CarAgent extends Agent {
 			DirectedWeightedMultigraph<Intersection, Edge> jgraphtClone = 
 			(DirectedWeightedMultigraph<Intersection, Edge>) jgrapht.clone();
 			putWeightsAsDistancesOnGraph(jgraphtClone);
-			pathJGrapht = DijkstraShortestPath.findPathBetween(jgraphtClone, 
+			pathGrapht = DijkstraShortestPath.findPathBetween(jgraphtClone, 
 					map.getIntersectionByID(initialInterseccion),
 					map.getIntersectionByID(finalIntersection));
 		} else if (algorithmType == Method.FASTEST.value) {
@@ -498,19 +511,26 @@ public class CarAgent extends Agent {
 			DirectedWeightedMultigraph<Intersection, Edge> jgraphtClone = 
 			(DirectedWeightedMultigraph<Intersection, Edge>) jgrapht.clone();
 			putWeightAsTripMaxSpeedOnGraph(jgraphtClone);
-			pathJGrapht = DijkstraShortestPath.findPathBetween(jgraphtClone, 
+			pathGrapht = DijkstraShortestPath.findPathBetween(jgraphtClone, 
 					map.getIntersectionByID(initialInterseccion),
 					map.getIntersectionByID(finalIntersection));
 		}
+		
+		System.out.println("//////////////////// PATH /////////////////");
+		System.out.println(pathGrapht.toString());
+		System.out.println("//////////////////// PATH 2 /////////////////");
+		System.out.println(pathGrapht.getVertexList().toString());		
+		System.out.println("//////////////////// END PATH /////////////////");
+
 
 		List<Step> steps = new ArrayList<Step>();
 		List<Segment> segments = new ArrayList<Segment>();
 		
-		for(Edge e: pathJGrapht.getEdgeList()){
+		for(Edge e: pathGrapht.getEdgeList()){
 			steps.addAll(map.getSegmentByID(e.getIdSegment()).getSteps());
 			segments.add(map.getSegmentByID(e.getIdSegment()));
 		}
-		return new Path(pathJGrapht.getVertexList(),
+		return new Path(pathGrapht.getVertexList(),
 				steps, segments);
 	}
 
