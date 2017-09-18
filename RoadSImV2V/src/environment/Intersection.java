@@ -1,7 +1,11 @@
 package environment;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.ArrayList; 
+import java.util.Collections; 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.List;
 
 /**
  * Represents the union of several {@link Segment}. A roundabout, 
@@ -21,6 +25,9 @@ public class Intersection implements Serializable{
 	//Out segments
 	private ArrayList<Segment> out;
 	
+	//Every way has a number of ways to exit
+	private Map<Segment, List<Segment>> allowedRoads = new HashMap<Segment, List<Segment>>();
+	
 	//Coordinates
 	private int x, y;
 	
@@ -34,6 +41,7 @@ public class Intersection implements Serializable{
 		this.out = new ArrayList<Segment>();
 		this.x = 0;
 		this.y = 0;
+		this.allowedRoads = new HashMap<Segment, List<Segment>>();
 	}
 	
 	/**
@@ -53,6 +61,10 @@ public class Intersection implements Serializable{
 		this.out = out;
 		this.x = x;
 		this.y = y;
+		for(Segment s: in){
+			//Now we use all the ways in every entry
+			this.allowedRoads.put(s, out);
+		}
 	}
 	
 	/**

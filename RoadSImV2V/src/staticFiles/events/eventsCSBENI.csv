@@ -1,0 +1,7 @@
+newCar,18:00,I-N340-04,I-N340a-01,81,fastest
+newCar,18:00,I-CV1501-02,I-N340a-01,112,fastest
+newCar,18:01,I-N340-03,I-N340-01,99,smartest
+newCar,18:02,I-CV1501-02,I-N340a-01,118,smartest
+newCar,18:01,I-CV1520-01,I-CV149-03,117,smartest
+newCar,18:02,I-CV1520-01,I-CV1501-01,117,fastest
+newCar,18:01,I-CV1520-01,I-N340-04,102,shortest

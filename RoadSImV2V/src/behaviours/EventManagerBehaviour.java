@@ -62,8 +62,7 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 				
 				ACLMessage timeMsg =new ACLMessage(ACLMessage.INFORM);
 				timeMsg.setOntology("updateTimeOntology");
-				timeMsg.addReceiver(this.agent.getInterfaceAgent().
-						                       getName());
+				timeMsg.addReceiver(this.agent.getInterfaceAgent().getName());
 				timeMsg.setContent(new JSONObject(
 					"{hora:" + String.format("%02d",hours) + 
 					", minutos:" +String.format("%02d", minutes)+"}").
@@ -71,8 +70,7 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 				myAgent.send(timeMsg);
 			}
 			
-			HashMap<Long, List<String>> events = 
-					                           this.agent.getEvents();
+			HashMap<Long, List<String>> events = this.agent.getEvents();
 			//System.out.println(events);
 			long currentTick = Long.parseLong(msg.getContent());
 			//System.out.println(currentTick);
@@ -87,7 +85,7 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 				for (String string : actions) {
 					
 					String parts[] = string.split(",");
-					
+					System.out.println(string);
 					if (parts[0].equals("newCar")) {
 						
 						try {
