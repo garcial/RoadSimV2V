@@ -7,11 +7,15 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
+import org.jgrapht.Graph;
+import org.jgrapht.GraphPath;
+
 import environment.Intersection;
 import environment.Map;
 import environment.Path;
 import environment.Segment;
 import environment.Step;
+import jgrapht.Edge;
 
 /**
  * Abstract class for the search algorithms
@@ -23,6 +27,19 @@ public abstract class Algorithm {
 	public abstract double getMetric(Intersection origin, Intersection destination, int maxSpeed);
 	
 	public static int MAXSPEED = 120;
+	
+	/**
+	 * Dijkstra https://en.wikipedia.org/?title=Dijkstra%27s_algorithm#Pseudocode.
+	 * 
+	 * @param grapth
+	 * @param intersection initial
+	 * @param intersection final
+	 * @return path from initial intersection to final intersection using Dijkstra
+	 */
+	public GraphPath<Intersection, Edge> findSmartestPath(Graph<Intersection, Edge> graph, Intersection startVertex, Intersection endVertex){
+		return null;
+		
+	}
 
 	/**
 	 * Dijkstra https://en.wikipedia.org/?title=Dijkstra%27s_algorithm#Pseudocode.

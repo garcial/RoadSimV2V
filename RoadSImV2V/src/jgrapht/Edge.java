@@ -15,17 +15,19 @@ public class Edge extends DefaultWeightedEdge {
 	 * cars about this segment
 	 */
 	private String idSegment;
-	private double length;
+	private double weight;
 	private int maxSpeed;
 	private int serviceLevel;
 	private List<EdgeData> edgeDataList;
 	private static final long serialVersionUID = 17455L;
+	private Node initialNode;
+	private Node finalNode;
 
 	
 	public Edge(String idSegment, double length, int maxSpeed) {
 		this.edgeDataList = new ArrayList<EdgeData>();
 		this.idSegment = idSegment;
-		this.length = length;
+		this.weight = length;
 		this.maxSpeed = maxSpeed;
 		this.edgeDataList = new ArrayList<EdgeData>();
 	}
@@ -38,9 +40,16 @@ public class Edge extends DefaultWeightedEdge {
 		this.serviceLevel = serviceLevel;
 		this.edgeDataList.add(
 				new EdgeData(serviceLevel, weight, initialDate, finalDate));
-		this.length = length;
+		this.weight = length;
 		this.maxSpeed = maxSpeed;
 		
+	}
+	
+	public Edge(Node initialNode, Node finalNode, String idSegment, double length) {
+		this.initialNode = initialNode;
+		this.finalNode = finalNode;
+		this.idSegment = idSegment;
+		this.weight = length;
 	}
 	
 //	public void updateList(long n_k){
@@ -66,12 +75,12 @@ public class Edge extends DefaultWeightedEdge {
 		this.edgeDataList = edgeDataList;
 	}
 
-	public double getLength() {
-		return length;
+	public double getWeight() {
+		return weight;
 	}
 
-	public void setLength(double length) {
-		this.length = length;
+	public void setWeight(double length) {
+		this.weight = length;
 	}
 
 	public int getMaxSpeed() {
@@ -92,6 +101,14 @@ public class Edge extends DefaultWeightedEdge {
 
 	public void setServiceLevel(int serviceLevel) {
 		this.serviceLevel = serviceLevel;
+	}
+	
+	public Node getSource(){
+		return initialNode;
+	}
+	
+	public Node getDestination(){
+		return finalNode;
 	}
 
 	@Override

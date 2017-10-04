@@ -518,6 +518,7 @@ public class CarAgent extends Agent {
 		
 		System.out.println("//////////////////// PATH /////////////////");
 		System.out.println(pathGrapht.toString());
+		System.out.println(pathGrapht);
 		System.out.println("//////////////////// PATH 2 /////////////////");
 		System.out.println(pathGrapht.getVertexList().toString());		
 		System.out.println("//////////////////// END PATH /////////////////");
@@ -538,7 +539,7 @@ public class CarAgent extends Agent {
 	private void putWeightsAsDistancesOnGraph(
 			DirectedWeightedMultigraph<Intersection, Edge> jgrapht2) {
 		for(Edge e: jgrapht2.edgeSet()) {
-			jgrapht2.setEdgeWeight(e, e.getLength());
+			jgrapht2.setEdgeWeight(e, e.getWeight());
 		}
 	}
 	
@@ -546,7 +547,7 @@ public class CarAgent extends Agent {
 	private void putWeightAsTripMaxSpeedOnGraph(
 			DirectedWeightedMultigraph<Intersection, Edge> jgraphtClone) {
 		for(Edge e: jgraphtClone.edgeSet()) {
-			jgraphtClone.setEdgeWeight(e, e.getLength() /
+			jgraphtClone.setEdgeWeight(e, e.getWeight() /
 					e.getMaxSpeed());
 		}
 	}
