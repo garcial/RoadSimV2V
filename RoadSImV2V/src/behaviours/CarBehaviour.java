@@ -198,9 +198,14 @@ public class CarBehaviour extends CyclicBehaviour {
 						}
 						
 						if (this.agent.isSmart()) {
-						    this.agent.recalculate(
-								this.agent.getCurrentSegment().
-								           getOrigin().getId());
+						    try {
+								this.agent.recalculate(
+									this.agent.getCurrentSegment().
+									           getOrigin().getId());
+							} catch (CloneNotSupportedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
 						}
 						
 						// Once rerouted, Delete data from future 

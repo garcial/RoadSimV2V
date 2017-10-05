@@ -3,7 +3,7 @@ package jgrapht;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MultiGraphRoadSim {
+public class MultiGraphRoadSim implements Cloneable {
 	
 	private List<Node> nodes;
 	private List<Edge> edges;
@@ -23,7 +23,7 @@ public class MultiGraphRoadSim {
 	}
 	
 	public void addEdge(Node nodeI, Node nodeF, String id, double weight){
-		Edge e = new Edge(nodeI, nodeF, id, weight);
+		Edge e = new Edge(nodeI, nodeF, id, weight, 'A');
 		this.edges.add(e);
 	}
 	
@@ -68,6 +68,12 @@ public class MultiGraphRoadSim {
 	@Override
 	public String toString() {
 		return "MultiGraphRoadSim [nodes=" + nodes.toString() + ", edges=" + edges.toString() + "]";
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
 	}
 	
 	

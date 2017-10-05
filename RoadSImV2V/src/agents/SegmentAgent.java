@@ -3,7 +3,6 @@ package agents;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -18,6 +17,7 @@ import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jgrapht.Edge;
+import jgrapht.MultiGraphRoadSim;
 import vehicles.CarData;
 
 /**
@@ -38,7 +38,7 @@ public class SegmentAgent extends Agent {
 
 	//The cars that are currently on this segment
 	private HashMap<String, CarData> cars;
-	private DirectedWeightedMultigraph<Intersection, Edge> jgrapht;
+	private MultiGraphRoadSim jgrapht;
 	private HashMap<String, ArrayList<String>> interactingCars;
 	//TODO: Gestionar lo que se guarda en el log
 	private int serviceLevelPast;
@@ -50,7 +50,7 @@ public class SegmentAgent extends Agent {
 		//Get the segment from parameter
 		this.segment = (Segment) this.getArguments()[0];
 		this.drawGUI = (boolean) this.getArguments()[1];
-		this.jgrapht = (DirectedWeightedMultigraph<Intersection, Edge>) this.getArguments()[2];
+		this.jgrapht = (MultiGraphRoadSim) this.getArguments()[2];
 		this.useLog = (boolean) this.getArguments()[3];
 		this.setTini((long) this.getArguments()[4]);
 		this.segment.setSegmentAgent(this);
@@ -256,11 +256,11 @@ public class SegmentAgent extends Agent {
 		this.useLog = useLog;
 	}
 
-	public DirectedWeightedMultigraph<Intersection, Edge> getJgrapht() {
+	public MultiGraphRoadSim getJgrapht() {
 		return jgrapht;
 	}
 
-	public void setJgrapht(DirectedWeightedMultigraph<Intersection, Edge> jgrapht) {
+	public void setJgrapht(MultiGraphRoadSim jgrapht) {
 		this.jgrapht = jgrapht;
 	}
 

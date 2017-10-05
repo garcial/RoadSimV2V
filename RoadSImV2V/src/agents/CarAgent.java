@@ -16,13 +16,12 @@ import trafficData.TrafficDataOutStore;
 import vehicles.CarData;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
-import org.jgrapht.GraphPath;
-import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
-import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.json.JSONObject;
 
+import jgrapht.*;
 import behaviours.CarBehaviour;
 import behaviours.CarReceivingDataBehaviour;
 import environment.Intersection;
@@ -30,7 +29,6 @@ import environment.Map;
 import environment.Path;
 import environment.Segment;
 import environment.Step;
-import jgrapht.Edge;
 
 /**
  * This code represents a mobile car, it will have an origin an a 
@@ -61,7 +59,7 @@ public class CarAgent extends Agent {
 	private String initialIntersection, finalIntersection;
 	private boolean smart = false;
 	private int algorithmType;
-	private DirectedWeightedMultigraph<Intersection, Edge> jgrapht;
+	private MultiGraphRoadSim graph;
 	private long currentTick;
 	
 	private List<LogData> logData;
@@ -109,7 +107,12 @@ public class CarAgent extends Agent {
 		this.map = (Map) this.getArguments()[0];
 		
 		//Get the jgraph from the map
-		this.jgrapht = (DirectedWeightedMultigraph<Intersection, Edge>) this.map.getJgrapht().clone();
+		try {
+			this.graph = (MultiGraphRoadSim) this.map.getJgrapht().clone();
+		} catch (CloneNotSupportedException e1) {
+			System.out.println("CarAgent:Constructor");
+			e1.printStackTrace();
+		}
 		
 		//Get the starting and final points of my trip
 		this.initialIntersection = (String) this.getArguments()[1];
@@ -132,8 +135,13 @@ public class CarAgent extends Agent {
 		useLog = (boolean) this.getArguments()[8];
 
 
-		this.path = getPathOnMethod(initialIntersection, 
-			       finalIntersection);
+		try {
+			this.path = getPathOnMethod(initialIntersection, 
+				       finalIntersection);
+		} catch (CloneNotSupportedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		Step currentStep = path.getGraphicalPath().get(0);
 	    setCurrentSegment(currentStep.getSegment());
@@ -278,8 +286,9 @@ public class CarAgent extends Agent {
 	 *     if we are smart.
 	 * 
 	 * @param origin ID of the intersection where the car is
+	 * @throws CloneNotSupportedException 
 	 */
-	public void recalculate(String origin) {
+	public void recalculate(String origin) throws CloneNotSupportedException {
 		
 		// A JGraph envision structure must be obteined from jgraphsT 
 		//     received by other cars in the twin segment of the 
@@ -349,14 +358,12 @@ public class CarAgent extends Agent {
 		return finalIntersection;
 	}
 	
-	public DirectedWeightedMultigraph<Intersection, Edge> 
-	                                                   getJgrapht() {
-		return jgrapht;
+	public MultiGraphRoadSim getJgrapht() {
+		return graph;
 	}
 
-	public void setjgrapht(
-			DirectedWeightedMultigraph<Intersection,Edge> jgrapht){
-		this.jgrapht = jgrapht;
+	public void setjgrapht(MultiGraphRoadSim graph){
+		this.graph = graph;
 	}
 	
 	public boolean isSmart() {
@@ -490,65 +497,62 @@ public class CarAgent extends Agent {
 	
 	// TODO: Cambiar este método pata implementar los de hay en algorithms
 	public Path getPathOnMethod(String initialInterseccion,
-            String finalIntersection) {
-
-		GraphPath<Intersection, Edge> pathGrapht = null;
-		if (algorithmType == Method.DYNAMICSMART.value || 
-				algorithmType == Method.STARTSMART.value) {
-			pathGrapht = DijkstraShortestPath.findPathBetween(jgrapht, 
-					map.getIntersectionByID(initialInterseccion),
-					map.getIntersectionByID(finalIntersection));
+            String finalIntersection) throws CloneNotSupportedException {
+      
+        LinkedList<Node> pathGrapht = null;
+		if (algorithmType == Method.DYNAMICSMART.value || algorithmType == Method.STARTSMART.value) {
+			DijkstraGirosPermitidos dijkstra = new DijkstraGirosPermitidos(graph); 
+			dijkstra.execute(graph.getNodeById(initialInterseccion), graph.getNodeById(finalIntersection));
+			pathGrapht = dijkstra.getPath();
 		} else if (algorithmType == Method.SHORTEST.value) {
 			@SuppressWarnings("unchecked")
-			DirectedWeightedMultigraph<Intersection, Edge> jgraphtClone = 
-			(DirectedWeightedMultigraph<Intersection, Edge>) jgrapht.clone();
+			MultiGraphRoadSim jgraphtClone = (MultiGraphRoadSim) graph.clone();
 			putWeightsAsDistancesOnGraph(jgraphtClone);
-			pathGrapht = DijkstraShortestPath.findPathBetween(jgraphtClone, 
-					map.getIntersectionByID(initialInterseccion),
-					map.getIntersectionByID(finalIntersection));
+			DijkstraGirosPermitidos dijkstra = new DijkstraGirosPermitidos(jgraphtClone); 
+			dijkstra.execute(graph.getNodeById(initialInterseccion), graph.getNodeById(finalIntersection));
+			pathGrapht = dijkstra.getPath();
 		} else if (algorithmType == Method.FASTEST.value) {
 			@SuppressWarnings("unchecked")
-			DirectedWeightedMultigraph<Intersection, Edge> jgraphtClone = 
-			(DirectedWeightedMultigraph<Intersection, Edge>) jgrapht.clone();
+			MultiGraphRoadSim jgraphtClone = (MultiGraphRoadSim) graph.clone();
 			putWeightAsTripMaxSpeedOnGraph(jgraphtClone);
-			pathGrapht = DijkstraShortestPath.findPathBetween(jgraphtClone, 
-					map.getIntersectionByID(initialInterseccion),
-					map.getIntersectionByID(finalIntersection));
+			DijkstraGirosPermitidos dijkstra = new DijkstraGirosPermitidos(jgraphtClone); 
+			dijkstra.execute(graph.getNodeById(initialInterseccion), graph.getNodeById(finalIntersection));
+			pathGrapht = dijkstra.getPath();
 		}
 		
 		System.out.println("//////////////////// PATH /////////////////");
 		System.out.println(pathGrapht.toString());
-		System.out.println(pathGrapht);
-		System.out.println("//////////////////// PATH 2 /////////////////");
-		System.out.println(pathGrapht.getVertexList().toString());		
+		System.out.println(pathGrapht);	
 		System.out.println("//////////////////// END PATH /////////////////");
 
 
 		List<Step> steps = new ArrayList<Step>();
 		List<Segment> segments = new ArrayList<Segment>();
+		List<Intersection> intersections = new ArrayList<Intersection>();
 		
-		for(Edge e: pathGrapht.getEdgeList()){
-			steps.addAll(map.getSegmentByID(e.getIdSegment()).getSteps());
-			segments.add(map.getSegmentByID(e.getIdSegment()));
+		for(Node n: pathGrapht){
+			String[] interEdge = n.getId().split("¿");
+			intersections.add(map.getIntersectionByID(interEdge[0]));
+			if(interEdge.length > 1){// Is not source
+				steps.addAll(map.getSegmentByID(interEdge[1]).getSteps());
+				segments.add(map.getSegmentByID(interEdge[1]));
+			}
 		}
-		return new Path(pathGrapht.getVertexList(),
-				steps, segments);
+		
+		return new Path(intersections,steps, segments);
 	}
 
 	//Used with the shortest method. The road speed is not important
-	private void putWeightsAsDistancesOnGraph(
-			DirectedWeightedMultigraph<Intersection, Edge> jgrapht2) {
-		for(Edge e: jgrapht2.edgeSet()) {
-			jgrapht2.setEdgeWeight(e, e.getWeight());
+	private void putWeightsAsDistancesOnGraph( MultiGraphRoadSim jgrapht2) {
+		for(Edge e: jgrapht2.getEdges()) {
+			e.setWeight(e.getWeight());
 		}
 	}
 	
 	//Used with the fastest method. The fast method depends of the distance and the speed
-	private void putWeightAsTripMaxSpeedOnGraph(
-			DirectedWeightedMultigraph<Intersection, Edge> jgraphtClone) {
-		for(Edge e: jgraphtClone.edgeSet()) {
-			jgraphtClone.setEdgeWeight(e, e.getWeight() /
-					e.getMaxSpeed());
+	private void putWeightAsTripMaxSpeedOnGraph(MultiGraphRoadSim jgraphtClone) {
+		for(Edge e: jgraphtClone.getEdges()) {
+			e.setWeight(e.getWeight()/e.getMaxSpeed());
 		}
 	}
 

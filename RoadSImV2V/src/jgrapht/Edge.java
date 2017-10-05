@@ -29,7 +29,7 @@ public class Edge extends DefaultWeightedEdge {
 		this.idSegment = idSegment;
 		this.weight = length;
 		this.maxSpeed = maxSpeed;
-		this.edgeDataList = new ArrayList<EdgeData>();
+		
 	}
 
 	public Edge(String idSegment, char serviceLevel, double weight,
@@ -45,11 +45,13 @@ public class Edge extends DefaultWeightedEdge {
 		
 	}
 	
-	public Edge(Node initialNode, Node finalNode, String idSegment, double length) {
+	public Edge(Node initialNode, Node finalNode, String idSegment, double length, char serviceLevel) {
 		this.initialNode = initialNode;
 		this.finalNode = finalNode;
 		this.idSegment = idSegment;
+		this.serviceLevel = serviceLevel;
 		this.weight = length;
+		this.edgeDataList = new ArrayList<EdgeData>();
 	}
 	
 //	public void updateList(long n_k){

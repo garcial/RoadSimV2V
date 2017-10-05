@@ -5,12 +5,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.jgrapht.graph.DirectedWeightedMultigraph;
-
 import agents.SegmentAgent;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 import jgrapht.Edge;
+import jgrapht.MultiGraphRoadSim;
 
 /**
  * Represents a section of a road in a single direction.
@@ -119,13 +118,12 @@ public class Segment implements Serializable{
 	 * @param  destination {@link Intersection} where this {@link Segment} ends.
 	 * @param  length The length of this {@link Segment} in Km.
 	 */
-	public Segment(DirectedWeightedMultigraph<Intersection, Edge> jgrapht,
-			String id, Intersection origin, Intersection destination, 
-	       double length, int maxSpeed, int capacity, int density, 
-	       int numberTracks, jade.wrapper.AgentContainer mainContainer, 
-	       boolean segmentLogging, String loggingDirectory, boolean drawGUI,
-	       String direction, double pkstart,
-	       LinkedList<String> segTwinsList, String roadCode, long tick){
+	public Segment(MultiGraphRoadSim jgrapht, String id, Intersection origin, 
+			Intersection destination, double length, int maxSpeed, int capacity,
+			int density, int numberTracks, jade.wrapper.AgentContainer mainContainer, 
+	        boolean segmentLogging, String loggingDirectory, boolean drawGUI,
+	        String direction, double pkstart, LinkedList<String> segTwinsList, 
+	        String roadCode, long tick){
 
 		this.id = id;
 		this.origin = origin;

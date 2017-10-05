@@ -10,11 +10,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-
-import org.jgrapht.graph.DirectedWeightedMultigraph;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import jgrapht.Edge;
+import jgrapht.MultiGraphRoadSim;
+import jgrapht.Node;
 
 /**
  * Class that holds the representation of a map.
@@ -32,8 +32,8 @@ public class Map implements Serializable {
 	private Integer intersectionCount;
 	private Integer segmentCount;
 	private List<Intersection> intersections;
-	// JGRAPHT
-	private DirectedWeightedMultigraph<Intersection, Edge> jgrapht;
+	// GRAPHT
+	private MultiGraphRoadSim grapht;
 
 	//The container where the segment agents will be created
 	private transient jade.wrapper.AgentContainer mainContainer;
@@ -63,9 +63,7 @@ public class Map implements Serializable {
 		this.useLog = useLog;
 		this.loggingDirectory = loggingDirectory;
 		// Create JGRAPHT - Multigrapht directed
-		this.jgrapht = 
-				new DirectedWeightedMultigraph<Intersection, Edge>
-		                (Edge.class);
+		this.grapht = new MultiGraphRoadSim();
 
 		//Read the files
 		this.intersectionCount = 0;
@@ -131,7 +129,8 @@ public class Map implements Serializable {
 
 				//Auxiliar structure
 				this.intersections = new ArrayList<Intersection>();
-
+				//Leemos los nodos
+				System.out.println("Map: Leemos nodos");
 				//Read  all the Intersections
 				while(line != null){
 
@@ -147,8 +146,12 @@ public class Map implements Serializable {
 					this.intersections.add(intersection);
 					intersectionsAux.put(inter.getString("id"),
 							             intersection);
-					//JGRAPHT - Add Vertex
-					this.jgrapht.addVertex(intersection);
+					//GRAPH - Add Vertex
+					Node n = new Node(intersection.getId());
+					/* System.out.println("Añadimos intersección: " + intersection);
+					System.out.println("Añadimos node: " + n); */					
+					this.grapht.addNode(n);
+					
 					line = intersectionsReader.readLine();
 					this.intersectionCount++;
 				}
@@ -166,19 +169,21 @@ public class Map implements Serializable {
 
 					Intersection origin = null;
 					Intersection destination = null;
+					Node destinationNode = null;
+					Node originNode = null;
 
 					//Origin
 					if(!seg.getString("origin").equals("null")) {
 
-						origin = intersectionsAux.get(
-								          seg.getString("origin"));
+						origin = intersectionsAux.get(seg.getString("origin"));
+						originNode = this.grapht.getNodeById(origin.getId());
 					}
 
 					//Destination
 					if(!seg.getString("destination").equals("null")) {
 
-						destination = intersectionsAux.get(
-								seg.getString("destination"));
+						destination = intersectionsAux.get(seg.getString("destination"));
+						destinationNode = this.grapht.getNodeById(destination.getId());
 					}
 
 					//Populate the map
@@ -189,7 +194,7 @@ public class Map implements Serializable {
 					}
 					
 					//Make the segment
-					Segment segment = new Segment(this.jgrapht, seg.getString("id"), 
+					Segment segment = new Segment(this.grapht, seg.getString("id"), 
 									          origin, destination, seg.getDouble("length"),
 									          seg.getInt("maxSpeed"), 
 									          seg.getInt("capacity"),
@@ -200,31 +205,35 @@ public class Map implements Serializable {
 									          seg.getString("direction"),
 									          seg.getDouble("pkstart"), segTwinsList,
 									          seg.getString("roadCode"),tick);
+					
+					Edge edgeSegment = new Edge(originNode, destinationNode,seg.getString("id"), seg.getDouble("length"), 'A');
 
 					if(origin != null){
+						Node norigin = this.grapht.getNodeById(origin.getId());
+						norigin.addSegmentOut(edgeSegment);
 						origin.addOutSegment(segment);
 					}
 
 					if(destination != null){
+						Node ndestination = this.grapht.getNodeById(destination.getId());
+						ndestination.addSegmentIn(edgeSegment);
 						destination.addInSegment(segment);
 					}
+										
 					
 					//Add an Edge to the Jgraph
 					if(origin != null && destination != null){
-						Edge e = new Edge(segment.getId(), 
-						          segment.getLength(), 
-						          segment.getMaxSpeed());
 						//Print the edges of the map
 						/* System.out.println("Map -- Add Edge " + 
 											segment.getId() + " : [ "
 											+ e.toString() + " ]"); */
-						this.jgrapht.addEdge(origin, destination, e);
+						/*System.out.println("Añadimos segment: " + segment);
+						System.out.println("Añadimos edge: " + edgeSegment);*/	
+						this.grapht.addEdge(edgeSegment);
 						/* The weight is hours in double (0.xx) */
-						this.jgrapht.setEdgeWeight(e, 
-								segment.getLength() /
-								segment.getMaxSpeed());
-						segment.setMyEdge(e);
-						this.edgesAux.put(segment.getId(), e);
+						edgeSegment.setWeight(segment.getLength() /	segment.getMaxSpeed());
+						segment.setMyEdge(edgeSegment);
+						this.edgesAux.put(segment.getId(), edgeSegment);
 					}
 
 					segmentsAux.put(segment.getId(), segment);
@@ -232,7 +241,20 @@ public class Map implements Serializable {
 					line = segmentsReader.readLine();
 					this.segmentCount++;
 				}
-
+				//Están los segmentos cargados así que podemos añadir los
+				//caminos permitidos
+				//PUT ALLOWED WAYS IN THIS CASE ALL THE WAYS ARE ALLOWED
+				//Esto es como si fueran todo rotondas
+				for(Node n : grapht.getNodes()){
+					for(Edge in: n.getSegmentIn()){
+						for(Edge out: n.getSegmentOut()){
+							// System.out.println("Camino permitido en " + n.getId() + " de " + in.getIdSegment() + " a " + out.getIdSegment());
+							n.addAllowedWay(in.getIdSegment(), out.getIdSegment());
+						}
+					}
+				}
+				
+				
 				this.start = this.intersections.get(0);
 
 				//Read all the steps
@@ -296,18 +318,13 @@ public class Map implements Serializable {
 	 * @return
 	 */
 	public Intersection getIntersectionByID(String id){
-
 		Intersection ret = null;
-
 		for(Intersection intersection: this.intersections){
-
 			if(intersection.getId().equals(id)){
-
 				ret = intersection;
 				break;
 			}
 		}
-
 		return ret;
 	}
 
@@ -327,10 +344,8 @@ public class Map implements Serializable {
 	/**
 	 * Returns the jgraph with the structure of the map
 	 * */
-	public DirectedWeightedMultigraph<Intersection, Edge> 
-	       getJgrapht() {
-		
-		return jgrapht;
+	public MultiGraphRoadSim getJgrapht() {
+		return grapht;
 	}
 
 	/**
