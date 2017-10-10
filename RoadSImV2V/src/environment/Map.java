@@ -131,7 +131,7 @@ public class Map implements Serializable {
 				//Auxiliar structure
 				this.intersections = new ArrayList<Intersection>();
 				//Leemos los nodos
-				System.out.println("Map: Leemos nodos");
+				System.out.println("(Map.java) LEEMOS NODOS");
 				//Read  all the Intersections
 				while(line != null){
 
@@ -149,8 +149,7 @@ public class Map implements Serializable {
 							             intersection);
 					//GRAPH - Add Vertex
 					Node n = new Node(intersection.getId());
-					/* System.out.println("Añadimos intersección: " + intersection);
-					System.out.println("Añadimos node: " + n); */					
+					System.out.println("Añadimos intersección: " + intersection + " - Añadimos node: " + n);				
 					this.grapht.addNode(n);
 					
 					line = intersectionsReader.readLine();
@@ -224,6 +223,7 @@ public class Map implements Serializable {
 					
 					//Add an Edge to the Jgraph
 					if(origin != null && destination != null){	
+						System.out.println("Añadido Edge: " + edgeSegment);
 						this.grapht.addEdge(edgeSegment);
 						/* The weight is hours in double (0.xx) */
 						edgeSegment.setWeight(segment.getLength() /	segment.getMaxSpeed());
@@ -238,7 +238,7 @@ public class Map implements Serializable {
 				}
 				//Están los segmentos cargados así que podemos añadir los
 				//caminos permitidos
-				//PUT ALLOWED WAYS IN THIS CASE ALL THE WAYS ARE ALLOWED
+				//TODO: PUT ALLOWED WAYS IN THIS CASE ALL THE WAYS ARE ALLOWED
 				//Esto es como si fueran todo rotondas
 				for(Node n : grapht.getNodes()){
 					for(Edge in: n.getSegmentIn()){

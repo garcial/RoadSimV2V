@@ -210,6 +210,25 @@ public class CarBehaviour extends CyclicBehaviour {
 			}
 		} else block();
 	}
+	
+	private int calculateServiceLevel(int numCars, double legth){
+		int currentSL;
+		double density = numCars / legth;
+		if (density < 11) {						
+			currentSL = 0; // 'A';
+		} else if (density < 18) {
+			currentSL = 1; // 'B';
+		} else if (density < 26) {
+			currentSL = 2; // 'C';
+		} else if (density < 35) {
+			currentSL = 3; // 'D';
+		} else if (density < 43) {
+			currentSL = 4; // 'E';
+		} else 
+			currentSL = 5; // 'F';
+		
+		return currentSL;
+	}
 
 	//This method will send a message to a given segment
 	private void informSegment(Segment segment, String type) {
@@ -232,7 +251,7 @@ public class CarBehaviour extends CyclicBehaviour {
 			//Cambiar el graph
 			System.out.println("Cambiar el grafo de futuro en " + segment.getId());
 			for(String seg: this.agent.getFutureTraffic().getData().keySet()){
-				Edge edge =  this.agent.getJgrapht().getEdgeById(seg);
+				Edge edge =  this.agent.getGraph().getEdgeById(seg);
 				long tiniAux = edge.getTini();
 				long tfinAux = edge.getTfin();
 				TrafficData dataAux = null;
@@ -240,6 +259,7 @@ public class CarBehaviour extends CyclicBehaviour {
 					// TODO Voy a utilizar que el tini haya empezado antes y en el caso de que sean igual el que 
 					// tfin sea más grande pasa
 					if((t.getTini() > tiniAux) || (t.getTini() == tiniAux && t.getTfin() > tfinAux) ){
+						System.out.println("Edege cambiado");
 						tiniAux = t.getTini();
 						tfinAux = t.getTfin();
 						dataAux = t;
@@ -248,11 +268,11 @@ public class CarBehaviour extends CyclicBehaviour {
 				
 				if(dataAux != null){
 					// TODO: Aqui el nivel de servicio no se cual poner. Que calculo con el número de coches he de hacer
-					edge.updateEdge(seg, (int) (dataAux.getNumCars() / this.agent.getCurrentSegment().getLength()), dataAux.getNumCars() / this.agent.getCurrentSegment().getLength(), this.agent.getCurrentSegment().getMaxSpeed(), dataAux.getTini(), dataAux.getTfin());
+					edge.updateEdge(seg, this.calculateServiceLevel(dataAux.getNumCars() , this.agent.getCurrentSegment().getLength()), dataAux.getNumCars() / this.agent.getCurrentSegment().getLength(), this.agent.getCurrentSegment().getMaxSpeed(), dataAux.getTini(), dataAux.getTfin());
 				}
 				
 			}
-			System.out.println(this.agent.getJgrapht().getEdges());
+			System.out.println(this.agent.getGraph().getEdges());
 			/*System.out.println("PAST TRAFFIC de " + this.agent.getId());
 			for (String key : this.agent.getPastTraffic().getData().keySet()){
 				System.out.println("CBinfSeg: " + key + " - " +this.agent.getPastTraffic().getData().get(key));

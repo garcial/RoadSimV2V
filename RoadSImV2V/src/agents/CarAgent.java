@@ -134,37 +134,13 @@ public class CarAgent extends Agent {
 		//It is requested to do Logs?
 		useLog = (boolean) this.getArguments()[8];
 
-
-		try {
-			this.path = getPathOnMethod(initialIntersection, 
-				       finalIntersection);
-		} catch (CloneNotSupportedException e1) {
-			e1.printStackTrace();
-		}
+		AlgorithmFactory factory = new AlgorithmFactory();
+		this.alg = null;
 		
-		Step currentStep = path.getGraphicalPath().get(0);
-	    setCurrentSegment(currentStep.getSegment());
-
 		/* Generate the log parameters*/
 		//Asign the type of algorithm
 		this.logAlgorithm = routeType;
 		this.logInitialTick = tini;
-
-		//Store data received from other cars in a Map
-		futureTraffic = new TrafficDataInStore();
-
-		//Store data to send to other cars in my route
-		pastTraffic = new TrafficDataOutStore();
-
-		this.logData = new ArrayList<LogData>();
-
-		// Store current trafficData sensored by myself
-		sensorTrafficData = new TrafficData();
-		// Tini for measuring traffic data intervals in twin segments 
-		//tini = elapsedtime;
-		
-		AlgorithmFactory factory = new AlgorithmFactory();
-		this.alg = null;
 		
 		if (routeType.equals("fastest")){
 			this.alg = factory.getAlgorithm(Method.FASTEST);
@@ -179,6 +155,31 @@ public class CarAgent extends Agent {
 			this.alg = factory.getAlgorithm(Method.STARTSMART);
 			this.algorithmType = Method.STARTSMART.value;
 		}
+		
+		try {
+			this.path = getPathOnMethod(initialIntersection, 
+				       finalIntersection);
+		} catch (CloneNotSupportedException e1) {
+			e1.printStackTrace();
+		}
+		
+		Step currentStep = path.getGraphicalPath().get(0);
+	    setCurrentSegment(currentStep.getSegment());
+
+		
+
+		//Store data received from other cars in a Map
+		futureTraffic = new TrafficDataInStore();
+
+		//Store data to send to other cars in my route
+		pastTraffic = new TrafficDataOutStore();
+
+		this.logData = new ArrayList<LogData>();
+
+		// Store current trafficData sensored by myself
+		sensorTrafficData = new TrafficData();
+		// Tini for measuring traffic data intervals in twin segments 
+		//tini = elapsedtime;
 		
 		//Create new CarData object
 		carData = new CarData(
@@ -357,7 +358,7 @@ public class CarAgent extends Agent {
 		return finalIntersection;
 	}
 	
-	public MultiGraphRoadSim getJgrapht() {
+	public MultiGraphRoadSim getGraph() {
 		return graph;
 	}
 
@@ -495,9 +496,7 @@ public class CarAgent extends Agent {
 	}
 	
 	// TODO: Cambiar este método pata implementar los de hay en algorithms
-	public Path getPathOnMethod(String initialInterseccion,
-            String finalIntersection) throws CloneNotSupportedException {
-      
+	public Path getPathOnMethod(String initialInterseccion, String finalIntersection) throws CloneNotSupportedException {
         LinkedList<Node> pathGrapht = null;
 		if (algorithmType == Method.DYNAMICSMART.value || algorithmType == Method.STARTSMART.value) {
 			DijkstraGirosPermitidos dijkstra = new DijkstraGirosPermitidos(graph); 
