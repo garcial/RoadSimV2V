@@ -5,11 +5,11 @@ import org.json.JSONObject;
 import agents.SegmentAgent;
 import environment.EdgeData;
 import environment.Segment;
+import graph.Edge;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import jgrapht.Edge;
 import vehicles.CarData;
 
 /**
@@ -121,15 +121,7 @@ public class SegmentListenBehaviour extends Behaviour {
 						//Store current data of the edge in the list of 
 						// previous data
 						Edge myEdge = agent.getSegment().getMyEdge();
-						myEdge.getEdgeDataList().add(
-								new EdgeData(previousServiceLevel,
-										agent.getJgrapht().getEdgeById(myEdge.getIdSegment()).getWeight(),
-										agent.getTini(),
-										car.getLong("tick")	
-								));
-						agent.setTini(car.getLong("tick"));
-						//Change the weight of this edge in the 
-						//  jgrapht
+						
 						//Start computing the average speed
 						double averageSpeed = 0.0;
 						for(CarData cd:agent.getCars().values()) {
@@ -137,7 +129,9 @@ public class SegmentListenBehaviour extends Behaviour {
 						}
 						averageSpeed = averageSpeed / numCars;
 						//Update the weight in the jgraph of the map
-						agent.getJgrapht().getEdgeById(myEdge.getIdSegment()).setWeight(segment.getLength() / averageSpeed);
+						myEdge.updateEdge(myEdge.getIdSegment(), currentSL, segment.getLength() / averageSpeed, agent.getSegment().getMaxSpeed() ,agent.getTini(), car.getLong("tick"));
+						
+						agent.setTini(car.getLong("tick"));
 
 						previousServiceLevel = currentSL;
 						agent.getSegment().setCurrentServiceLevel(currentSL);

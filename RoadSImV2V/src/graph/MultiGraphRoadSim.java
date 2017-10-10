@@ -1,4 +1,4 @@
-package jgrapht;
+package graph;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +19,6 @@ public class MultiGraphRoadSim implements Cloneable {
 	}
 	
 	public void addEdge(Edge e){
-		this.edges.add(e);
-	}
-	
-	public void addEdge(Node nodeI, Node nodeF, String id, double weight){
-		Edge e = new Edge(nodeI, nodeF, id, weight, 'A');
 		this.edges.add(e);
 	}
 	

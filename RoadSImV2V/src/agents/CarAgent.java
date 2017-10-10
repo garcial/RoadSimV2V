@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.json.JSONObject;
 
-import jgrapht.*;
 import behaviours.CarBehaviour;
 import behaviours.CarReceivingDataBehaviour;
 import environment.Intersection;
@@ -29,6 +28,7 @@ import environment.Map;
 import environment.Path;
 import environment.Segment;
 import environment.Step;
+import graph.*;
 
 /**
  * This code represents a mobile car, it will have an origin an a 
@@ -108,7 +108,7 @@ public class CarAgent extends Agent {
 		
 		//Get the jgraph from the map
 		try {
-			this.graph = (MultiGraphRoadSim) this.map.getJgrapht().clone();
+			this.graph = (MultiGraphRoadSim) this.map.getGraph().clone();
 		} catch (CloneNotSupportedException e1) {
 			System.out.println("CarAgent:Constructor");
 			e1.printStackTrace();
@@ -139,7 +139,6 @@ public class CarAgent extends Agent {
 			this.path = getPathOnMethod(initialIntersection, 
 				       finalIntersection);
 		} catch (CloneNotSupportedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
@@ -520,10 +519,10 @@ public class CarAgent extends Agent {
 			pathGrapht = dijkstra.getPath();
 		}
 		
-		System.out.println("//////////////////// PATH /////////////////");
+		/*System.out.println("//////////////////// PATH /////////////////");
 		System.out.println(pathGrapht.toString());
 		System.out.println(pathGrapht);	
-		System.out.println("//////////////////// END PATH /////////////////");
+		System.out.println("//////////////////// END PATH /////////////////");*/
 
 
 		List<Step> steps = new ArrayList<Step>();
@@ -550,9 +549,9 @@ public class CarAgent extends Agent {
 	}
 	
 	//Used with the fastest method. The fast method depends of the distance and the speed
-	private void putWeightAsTripMaxSpeedOnGraph(MultiGraphRoadSim jgraphtClone) {
-		for(Edge e: jgraphtClone.getEdges()) {
-			e.setWeight(e.getWeight()/e.getMaxSpeed());
+	private void putWeightAsTripMaxSpeedOnGraph(MultiGraphRoadSim graphClone) {
+		for(Edge e: graphClone.getEdges()) {
+			e.setWeight(e.getWeight()/map.getSegmentByID(e.getIdSegment()).getMaxSpeed());
 		}
 	}
 

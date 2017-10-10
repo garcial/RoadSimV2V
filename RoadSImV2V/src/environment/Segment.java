@@ -6,10 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 import agents.SegmentAgent;
+import graph.Edge;
+import graph.MultiGraphRoadSim;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
-import jgrapht.Edge;
-import jgrapht.MultiGraphRoadSim;
 
 /**
  * Represents a section of a road in a single direction.

@@ -56,4 +56,12 @@ public class EdgeData {
 		this.serviceLevel = serviceLevel;
 	}
 
+	@Override
+	public String toString() {
+		return "EdgeData [serviceLevel=" + serviceLevel + ", weight=" + weight + ", initialDate=" + initialDate
+				+ ", finalDate=" + finalDate + "]";
+	}
+	
+	
+
 }

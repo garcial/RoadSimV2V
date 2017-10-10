@@ -15,7 +15,7 @@ import environment.Map;
 import environment.Path;
 import environment.Segment;
 import environment.Step;
-import jgrapht.Edge;
+import graph.Edge;
 
 /**
  * Abstract class for the search algorithms

@@ -12,9 +12,10 @@ import java.util.List;
 import java.util.Random;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import jgrapht.Edge;
-import jgrapht.MultiGraphRoadSim;
-import jgrapht.Node;
+
+import graph.Edge;
+import graph.MultiGraphRoadSim;
+import graph.Node;
 
 /**
  * Class that holds the representation of a map.
@@ -206,7 +207,7 @@ public class Map implements Serializable {
 									          seg.getDouble("pkstart"), segTwinsList,
 									          seg.getString("roadCode"),tick);
 					
-					Edge edgeSegment = new Edge(originNode, destinationNode,seg.getString("id"), seg.getDouble("length"), 'A');
+					Edge edgeSegment = new Edge(originNode, destinationNode,seg.getString("id"), seg.getDouble("length"), 2, seg.getInt("maxSpeed"), tick, tick);
 
 					if(origin != null){
 						Node norigin = this.grapht.getNodeById(origin.getId());
@@ -222,13 +223,7 @@ public class Map implements Serializable {
 										
 					
 					//Add an Edge to the Jgraph
-					if(origin != null && destination != null){
-						//Print the edges of the map
-						/* System.out.println("Map -- Add Edge " + 
-											segment.getId() + " : [ "
-											+ e.toString() + " ]"); */
-						/*System.out.println("Añadimos segment: " + segment);
-						System.out.println("Añadimos edge: " + edgeSegment);*/	
+					if(origin != null && destination != null){	
 						this.grapht.addEdge(edgeSegment);
 						/* The weight is hours in double (0.xx) */
 						edgeSegment.setWeight(segment.getLength() /	segment.getMaxSpeed());
@@ -344,7 +339,7 @@ public class Map implements Serializable {
 	/**
 	 * Returns the jgraph with the structure of the map
 	 * */
-	public MultiGraphRoadSim getJgrapht() {
+	public MultiGraphRoadSim getGraph() {
 		return grapht;
 	}
 

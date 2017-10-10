@@ -11,13 +11,13 @@ import behaviours.SegmentRadarBehaviour;
 import behaviours.SegmentSendToDrawBehaviour;
 import environment.Intersection;
 import environment.Segment;
+import graph.Edge;
+import graph.MultiGraphRoadSim;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import jgrapht.Edge;
-import jgrapht.MultiGraphRoadSim;
 import vehicles.CarData;
 
 /**
