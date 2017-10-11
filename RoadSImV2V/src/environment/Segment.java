@@ -123,7 +123,7 @@ public class Segment implements Serializable{
 			int density, int numberTracks, jade.wrapper.AgentContainer mainContainer, 
 	        boolean segmentLogging, String loggingDirectory, boolean drawGUI,
 	        String direction, double pkstart, LinkedList<String> segTwinsList, 
-	        String roadCode, long tick){
+	        String roadCode, long tick, int serviceLevel){
 
 		this.id = id;
 		this.origin = origin;
@@ -137,7 +137,8 @@ public class Segment implements Serializable{
 		this.mainContainer = mainContainer;
 		this.currentAllowedSpeed = this.maxSpeed;
 		this.serviceLevels = new HashMap<Integer, Float>();
-		this.currentServiceLevel = 0;
+		//Defaul currentService
+		this.currentServiceLevel = serviceLevel;
 		this.segmentLogging = segmentLogging;
 		this.loggingDirectory = loggingDirectory;
 		this.drawGUI = drawGUI;

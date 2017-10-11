@@ -45,8 +45,10 @@ public class DijkstraGirosPermitidos {
 	    public void execute(Node source, Node target) {
 	    	this.source = source;
 	    	this.target = target;
+	    	//System.out.println("SOURCE DIJK " + source);
+	    	//System.out.println("TARGET DIJK " + target);
 	        //System.out.println("------NODOS NO VISITADOS INICIO-------");
-	        //System.out.println(this.unSettledNodes);
+	        //System.out.println("NODOS NO VISITADOS INICIO "+this.unSettledNodes);
 	        //System.out.println("--------------------------------------");
 	        
 	        unSettledNodes.add(source);

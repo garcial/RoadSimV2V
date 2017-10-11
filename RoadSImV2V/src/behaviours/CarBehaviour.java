@@ -13,7 +13,6 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import trafficData.TrafficData;
-import trafficData.TrafficDataInStore;
 
 /**
  * This behaviour is used by the CarAgent and calculates the next 
@@ -259,7 +258,7 @@ public class CarBehaviour extends CyclicBehaviour {
 				for(TrafficData t : this.agent.getFutureTraffic().getData().get(seg)){
 					// TODO Voy a utilizar que el tini haya empezado antes y en el caso de que sean igual el que 
 					// tfin sea más grande pasa
-					if((t.getTini() > tiniAux) || (t.getTini() == tiniAux && t.getTfin() > tfinAux) ){
+					if((t.getTfin() > tfinAux) || (t.getTfin() == tfinAux && t.getTini() < tiniAux) ){
 						tiniAux = t.getTini();
 						tfinAux = t.getTfin();
 						dataAux = t;
@@ -268,9 +267,6 @@ public class CarBehaviour extends CyclicBehaviour {
 				
 				if(dataAux != null){
 					int serviceLevel = this.calculateServiceLevel(dataAux.getNumCars(), this.agent.getCurrentSegment().getLength());
-					System.out.println("NumCars: " + dataAux.getNumCars());
-					System.out.println("Length: " + this.agent.getCurrentSegment().getLength());
-					System.out.println("Weight: " + segment.getServiceLevels().get(serviceLevel));
 					// TODO: Aqui el nivel de servicio no se cual poner. Que calculo con el número de coches he de hacer
 					
 					edge.updateEdge(seg,serviceLevel, this.agent.getCurrentSegment().getLength()/this.agent.getCurrentSegment().getCurrentAllowedSpeed() , this.agent.getCurrentSegment().getMaxSpeed(), dataAux.getTini(), dataAux.getTfin());

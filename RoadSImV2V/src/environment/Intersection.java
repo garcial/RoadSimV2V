@@ -2,7 +2,6 @@ package environment;
 
 import java.io.Serializable;
 import java.util.ArrayList; 
-import java.util.Collections; 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -35,7 +34,6 @@ public class Intersection implements Serializable{
 	 * Default constructor. 
 	 */
 	public Intersection(){
-		
 		this.id = "";
 		this.in = new ArrayList<Segment>();
 		this.out = new ArrayList<Segment>();

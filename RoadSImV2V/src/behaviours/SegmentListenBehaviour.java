@@ -3,7 +3,6 @@ package behaviours;
 import org.json.JSONObject;
 
 import agents.SegmentAgent;
-import environment.EdgeData;
 import environment.Segment;
 import graph.Edge;
 import jade.core.AID;

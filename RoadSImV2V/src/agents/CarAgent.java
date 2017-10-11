@@ -7,8 +7,6 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import searchAlgorithms.Algorithm;
-import searchAlgorithms.AlgorithmFactory;
 import searchAlgorithms.Method;
 import trafficData.TrafficData;
 import trafficData.TrafficDataInStore;
@@ -53,7 +51,6 @@ public class CarAgent extends Agent {
 	private boolean drawGUI;
 	private boolean useLog;
 	private Map map;
-	private Algorithm alg;
 	private Path path;
 	private Segment currentSegment;
 	private String initialIntersection, finalIntersection;
@@ -133,9 +130,6 @@ public class CarAgent extends Agent {
 		
 		//It is requested to do Logs?
 		useLog = (boolean) this.getArguments()[8];
-
-		AlgorithmFactory factory = new AlgorithmFactory();
-		this.alg = null;
 		
 		/* Generate the log parameters*/
 		//Asign the type of algorithm
@@ -143,17 +137,13 @@ public class CarAgent extends Agent {
 		this.logInitialTick = tini;
 		
 		if (routeType.equals("fastest")){
-			this.alg = factory.getAlgorithm(Method.FASTEST);
 			this.algorithmType = Method.FASTEST.value;
 		} else if (routeType.equals("shortest")){
-			this.alg = factory.getAlgorithm(Method.SHORTEST);
 			this.algorithmType = Method.SHORTEST.value;
 		} else if (routeType.equals("dynamicSmart")) {
-			this.alg = factory.getAlgorithm(Method.DYNAMICSMART);
 			this.algorithmType = Method.DYNAMICSMART.value;
 			this.smart = true;
 		} else {
-			this.alg = factory.getAlgorithm(Method.STARTSMART);
 			this.algorithmType = Method.STARTSMART.value;
 			this.smart = true;
 		}
@@ -292,10 +282,9 @@ public class CarAgent extends Agent {
 	 */
 	public void recalculate(String origin) throws CloneNotSupportedException {
 		
-		// A JGraph envision structure must be obteined from jgraphsT 
+		//TODO: A JGraph envision structure must be obteined from jgraphsT 
 		//     received by other cars in the twin segment of the 
 		//     current segment where the car is going.
-		// TODO:
 		this.path = getPathOnMethod(origin, finalIntersection);
 		System.out.println(this.getFutureTraffic().getData().toString());
 		System.out.println(this.path.getSegmentPath().toString());
@@ -508,14 +497,12 @@ public class CarAgent extends Agent {
 			dijkstra.execute(graph.getNodeById(initialInterseccion), graph.getNodeById(finalIntersection));
 			pathGrapht = dijkstra.getPath();
 		} else if (algorithmType == Method.SHORTEST.value) {
-			@SuppressWarnings("unchecked")
 			MultiGraphRoadSim jgraphtClone = (MultiGraphRoadSim) graph.clone();
 			putWeightsAsDistancesOnGraph(jgraphtClone);
 			DijkstraGirosPermitidos dijkstra = new DijkstraGirosPermitidos(jgraphtClone); 
 			dijkstra.execute(graph.getNodeById(initialInterseccion), graph.getNodeById(finalIntersection));
 			pathGrapht = dijkstra.getPath();
 		} else if (algorithmType == Method.FASTEST.value) {
-			@SuppressWarnings("unchecked")
 			MultiGraphRoadSim jgraphtClone = (MultiGraphRoadSim) graph.clone();
 			putWeightAsTripMaxSpeedOnGraph(jgraphtClone);
 			DijkstraGirosPermitidos dijkstra = new DijkstraGirosPermitidos(jgraphtClone); 
@@ -572,46 +559,6 @@ public class CarAgent extends Agent {
 			this.numMsgRecibido = numMsgRecibido;
 			this.numMsgEnviados = numMsgEnviados;
 			this.distSegment = distSegment;
-			this.velMedia = velMedia;
-		}
-
-		public String getIdSegment() {
-			return idSegment;
-		}
-
-		public void setIdSegment(String idSegment) {
-			this.idSegment = idSegment;
-		}
-
-		public int getNumMsgRecibido() {
-			return numMsgRecibido;
-		}
-
-		public void setNumMsgRecibido(int numMsgRecibido) {
-			this.numMsgRecibido = numMsgRecibido;
-		}
-
-		public int getNumMsgEnviados() {
-			return numMsgEnviados;
-		}
-
-		public void setNumMsgEnviados(int numMsgEnviados) {
-			this.numMsgEnviados = numMsgEnviados;
-		}
-
-		public float getDistSegment() {
-			return distSegment;
-		}
-
-		public void setDistSegment(float distSegment) {
-			this.distSegment = distSegment;
-		}
-
-		public float getVelMedia() {
-			return velMedia;
-		}
-
-		public void setVelMedia(float velMedia) {
 			this.velMedia = velMedia;
 		}
 
