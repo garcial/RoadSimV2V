@@ -55,8 +55,7 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 			int hours = (int) (totalMinutes / 60);
 			int minutes = (int) (totalMinutes % 60);
 			//If the minute has changed, notify the interface
-			if (minutes != this.agent.getPreviousMinute() && 
-				this.drawGUI) {
+			if (minutes != this.agent.getPreviousMinute() && this.drawGUI) {
 				
 				this.agent.setPreviousMinute(minutes);
 				
@@ -71,7 +70,7 @@ public class EventManagerBehaviour extends CyclicBehaviour {
 			}
 			
 			HashMap<Long, List<String>> events = this.agent.getEvents();
-			//System.out.println(events);
+			//System.out.println("EMB Listevents" + events);
 			long currentTick = Long.parseLong(msg.getContent());
 			//System.out.println(currentTick);
 			int counter = 0;

@@ -13,10 +13,8 @@ import java.util.Set;
 public class DijkstraGirosPermitidos {
 
 	    private List<Node> nodes;
-		private Set<Node> settledNodes;
 	    private Set<Node> unSettledNodes;
 	    // El segmento seleccionado es el segmento por el que vas
-	    private Edge segmentSelected; 
 	    private Map<Node, Node> predecessors;
 	    // La key de las distancias es el id de la intersección - id del segmento
 	    // El segmento que se utiliza en las distacias es que segmento por el cual llegas a esa intersección
@@ -47,8 +45,6 @@ public class DijkstraGirosPermitidos {
 	    public void execute(Node source, Node target) {
 	    	this.source = source;
 	    	this.target = target;
-	    	this.segmentSelected = null;
-	        this.settledNodes = new HashSet<Node>();
 	        //System.out.println("------NODOS NO VISITADOS INICIO-------");
 	        //System.out.println(this.unSettledNodes);
 	        //System.out.println("--------------------------------------");
@@ -190,7 +186,6 @@ public class DijkstraGirosPermitidos {
 	        	if (edge.getIdSegment().equals(targetParts[1]) && edge.getDestination().getId().equals(targetParts[0]) && edge.getWeight() < minDistance) {
 	            	//System.out.println(" .Segment Vecino: " + edge.getIdSegment() + " de " + node.getId() + " a " + target.getId());
 	            	minDistance = edge.getWeight();
-	                this.segmentSelected = edge;
 	            } else {
 	            	//System.out.println(" .No cumple los requisitos el seg " + edge.getIdSegment());
 	            }
@@ -233,7 +228,7 @@ public class DijkstraGirosPermitidos {
 	        //System.out.println("GetPath");
 	        //System.out.println(this.target);
 	        //System.out.println(predecessors);
-	        //System.out.println(distance);
+	        System.out.println("Distancias" + distance.toString());
 	        LinkedList<Node> path = new LinkedList<Node>();
 	        Node step = this.target;
 	        double minDistance  = Double.MAX_VALUE;

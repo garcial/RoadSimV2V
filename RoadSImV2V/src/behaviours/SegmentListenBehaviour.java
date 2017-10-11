@@ -60,7 +60,6 @@ public class SegmentListenBehaviour extends Behaviour {
 				//Register
 				if (msg.getConversationId().equals("update")) { 
 					//Update position
-
 					this.agent.updateCar(car);
 				} else {
 					if (msg.getConversationId().equals("register")) {

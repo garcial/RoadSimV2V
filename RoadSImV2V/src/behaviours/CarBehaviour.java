@@ -212,22 +212,22 @@ public class CarBehaviour extends CyclicBehaviour {
 	}
 	
 	private int calculateServiceLevel(int numCars, double legth){
-		int currentSL;
-		double density = numCars / legth;
-		if (density < 11) {						
-			currentSL = 0; // 'A';
-		} else if (density < 18) {
-			currentSL = 1; // 'B';
-		} else if (density < 26) {
-			currentSL = 2; // 'C';
-		} else if (density < 35) {
-			currentSL = 3; // 'D';
-		} else if (density < 43) {
-			currentSL = 4; // 'E';
-		} else 
-			currentSL = 5; // 'F';
-		
-		return currentSL;
+        int currentSL;
+        double density = numCars / legth;
+        if (density < 11) {
+                currentSL = 0; // 'A';
+        } else if (density < 18) {
+                currentSL = 1; // 'B';
+        } else if (density < 26) {
+                currentSL = 2; // 'C';
+        } else if (density < 35) {
+                currentSL = 3; // 'D';
+        } else if (density < 43) {
+                currentSL = 4; // 'E';
+        } else
+                currentSL = 5; // 'F';
+
+        return currentSL;
 	}
 
 	//This method will send a message to a given segment
@@ -246,10 +246,11 @@ public class CarBehaviour extends CyclicBehaviour {
 			        setNumCars(agent.getSensorTrafficData().
 			        	    	getCarsPositions().size());
 			
+			//System.out.println("CB Pasamos de sensor a past en " + segment.getId() + " de " + this.agent.getName() + " - " + this.agent.getSensorTrafficData() );
 			this.agent.getPastTraffic().put(segment.getId(), this.agent.getSensorTrafficData());
 			
 			//Cambiar el graph
-			System.out.println("Cambiar el grafo de futuro en " + segment.getId());
+			//System.out.println("Cambiar el grafo de futuro en " + segment.getId());
 			for(String seg: this.agent.getFutureTraffic().getData().keySet()){
 				Edge edge =  this.agent.getGraph().getEdgeById(seg);
 				long tiniAux = edge.getTini();
@@ -259,7 +260,6 @@ public class CarBehaviour extends CyclicBehaviour {
 					// TODO Voy a utilizar que el tini haya empezado antes y en el caso de que sean igual el que 
 					// tfin sea más grande pasa
 					if((t.getTini() > tiniAux) || (t.getTini() == tiniAux && t.getTfin() > tfinAux) ){
-						System.out.println("Edege cambiado");
 						tiniAux = t.getTini();
 						tfinAux = t.getTfin();
 						dataAux = t;
@@ -267,12 +267,17 @@ public class CarBehaviour extends CyclicBehaviour {
 				}
 				
 				if(dataAux != null){
+					int serviceLevel = this.calculateServiceLevel(dataAux.getNumCars(), this.agent.getCurrentSegment().getLength());
+					System.out.println("NumCars: " + dataAux.getNumCars());
+					System.out.println("Length: " + this.agent.getCurrentSegment().getLength());
+					System.out.println("Weight: " + segment.getServiceLevels().get(serviceLevel));
 					// TODO: Aqui el nivel de servicio no se cual poner. Que calculo con el número de coches he de hacer
-					edge.updateEdge(seg, this.calculateServiceLevel(dataAux.getNumCars() , this.agent.getCurrentSegment().getLength()), dataAux.getNumCars() / this.agent.getCurrentSegment().getLength(), this.agent.getCurrentSegment().getMaxSpeed(), dataAux.getTini(), dataAux.getTfin());
+					
+					edge.updateEdge(seg,serviceLevel, this.agent.getCurrentSegment().getLength()/this.agent.getCurrentSegment().getCurrentAllowedSpeed() , this.agent.getCurrentSegment().getMaxSpeed(), dataAux.getTini(), dataAux.getTfin());
 				}
 				
 			}
-			System.out.println(this.agent.getGraph().getEdges());
+			//System.out.println(this.agent.getJgrapht().getEdges());
 			/*System.out.println("PAST TRAFFIC de " + this.agent.getId());
 			for (String key : this.agent.getPastTraffic().getData().keySet()){
 				System.out.println("CBinfSeg: " + key + " - " +this.agent.getPastTraffic().getData().get(key));
@@ -294,7 +299,7 @@ public class CarBehaviour extends CyclicBehaviour {
 		}else if("register".compareTo(type) == 0){
 			//Start a new current trafficData by myself
 			this.currentSegmentCovered = 0;
-			agent.setFutureTraffic(new TrafficDataInStore());
+			//agent.setFutureTraffic(new TrafficDataInStore());
 			agent.setSensorTrafficData(new TrafficData());
 			agent.getSensorTrafficData().setTini(this.currentTick);
 			//To log the info segment we need the initial tick
@@ -330,6 +335,9 @@ public class CarBehaviour extends CyclicBehaviour {
 		ACLMessage msgLog = new ACLMessage(ACLMessage.INFORM);
 		msgLog.setOntology("logCarOntology");
 		msgLog.addReceiver(this.agent.getLogAgent().getName());
+		/*System.out.println("CB Al acabar tenemos un pasado - id " + this.agent.getName() + " : " + this.agent.getPastTraffic().getData().toString() );
+		System.out.println("CB Al acabar tenemos un sensor - id " + this.agent.getName() + " : " + this.agent.getSensorTrafficData() );
+		System.out.println("CB Al acabar tenemos un futuro - id " + this.agent.getName() + " : " + this.agent.getFutureTraffic().getData().toString() );*/
 		msgLog.setContent(this.agent.getLogData().toString() + "," +
 		this.agent.getLogInitialTick() + "," + this.agent.getLogEndTick() +
 		"," + this.agent.getLogAlgorithm());

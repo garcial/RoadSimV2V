@@ -225,6 +225,14 @@ public class Segment implements Serializable{
 		this.segmentAgent.setSegment(this);
 	}
 
+	public HashMap<Integer, Float> getServiceLevels() {
+		return serviceLevels;
+	}
+
+	public void setServiceLevels(HashMap<Integer, Float> serviceLevels) {
+		this.serviceLevels = serviceLevels;
+	}
+
 	public double getDensity() {
 		return density;
 	}

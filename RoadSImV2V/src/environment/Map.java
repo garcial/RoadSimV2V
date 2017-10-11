@@ -226,7 +226,7 @@ public class Map implements Serializable {
 						System.out.println("Añadido Edge: " + edgeSegment);
 						this.grapht.addEdge(edgeSegment);
 						/* The weight is hours in double (0.xx) */
-						edgeSegment.setWeight(segment.getLength() /	segment.getMaxSpeed());
+						edgeSegment.setWeight(seg.getDouble("length")/ (seg.getInt("maxSpeed") * 0.8f));
 						segment.setMyEdge(edgeSegment);
 						this.edgesAux.put(segment.getId(), edgeSegment);
 					}
@@ -243,7 +243,7 @@ public class Map implements Serializable {
 				for(Node n : grapht.getNodes()){
 					for(Edge in: n.getSegmentIn()){
 						for(Edge out: n.getSegmentOut()){
-							// System.out.println("Camino permitido en " + n.getId() + " de " + in.getIdSegment() + " a " + out.getIdSegment());
+							System.out.println("Camino permitido en " + n.getId() + " de " + in.getIdSegment() + " a " + out.getIdSegment());
 							n.addAllowedWay(in.getIdSegment(), out.getIdSegment());
 						}
 					}

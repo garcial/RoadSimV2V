@@ -5,11 +5,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import behaviours.EventManagerBehaviour;
 import environment.Map;
@@ -30,7 +29,7 @@ public class EventManagerAgent extends Agent {
 
 	private int previousMinute;
 	
-	private Set<String> aux;
+	private List<String> aux;
 
 	// First parameter: Tick in seconds
 	// Second parameter: Events to be fired on tick
@@ -50,7 +49,7 @@ public class EventManagerAgent extends Agent {
 	protected void setup() {
 
 		this.events = new HashMap<Long, List<String>>();
-		this.aux = new HashSet<String>();
+		this.aux = new ArrayList<String>();
 
 		//Get the map
 		this.map = (Map) this.getArguments()[0];
@@ -132,7 +131,7 @@ public class EventManagerAgent extends Agent {
 				String line = null;
 
 				line = eventsReader.readLine();
-
+				
 				//Read  all the events
 				while(line != null){
 					aux.add(line);

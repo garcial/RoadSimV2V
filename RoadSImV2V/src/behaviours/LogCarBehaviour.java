@@ -28,7 +28,7 @@ public class LogCarBehaviour extends Behaviour {
 	public void action() {
 		ACLMessage msg = logAgent.receive(mtLogCar);
 		if (msg != null) { //There is a message
-			System.out.println("/***********/\n LogCarBehaviour:action \n" + msg);
+			//System.out.println("/***********/\n LogCarBehaviour:action \n" + msg);
 			this.logAgent.writeCar(msg.getContent());
 		}
 

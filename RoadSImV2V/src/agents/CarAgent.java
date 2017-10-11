@@ -151,9 +151,11 @@ public class CarAgent extends Agent {
 		} else if (routeType.equals("dynamicSmart")) {
 			this.alg = factory.getAlgorithm(Method.DYNAMICSMART);
 			this.algorithmType = Method.DYNAMICSMART.value;
+			this.smart = true;
 		} else {
 			this.alg = factory.getAlgorithm(Method.STARTSMART);
 			this.algorithmType = Method.STARTSMART.value;
+			this.smart = true;
 		}
 		
 		try {
@@ -295,6 +297,8 @@ public class CarAgent extends Agent {
 		//     current segment where the car is going.
 		// TODO:
 		this.path = getPathOnMethod(origin, finalIntersection);
+		System.out.println(this.getFutureTraffic().getData().toString());
+		System.out.println(this.path.getSegmentPath().toString());
 	}
 
 	//Setters and getters
@@ -499,6 +503,7 @@ public class CarAgent extends Agent {
 	public Path getPathOnMethod(String initialInterseccion, String finalIntersection) throws CloneNotSupportedException {
         LinkedList<Node> pathGrapht = null;
 		if (algorithmType == Method.DYNAMICSMART.value || algorithmType == Method.STARTSMART.value) {
+			System.out.println(graph.getEdges().toString());
 			DijkstraGirosPermitidos dijkstra = new DijkstraGirosPermitidos(graph); 
 			dijkstra.execute(graph.getNodeById(initialInterseccion), graph.getNodeById(finalIntersection));
 			pathGrapht = dijkstra.getPath();
