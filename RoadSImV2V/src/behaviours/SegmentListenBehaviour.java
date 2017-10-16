@@ -118,6 +118,8 @@ public class SegmentListenBehaviour extends Behaviour {
 					if (currentSL != previousServiceLevel) {
 						//Store current data of the edge in the list of 
 						// previous data
+						
+						// Cuando se cambia el nivel de servicio se cambia el grafo
 						Edge myEdge = agent.getSegment().getMyEdge();
 						
 						//Start computing the average speed

@@ -13,6 +13,10 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import vehicles.CarData;
 
+/**
+ * Gestiona la comunicación entre agentes coches
+ * */
+
 public class SegmentRadarBehaviour extends CyclicBehaviour {
 
 	private static final long serialVersionUID =-3953532297570848414L;

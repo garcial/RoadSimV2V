@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Node {
-	// Nodo del grafo. Este nodo es la intersección y la lista de segmentos a los que puede ir ??
+	// Nodo del grafo. Este nodo es la intersección y la lista de segmentos a los que puede ir
 	private String id;
 	private List<Edge> segmentIn;
 	private List<Edge> segmentOut;
@@ -69,7 +69,7 @@ public class Node {
 		for(String s: segments){
 			res.add(this.getSegmentById(s));
 		}
-		//System.out.println("--- GetAllowedSegment " + source.getIdSegment() + " : " +res);
+
 		return res;
 	}
 
@@ -106,7 +106,6 @@ public class Node {
 	@Override
 	public String toString() {
 		return "(Inte=" + id +  ")";
-		//return "INTERSECTION";
 	}
 	
 	

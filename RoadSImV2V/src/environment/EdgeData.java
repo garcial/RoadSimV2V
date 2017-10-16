@@ -1,5 +1,9 @@
 package environment;
 
+/**
+ * Datos de una arista del grafo
+ * */
+
 public class EdgeData {
 	
 	/*

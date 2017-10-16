@@ -11,10 +11,14 @@ import java.util.Map;
 import java.util.Set;
 
 public class DijkstraGirosPermitidos {
+	
+	/**
+	 * El algoritmo se basa en el capítulo 3 de Inteligencia Artificial para
+	 * desarrolladores. Conceptos e implementación en C#
+	 * */
 
 	    private List<Node> nodes;
 	    private Set<Node> unSettledNodes;
-	    // El segmento seleccionado es el segmento por el que vas
 	    private Map<Node, Node> predecessors;
 	    // La key de las distancias es el id de la intersección - id del segmento
 	    // El segmento que se utiliza en las distacias es que segmento por el cual llegas a esa intersección
@@ -27,13 +31,15 @@ public class DijkstraGirosPermitidos {
 	    public DijkstraGirosPermitidos(MultiGraphRoadSim graph) {
 	        // create a copy of the array so that we can operate on this array
 	    	// Ejemplo de Segmento - Edge {"2","3","E3","2"}
-	    	//{Intersección origen, destino, id, peso}
+	    	// {Intersección origen, destino, id, peso}
 	    	this.nodes = graph.getNodes();
 	    	this.unSettledNodes = new HashSet<Node>();
 	    	this.distance = new HashMap<Node, Double>();
 	        this.predecessors = new HashMap<Node, Node>();
 	        for(Edge i : graph.getEdges()){
-	        	// Los nodos son la intersección destino y el camino por el que llegan ahí
+	        	// El caracter ¿ es para crear los nodos virtuales
+	        	// Cada nodo en realidad engloba el camino por donde viene es decir cada intersección
+	        	// puede tener varios nodos. Ejemplo: I1¿E2
 	        	Node inter = new Node(i.getDestination().getId() + "¿" + i.getIdSegment());
 	        	this.unSettledNodes.add(inter);
 	        	this.distance.put(inter, Double.MAX_VALUE);
@@ -92,6 +98,9 @@ public class DijkstraGirosPermitidos {
 	    	return distance.get(destination);
 	    }
 
+	    /**
+	     * Este método búsca el camino con menor peso
+	     * */
 	    private void findMinimalDistances(Node node) {
 	    	//System.out.println("FindMinimalDistance de " + node.toString());
 	        List<Node> adjacentNodes = getNeighbors(node);
@@ -114,10 +123,15 @@ public class DijkstraGirosPermitidos {
 	        unSettledNodes.remove(node);
 	    }
 	    
+	    /**
+	     * Consigue los vecinos de un nodo específico
+	     * */
 	    private List<Node> getNeighbors(Node node) {
 	        //System.out.println("GetNeighbors - " + node);
 	    	List<Node> neighbors = new ArrayList<Node>();
 	        List<Edge> candidates = new ArrayList<Edge>();
+	        // Si es el primer nodo cogemos como candidatos
+	        // los segmentos de salida, sino cogeremos los segmentos permitidos
 	        if(node.getId().compareTo(this.source.getId()) == 0){
 	        	candidates = node.getSegmentOut();
 	        }else{
@@ -151,6 +165,9 @@ public class DijkstraGirosPermitidos {
 	        return neighbors;
 	    }
 
+	    /**
+	     * Calcula la distancia entre un nodo origen y un nodo destino
+	     * */
 	    private double getDistance(Node node, Node target) {
 	    	double minDistance = distance.get(target);
 	    	//System.out.println("-Distancia Minima: " + minDistance);
@@ -195,7 +212,7 @@ public class DijkstraGirosPermitidos {
 	        return minDistance;
 	    }
 	    
-	    /*
+	    /**
 	     * This method returns the path from the source to the selected target and
 	     * NULL if no path exists
 	     */

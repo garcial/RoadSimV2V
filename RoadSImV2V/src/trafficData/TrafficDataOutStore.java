@@ -4,6 +4,10 @@ import java.util.HashMap;
 
 import org.json.JSONObject;
 
+/**
+ * Lista de datos que vas a enviar
+ * */
+
 public class TrafficDataOutStore {
 
 	private HashMap<String, TrafficData> data;

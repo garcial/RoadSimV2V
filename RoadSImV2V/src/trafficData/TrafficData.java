@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+/**
+ * Datos que se envian entre agentes coche
+ * */
+
 public class TrafficData {
 	private long tini;
 	private long tfin;

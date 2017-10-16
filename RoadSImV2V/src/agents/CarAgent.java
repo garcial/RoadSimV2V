@@ -488,7 +488,6 @@ public class CarAgent extends Agent {
 		this.logData.add(new LogData(idSegment,numMsgRecibido,numMsgEnviados,distSegment,velMedia));
 	}
 	
-	// TODO: Cambiar este método pata implementar los de hay en algorithms
 	public Path getPathOnMethod(String initialInterseccion, String finalIntersection) throws CloneNotSupportedException {
         LinkedList<Node> pathGrapht = null;
 		if (algorithmType == Method.DYNAMICSMART.value || algorithmType == Method.STARTSMART.value) {

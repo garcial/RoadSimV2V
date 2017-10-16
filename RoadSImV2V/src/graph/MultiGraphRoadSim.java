@@ -13,7 +13,6 @@ public class MultiGraphRoadSim implements Cloneable {
 		this.edges = new ArrayList<Edge>();
 	}
 	
-	
 	public void addNode(Node n){
 		this.nodes.add(n);
 	}

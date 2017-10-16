@@ -39,8 +39,7 @@ public class CarSendingDataBehaviour extends Behaviour {
 			ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
 			msg.setOntology("roadTwinsOntology");
 
-			List<String> twins = carAgent.getCurrentSegment().
-					                      getTwinSegments();
+			List<String> twins = carAgent.getCurrentSegment().getTwinSegments();
 			for(int i = 0; i < twins.size(); i++) {
 				msg.addReceiver(carAgent.getMap().
 						        getSegmentByID(twins.get(i)).

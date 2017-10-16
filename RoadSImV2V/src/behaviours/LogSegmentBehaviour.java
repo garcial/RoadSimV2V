@@ -5,6 +5,10 @@ import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 
+/**
+ * Comportamiento que se encarga de loguear los datos de un segmento
+ * */
+
 public class LogSegmentBehaviour extends Behaviour {
 
 	

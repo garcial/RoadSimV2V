@@ -5,6 +5,9 @@ import java.util.HashMap;
 
 import org.json.JSONObject;
 
+/**
+ * Lista de datos que recibe un coche
+ * */
 
 public class TrafficDataInStore {
 
@@ -21,6 +24,7 @@ public class TrafficDataInStore {
 	public void setData(HashMap<String, ArrayList<TrafficData>> data){
 		this.data = data;
 	}
+	
 	public void put(String key, JSONObject json) {
 		if (data.containsKey(key)) 
 			data.get(key).add(new TrafficData(json));
