@@ -35,10 +35,10 @@ public class CarReceivingDataBehaviour extends CyclicBehaviour {
 			//   current position and pastTrafficState (that is to 
 			//   be added to futureTrafficState of the agent that
 			//   receives this msg)
-			// La información del coche la meto en la información sensorizada
+			// La informaciÃ³n del coche la meto en la informaciÃ³n sensorizada
 			//   mientras que el past traffic que me pasa lo meto dentro de mi future que
-			//   es lo que decidirá
-			carAgent.getSensorTrafficData().addOneCar(); // Suma un coche al número de coches detectados
+			//   es lo que decidir
+			carAgent.getSensorTrafficData().addOneCar(); // Suma un coche al nÃºmero de coches detectados
 			carAgent.setNumMsgRecibido(carAgent.getNumMsgRecibido() + 1); //Suma el numero de mensajes recibidos
 			carAgent.getSensorTrafficData().getCarsSpeeds().add(datos.getDouble("speed"));
 			carAgent.getSensorTrafficData().getCarsPositions().add(datos.getDouble("position"));

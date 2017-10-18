@@ -41,7 +41,7 @@ public class Segment implements Serializable{
 	//Number of tracks
 	private int numberTracks;
 
-	//The steps that form the segment
+	//The stepsTest that form the segment
 	private List<Step> steps;
 
 	//Max speed
@@ -59,7 +59,7 @@ public class Segment implements Serializable{
 	//Variable to draw the GUI
 	private boolean drawGUI;
 	
-	//List with the twins segments
+	//List with the twins segmentsTest
 	private List<String> twinSegments;
 	
 	//Road Code
@@ -158,7 +158,7 @@ public class Segment implements Serializable{
 		//Create the agents
 		try {
 
-			//Agent Controller to segments with Interface
+			//Agent Controller to segmentsTest with Interface
 			AgentController agent = mainContainer.createNewAgent(
 					this.id, "agents.SegmentAgent", new Object[]{this, this.drawGUI,
 							 jgrapht, this.segmentLogging, tick});

@@ -32,7 +32,7 @@ public class Main {
 	//Activate the log
 	private static boolean useLog = true;
 	
-	//Logging directory for the segments and carAgent by default
+	//Logging directory for the segmentsTest and carAgent by default
 	private static String loggingDirectory = 
 			"D:/DOCS/Investigacion/codigo/api/RoadSimV2V/RoadSImV2V/src/staticFiles/log";
 	
@@ -128,7 +128,7 @@ public class Main {
 			}
 		}
 
-		//We will use a container only for the segments
+		//We will use a container only for the segmentsTest
 		profile = new ProfileImpl(null, 1099, null);
 		profile.setParameter(Profile.CONTAINER_NAME, 
 				            "Segment container");
@@ -168,8 +168,8 @@ public class Main {
 
 		//Load the map
 		try {
-			// The map load the segments that create the SegmentAgent
-			map = new Map("staticFiles/map/test", segmentContainer,
+			// The map load the segmentsTest that create the SegmentAgent
+			map = new Map("staticFiles/map/pruebasDijkstra", segmentContainer,
 					      useLog, loggingDirectory, drawGUI, startingTick);
 		} catch (IOException e) {
 

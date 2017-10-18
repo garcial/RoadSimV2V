@@ -20,7 +20,7 @@ import vehicles.CarData;
 
 /**
  * This agent will keep track of the cars that are inside between two
- * intersections and will update the data accordingly.
+ * intersectionsTest and will update the data accordingly.
  *
  */
 public class SegmentAgent extends Agent {
@@ -108,7 +108,7 @@ public class SegmentAgent extends Agent {
 			addBehaviour(new SegmentSendToDrawBehaviour(this));
 		}
 		//This behaviour will answer car requests on neighbour cars 
-		//   driving on twin segments
+		//   driving on twin segmentsTest
 		addBehaviour(new SegmentRadarBehaviour(this));
 	}
 
@@ -278,7 +278,7 @@ public class SegmentAgent extends Agent {
 			return true;
 			
 		} else if (!interactingCars.get(otherCar).contains(idCar)) {
-			// Una vez ha habido una nueva interacción, esta deja de ser nueva por lo que se le añade a la lista de interacciones
+			// Una vez ha habido una nueva interacciï¿½n, esta deja de ser nueva por lo que se le aï¿½ade a la lista de interacciones
 			interactingCars.get(otherCar).add(idCar);
 			return true;
 		}

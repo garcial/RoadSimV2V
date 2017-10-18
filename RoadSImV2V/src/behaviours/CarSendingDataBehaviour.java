@@ -29,7 +29,7 @@ public class CarSendingDataBehaviour extends Behaviour {
 		step = 0;
 	}
 
-	// two steps behaviour
+	// two stepsTest behaviour
 	@Override
 	public void action() {
 		switch (step) {
@@ -57,12 +57,12 @@ public class CarSendingDataBehaviour extends Behaviour {
 			step++;
 			break;
 		// Recibe los ids de los agentes coche que hay en el segmento opuesto
-		// Se les manda la informaci髇 del coche en ese momento
-		// Esta informaci髇 se basa en el id, velocidad, pk e
-		// informaci髇 sobre el trafico que le interesa al vecino
+		// Se les manda la informaci贸n del coche en ese momento
+		// Esta informaci贸n se basa en el id, velocidad, pk e
+		// informaci贸n sobre el trafico que le interesa al vecino
 		case 1: 
 			//TODO: Revise how to manage all the responses from
-			//      all the twin segments
+			//      all the twin segmentsTest
 			ACLMessage req = myAgent.receive(mtTwins);
 			//System.out.println(req);
 			if (req!= null){
@@ -73,9 +73,9 @@ public class CarSendingDataBehaviour extends Behaviour {
 				JSONArray list = contenido.getJSONArray("ids");
 				//System.out.println("CarAgent AID CSDB: " + carAgent.getAID() + " ListaID: " + list.toString());
 				int numTwins = list.length();
-				// Ojo con pedir la misma informaci贸n varias veces 
-				//     al mismo veh铆culo durante el tiempo en que  
-				//     coinciden en el radio de localizaci贸n => => 
+				// Ojo con pedir la misma informaci脙鲁n varias veces 
+				//     al mismo veh脙颅culo durante el tiempo en que  
+				//     coinciden en el radio de localizaci脙鲁n => => 
 				//     => => Lo hace el agente segmento
 				if (numTwins == 0) {step++; return;} // NO hay vecinos
 				// Si al menos hay un vecino con el que comunicarse ..

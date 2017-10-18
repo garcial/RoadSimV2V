@@ -7,13 +7,13 @@ public class Path implements Serializable {
 	
 	private static final long serialVersionUID =-5385591092178183277L;
 
-	//The list of intersections of this path
+	//The list of intersectionsTest of this path
 	List<Intersection> intersectionPath;
 	
 	//The graphical lines of this path
 	List<Step> graphicalPath;
 	
-	//The segments of this path
+	//The segmentsTest of this path
 	List<Segment> segmentPath;
 	
 	/**

@@ -93,7 +93,7 @@ public class JSONTokener {
      */
     public void back() throws JSONException {
         if (this.usePrevious || this.index <= 0) {
-            throw new JSONException("Stepping back two steps is not supported");
+            throw new JSONException("Stepping back two stepsTest is not supported");
         }
         this.index -= 1;
         this.character -= 1;

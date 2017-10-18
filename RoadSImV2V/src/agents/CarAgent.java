@@ -42,7 +42,7 @@ public class CarAgent extends Agent {
 	private CarData carData;
 	private float currentPk;
 	private int direction;
-	private int ratio = 10; // El radio es un valor fijo que dependerá del hardware
+	private int ratio = 10; // El radio es un valor fijo que dependerï¿½ del hardware
 	private int maxSpeed;
 	private double currentTrafficDensity;
 	private long tini; // For measuring temporal intervals of traffic
@@ -154,7 +154,7 @@ public class CarAgent extends Agent {
 		} catch (CloneNotSupportedException e1) {
 			e1.printStackTrace();
 		}
-		
+
 		Step currentStep = path.getGraphicalPath().get(0);
 	    setCurrentSegment(currentStep.getSegment());
 
@@ -170,7 +170,7 @@ public class CarAgent extends Agent {
 
 		// Store current trafficData sensored by myself
 		sensorTrafficData = new TrafficData();
-		// Tini for measuring traffic data intervals in twin segments 
+		// Tini for measuring traffic data intervals in twin segmentsTest
 		//tini = elapsedtime;
 		
 		//Create new CarData object
@@ -520,7 +520,7 @@ public class CarAgent extends Agent {
 		List<Intersection> intersections = new ArrayList<Intersection>();
 		
 		for(Node n: pathGrapht){
-			String[] interEdge = n.getId().split("¿");
+			String[] interEdge = n.getId().split("Â¿");
 			intersections.add(map.getIntersectionByID(interEdge[0]));
 			if(interEdge.length > 1){// Is not source
 				steps.addAll(map.getSegmentByID(interEdge[1]).getSteps());

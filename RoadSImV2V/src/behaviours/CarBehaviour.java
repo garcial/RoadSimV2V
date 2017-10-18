@@ -17,7 +17,7 @@ import trafficData.TrafficData;
 /**
  * This behaviour is used by the CarAgent and calculates the next 
  * graphical position of the car. It also registers and deregisters
- * the car from the segments.
+ * the car from the segmentsTest.
  * 
  * The car is registered when it enters a new segment and deregistered
  * when it leaves a segment.

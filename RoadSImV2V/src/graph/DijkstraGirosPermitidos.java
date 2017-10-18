@@ -13,16 +13,16 @@ import java.util.Set;
 public class DijkstraGirosPermitidos {
 	
 	/**
-	 * El algoritmo se basa en el capítulo 3 de Inteligencia Artificial para
-	 * desarrolladores. Conceptos e implementación en C#
+	 * El algoritmo se basa en el capï¿½tulo 3 de Inteligencia Artificial para
+	 * desarrolladores. Conceptos e implementaciï¿½n en C#
 	 * */
 
 	    private List<Node> nodes;
 	    private Set<Node> unSettledNodes;
 	    private Map<Node, Node> predecessors;
-	    // La key de las distancias es el id de la intersección - id del segmento
-	    // El segmento que se utiliza en las distacias es que segmento por el cual llegas a esa intersección
-	    //En el caso de que sea el primer nodo que pongo ¿Solo el nombre de la intersección 0 o los de entrada?
+	    // La key de las distancias es el id de la intersecciï¿½n - id del segmento
+	    // El segmento que se utiliza en las distacias es que segmento por el cual llegas a esa intersecciï¿½n
+	    //En el caso de que sea el primer nodo que pongo ï¿½Solo el nombre de la intersecciï¿½n 0 o los de entrada?
 	    private Map<Node, Double> distance;
 	    
 	    private Node source;
@@ -31,16 +31,16 @@ public class DijkstraGirosPermitidos {
 	    public DijkstraGirosPermitidos(MultiGraphRoadSim graph) {
 	        // create a copy of the array so that we can operate on this array
 	    	// Ejemplo de Segmento - Edge {"2","3","E3","2"}
-	    	// {Intersección origen, destino, id, peso}
+	    	// {Intersecciï¿½n origen, destino, id, peso}
 	    	this.nodes = graph.getNodes();
 	    	this.unSettledNodes = new HashSet<Node>();
 	    	this.distance = new HashMap<Node, Double>();
 	        this.predecessors = new HashMap<Node, Node>();
 	        for(Edge i : graph.getEdges()){
-	        	// El caracter ¿ es para crear los nodos virtuales
-	        	// Cada nodo en realidad engloba el camino por donde viene es decir cada intersección
-	        	// puede tener varios nodos. Ejemplo: I1¿E2
-	        	Node inter = new Node(i.getDestination().getId() + "¿" + i.getIdSegment());
+	        	// El caracter ï¿½ es para crear los nodos virtuales
+	        	// Cada nodo en realidad engloba el camino por donde viene es decir cada intersecciï¿½n
+	        	// puede tener varios nodos. Ejemplo: I1ï¿½E2
+	        	Node inter = new Node(i.getDestination().getId() + "Â¿" + i.getIdSegment());
 	        	this.unSettledNodes.add(inter);
 	        	this.distance.put(inter, Double.MAX_VALUE);
 	        	this.predecessors.put(inter, null);
@@ -66,15 +66,15 @@ public class DijkstraGirosPermitidos {
 	            /* Recalcula los pesos de sus vecinos */
 	            findMinimalDistances(node);
 	            //System.out.println("{   {  .  .  .NODE: " + node);
-	            //System.out.println("{{··· PREDECESORES: " + this.predecessors);
-	            //System.out.println("{  {  ·  ·  ·PESOS: " + this.distance);
-	            if(node.getId().compareTo(target.getId().split("¿")[0]) == 0)
+	            //System.out.println("{{ï¿½ï¿½ï¿½ PREDECESORES: " + this.predecessors);
+	            //System.out.println("{  {  ï¿½  ï¿½  ï¿½PESOS: " + this.distance);
+	            if(node.getId().compareTo(target.getId().split("Â¿")[0]) == 0)
 	            	break;
 	        }
 	    }
 	    
 	    /**
-	     * Este método busca el nodo con menor peso de los no recorridos
+	     * Este mï¿½todo busca el nodo con menor peso de los no recorridos
 	     * */
 	    private Node getMinimum(Set<Node> Nodes) {
 	        Node minimum = null;
@@ -99,7 +99,7 @@ public class DijkstraGirosPermitidos {
 	    }
 
 	    /**
-	     * Este método búsca el camino con menor peso
+	     * Este mï¿½todo bï¿½sca el camino con menor peso
 	     * */
 	    private void findMinimalDistances(Node node) {
 	    	//System.out.println("FindMinimalDistance de " + node.toString());
@@ -124,7 +124,7 @@ public class DijkstraGirosPermitidos {
 	    }
 	    
 	    /**
-	     * Consigue los vecinos de un nodo específico
+	     * Consigue los vecinos de un nodo especï¿½fico
 	     * */
 	    private List<Node> getNeighbors(Node node) {
 	        //System.out.println("GetNeighbors - " + node);
@@ -138,14 +138,14 @@ public class DijkstraGirosPermitidos {
 	        	////System.out.println(" ++No es el primero");
 	        	Node interseccion = null;
 	        	for (Node nodeTest: this.nodes){
-	        		if(nodeTest.getId().compareTo(node.getId().split("¿")[0]) == 0){
+	        		if(nodeTest.getId().compareTo(node.getId().split("Â¿")[0]) == 0){
 	        			interseccion = nodeTest;
 	        		}
 	        	}
 	        	//System.out.println(" ++Interseccion: " + interseccion);
 	        	//System.out.println(" ++AllowedWays: " + interseccion.getAllowedWays());
-	        	//System.out.println(" ++SEGMENT: " + interseccion.getSegmentById(node.getId().split("¿")[1]));
-	        	List<Edge> listSegments = interseccion.getAllowedSegments(interseccion.getSegmentById(node.getId().split("¿")[1]));
+	        	//System.out.println(" ++SEGMENT: " + interseccion.getSegmentById(node.getId().split("ï¿½")[1]));
+	        	List<Edge> listSegments = interseccion.getAllowedSegments(interseccion.getSegmentById(node.getId().split("Â¿")[1]));
 	        	//System.out.println(" ++ListSegments: " + listSegments);
 	        	for(Edge s: listSegments){
 	        			candidates.add(s);
@@ -156,7 +156,7 @@ public class DijkstraGirosPermitidos {
 	                Iterator<Node> iter = this.unSettledNodes.iterator();
 	                while(iter.hasNext()){
 	                	Node cand = (Node) iter.next();
-	                	if(cand.getId().compareTo(edge.getDestination().getId() + "¿" + edge.getIdSegment()) == 0){
+	                	if(cand.getId().compareTo(edge.getDestination().getId() + "Â¿" + edge.getIdSegment()) == 0){
 	                		neighbors.add(cand);
 	                	}
 	                }
@@ -175,8 +175,8 @@ public class DijkstraGirosPermitidos {
 	    	//System.out.println("-Target: " + target);
 	    	
 	    	ArrayList<Edge> neighborsSegments = new ArrayList<Edge>();
-	    	String[] nodeParts = node.getId().split("¿"); // En el caso del primer nodo solo tiene la id de la intersección
-	    	String[] targetParts = target.getId().split("¿");
+	    	String[] nodeParts = node.getId().split("Â¿"); // En el caso del primer nodo solo tiene la id de la intersecciï¿½n
+	    	String[] targetParts = target.getId().split("Â¿");
 	    	
 	    	//System.out.println("-TargetParts: " + targetParts[0] + " " + targetParts[1] );
 	    	// The parts of the target are [intersectionDestination, segmentFromOriginToDestination]
@@ -226,7 +226,7 @@ public class DijkstraGirosPermitidos {
 	        for(Node i : predecessors.keySet()){
 	        	double minDistance  = Double.MAX_VALUE;
 	        	
-	        	if(i.getId().split("¿")[0].compareTo(target.getId()) == 0 && predecessors.get(i) != null && distance.get(i) < minDistance){
+	        	if(i.getId().split("Â¿")[0].compareTo(target.getId()) == 0 && predecessors.get(i) != null && distance.get(i) < minDistance){
 	        		step = i;
 	        		minDistance = distance.get(i);
 	        	}
@@ -252,7 +252,7 @@ public class DijkstraGirosPermitidos {
 	        Node step = this.target;
 	        double minDistance  = Double.MAX_VALUE;
 	        for(Node i : predecessors.keySet()){
-	        	if(i.getId().split("¿")[0].compareTo(this.target.getId()) == 0 && predecessors.get(i) != null && distance.get(i) < minDistance){
+	        	if(i.getId().split("Â¿")[0].compareTo(this.target.getId()) == 0 && predecessors.get(i) != null && distance.get(i) < minDistance){
 	        		step = i;
 	        		minDistance = distance.get(i);
 	        	}

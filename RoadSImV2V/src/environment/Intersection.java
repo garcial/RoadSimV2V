@@ -18,10 +18,10 @@ public class Intersection implements Serializable{
 	//Unique id
 	private String id;
 	
-	//In segments
+	//In segmentsTest
 	private ArrayList<Segment> in;
 	
-	//Out segments
+	//Out segmentsTest
 	private ArrayList<Segment> out;
 	
 	//Every way has a number of ways to exit

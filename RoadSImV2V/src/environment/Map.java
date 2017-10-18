@@ -39,7 +39,7 @@ public class Map implements Serializable {
 	//The container where the segment agents will be created
 	private transient jade.wrapper.AgentContainer mainContainer;
 	
-	//Parameters for the segments
+	//Parameters for the segmentsTest
 	private boolean useLog;
 	private String loggingDirectory;
 	HashMap<String, Segment> segmentsAux;
@@ -121,7 +121,7 @@ public class Map implements Serializable {
 			throw new IOException("Couldn't find the files.");
 		} else {
 			try {
-				//This will be used later to append the segments in an
+				//This will be used later to append the segmentsTest in an
 				//     efficient way
 				HashMap<String, Intersection> intersectionsAux = new 
 						              HashMap<String, Intersection>();
@@ -131,7 +131,7 @@ public class Map implements Serializable {
 				//Auxiliar structure
 				this.intersections = new ArrayList<Intersection>();
 				//Leemos los nodos
-				System.out.println("(Map.java) LEEMOS NODOS");
+				//System.out.println("(Map.java) LEEMOS NODOS");
 				//Read  all the Intersections
 				while(line != null){
 
@@ -149,7 +149,7 @@ public class Map implements Serializable {
 							             intersection);
 					//GRAPH - Add Vertex
 					Node n = new Node(intersection.getId());
-					//System.out.println("Añadimos intersección: " + intersection + " - Añadimos node: " + n);				
+					//System.out.println("AÃ±adimos interseccion: " + intersection + " - AÃ±adimos node: " + n);
 					this.grapht.addNode(n);
 					
 					line = intersectionsReader.readLine();
@@ -158,11 +158,11 @@ public class Map implements Serializable {
 
 				line = segmentsReader.readLine();
 
-				//This will be used to add the steps later
+				//This will be used to add the stepsTest later
 				segmentsAux = new HashMap<String, Segment>();
 				edgesAux = new HashMap<String, Edge>();
 
-				//Read all the segments				
+				//Read all the segmentsTest
 				while(line != null){
 
 					JSONObject seg = new JSONObject(line);
@@ -223,7 +223,7 @@ public class Map implements Serializable {
 					
 					//Add an Edge to the Jgraph
 					if(origin != null && destination != null){	
-						//System.out.println("Añadido Edge: " + edgeSegment);
+						//System.out.println("Aï¿½adido Edge: " + edgeSegment);
 						this.grapht.addEdge(edgeSegment);
 						/* The weight is hours in double (0.xx) */
 						// This modification of the weight of the edge is because the service level is 2 when we haven't
@@ -238,7 +238,7 @@ public class Map implements Serializable {
 					line = segmentsReader.readLine();
 					this.segmentCount++;
 				}
-				//Están los segmentos cargados así que podemos añadir los
+				//Estï¿½n los segmentos cargados asï¿½ que podemos aï¿½adir los
 				//caminos permitidos
 				//TODO: PUT ALLOWED WAYS IN THIS CASE ALL THE WAYS ARE ALLOWED
 				//Esto es como si fueran todo rotondas
@@ -254,10 +254,10 @@ public class Map implements Serializable {
 				
 				this.start = this.intersections.get(0);
 
-				//Read all the steps
+				//Read all the stepsTest
 				line = stepsReader.readLine();
 
-				//Read all the segments				
+				//Read all the segmentsTest
 				while(line != null){
 
 					JSONObject step = new JSONObject(line);
@@ -273,13 +273,13 @@ public class Map implements Serializable {
 						step.getJSONObject("destinationCoordinates").getInt("x"),
 						step.getJSONObject("destinationCoordinates").getInt("y"));
 
-					//Add the steps to the segment
+					//Add the stepsTest to the segment
 					segmentsAux.get(idSegment).addStep(s);				
 
 					line = stepsReader.readLine();
 				}
 				
-				//Move the segments
+				//Move the segmentsTest
 				for (String string : segmentsAux.keySet()) {
 					this.move(segmentsAux.get(string), 4);
 				}
@@ -346,7 +346,7 @@ public class Map implements Serializable {
 	}
 
 	/**
-	 * Returns the list of intersections
+	 * Returns the list of intersectionsTest
 	 * 
 	 * @return The Intersection list
 	 */
@@ -357,7 +357,7 @@ public class Map implements Serializable {
 
 	/**
 	 * This method moves the segment a given quantity, so two  
-	 * segments don't overlap.
+	 * segmentsTest don't overlap.
 	 * 
 	 * @param seg
 	 * @param quantity

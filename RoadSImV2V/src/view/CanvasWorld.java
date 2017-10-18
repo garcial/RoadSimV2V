@@ -386,7 +386,7 @@ public class CanvasWorld extends JFrame
 			//Set the stroke width
 			g.setStroke(new BasicStroke(2));
 			
-			//Draw the intersections and segments
+			//Draw the intersectionsTest and segmentsTest
 			for (Intersection in : map.getIntersections()) {
 
 				for (Segment s: in.getOutSegments()){
@@ -424,7 +424,7 @@ public class CanvasWorld extends JFrame
 				}
 			}
 
-			//Draw the intersections
+			//Draw the intersectionsTest
 			for (Intersection in : map.getIntersections()) {
 
 				g.setColor(Color.RED);
