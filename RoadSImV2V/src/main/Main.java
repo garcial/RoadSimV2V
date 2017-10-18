@@ -34,7 +34,7 @@ public class Main {
 	
 	//Logging directory for the segments and carAgent by default
 	private static String loggingDirectory = 
-			"C:/Users/usuario/workspaceDavidNeon/RoadSimV2V/RoadSImV2V/src/staticFiles/log";
+			"D:/DOCS/Investigacion/codigo/api/RoadSimV2V/RoadSImV2V/src/staticFiles/log";
 	
 	//The name of the car files by default
 	private static String carFile = "logcar.txt";

@@ -1,5 +1,7 @@
 # Compiled class file
 *.class
+.idea
+*.iml
 
 #Project Files
 APDescription.txt
