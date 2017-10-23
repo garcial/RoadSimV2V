@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 public class Node {
-	// Nodo del grafo. Este nodo es la intersecci�n y la lista de segmentos a los que puede ir
+	// Nodo del grafo. Este nodo es la intersección y
+	// la lista de segmentos a los que puede ir
 	private String id;
 	private List<Edge> segmentIn;
 	private List<Edge> segmentOut;
@@ -33,7 +34,13 @@ public class Node {
 	public void addSegmentOut(Edge s){
 		this.segmentOut.add(s);
 	}
-	
+
+	/** Añade un camino permitido . En el caso de que no tenga
+	 * caminos permitidos crea la lista y añade el camino. En
+	 * el caso de que el nodo si que tenga caminos permitidos
+	 * pues añade a los actuales caminos uno nuevo.
+	 * @param source Origen del camino
+	 * @param target Destino del camino*/
 	public void addAllowedWay(String source, String target){
 		if(!this.allowedWays.containsKey(source)){
 			ArrayList<String> aux = new ArrayList<String>();
@@ -43,23 +50,12 @@ public class Node {
 			this.allowedWays.get(source).add(target);
 		}
 	}
-	
-	public String getId() {
-		return id;
-	}
-	
-	public void setId(String id) {
-		this.id = id;
-	}
 
-	public List<Edge> getSegmentIn() {
-		return segmentIn;
-	}
-
-	public void setSegmentIn(List<Edge> segmentIn) {
-		this.segmentIn = segmentIn;
-	}
-	
+	/**
+	 * @param source El segmento del que partes para
+	 *               conseguir los permitidos
+	 * @return la lista de Segmentos permitidos
+	 * */
 	public List<Edge> getAllowedSegments(Edge source){
 		ArrayList<Edge> res = new ArrayList<Edge>();
 		List<String> segments = new ArrayList<String>();
@@ -71,6 +67,24 @@ public class Node {
 		}
 
 		return res;
+	}
+
+	/** Getters y Setters de los atributos */
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public List<Edge> getSegmentIn() {
+		return segmentIn;
+	}
+
+	public void setSegmentIn(List<Edge> segmentIn) {
+		this.segmentIn = segmentIn;
 	}
 
 	public List<Edge> getSegmentOut() {
@@ -88,7 +102,10 @@ public class Node {
 	public void setAllowedWays(Map<String, ArrayList<String>> allowedWays) {
 		this.allowedWays = allowedWays;
 	}
-	
+
+	/**
+	 * @param id String del id del Segment
+	 * @return Devuelve un Edge a partir del id */
 	public Edge getSegmentById(String id){
 		for(Edge s: this.segmentOut){
 			if(s.getIdSegment().compareTo(id)==0){

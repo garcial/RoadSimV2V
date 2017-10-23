@@ -24,7 +24,8 @@ public class Edge extends DefaultWeightedEdge {
 	private Node initialNode;
 	private Node finalNode;
 
-	public Edge(Node initialNode, Node finalNode, String idSegment, double weight, int serviceLevel, int maxSpeed, long tini, long tfin) {
+	public Edge(Node initialNode, Node finalNode, String idSegment, double weight,
+				int serviceLevel, int maxSpeed, long tini, long tfin) {
 		this.initialNode = initialNode;
 		this.finalNode = finalNode;
 		this.idSegment = idSegment;
@@ -40,9 +41,15 @@ public class Edge extends DefaultWeightedEdge {
 		return idSegment;
 	}
 
-	public boolean updateEdge(String idSegment, int serviceLevel, double weight, int maxSpeed, long initialDate, long finalDate) {
+	/**
+	 * Actualiza el Edge con nuevos datos. Primero mete los datos que existian
+	 * en la lista de Edge data para tener un log del pasado
+	 * */
+	public boolean updateEdge(String idSegment, int serviceLevel, double weight,
+							  int maxSpeed, long initialDate, long finalDate) {
 		if (idSegment.equals(this.idSegment)) {
-			EdgeData ed = new EdgeData(getServiceLevel(), getWeight(), getTini(), getTfin());
+			EdgeData ed = new EdgeData(
+					getServiceLevel(), getWeight(), getTini(), getTfin());
 			this.addEdgeData(ed);
 			this.setServiceLevel(serviceLevel);
 			this.setMaxSpeed(maxSpeed);
@@ -54,17 +61,26 @@ public class Edge extends DefaultWeightedEdge {
 		return false;
 	}
 
+	/** Añade al log un nuevo EdgeData*/
 	public void addEdgeData(EdgeData e) {
 		this.pastEdgeData.add(e);
 	}
 
+	/** Coge la lista de datos del log de EdgeData*/
 	public List<EdgeData> getPastEdgeData() {
 		return pastEdgeData;
 	}
 
+	/** Cambia la lista de logs
+	 * @param pastEdgeData La nueva lista de EdgeData
+	 * */
 	public void setPastEdgeData(List<EdgeData> pastEdgeData) {
 		this.pastEdgeData = pastEdgeData;
 	}
+
+	/**
+	 * Los métodos siguientes nos getters y setters de los atributos
+	 * */
 
 	public double getWeight() {
 		return weight;
