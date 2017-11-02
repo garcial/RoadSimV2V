@@ -79,9 +79,10 @@ public class Map implements Serializable {
 		File[] files = new File(url).listFiles();
 
 		//Check correct files
-		BufferedReader intersectionsReader = null, 
-				       segmentsReader = null, 
-				       stepsReader = null;
+		BufferedReader  intersectionsReader = null,
+				        segmentsReader = null,
+				        stepsReader = null,
+						prohibitionsReader = null;
 		
 		System.out.println("/***************************/");
 		System.out.println("MapJava: Constructor");
@@ -97,26 +98,31 @@ public class Map implements Serializable {
 
 		for(int i=0; i < files.length; i++){
 			
-			if(files[i].getName().equals("intersections")){
+			if(files[i].getName().equals("intersections.json")){
 
 				intersectionsReader = new 
 						BufferedReader(
 						new FileReader(files[i].getAbsolutePath()));
 
-			}else if(files[i].getName().equals("segments")){
+			}else if(files[i].getName().equals("segments.json")){
 
 				segmentsReader = new BufferedReader(
 						new FileReader(files[i].getAbsolutePath()));
 
-			}else if(files[i].getName().equals("steps")){
+			}else if(files[i].getName().equals("steps.json")){
 
 				stepsReader = new BufferedReader(
 						new FileReader(files[i].getAbsolutePath()));
+
+			} else if(files[i].getName().equals("prohibitions.json")){
+				prohibitionsReader = new BufferedReader(
+						new FileReader(files[i].getAbsolutePath())
+				);
 			}
 		}
 
 		if(segmentsReader == null || intersectionsReader == null || 
-				stepsReader == null) {
+				stepsReader == null || prohibitionsReader == null) {
 
 			throw new IOException("Couldn't find the files.");
 		} else {
@@ -238,10 +244,8 @@ public class Map implements Serializable {
 					line = segmentsReader.readLine();
 					this.segmentCount++;
 				}
-				//Est�n los segmentos cargados as� que podemos a�adir los
-				//caminos permitidos
-				//TODO: PUT ALLOWED WAYS IN THIS CASE ALL THE WAYS ARE ALLOWED
-				//Esto es como si fueran todo rotondas
+
+				//Esto es como si fueran rotondas
 				for(Node n : grapht.getNodes()){
 					for(Edge in: n.getSegmentIn()){
 						for(Edge out: n.getSegmentOut()){
@@ -250,7 +254,29 @@ public class Map implements Serializable {
 						}
 					}
 				}
-				
+
+				String prohibitionLine = prohibitionsReader.readLine();
+
+				while(prohibitionLine != null){
+					JSONObject prohibition = new JSONObject(prohibitionLine);
+
+					//Recorremos todos los nodos por cada linea
+					for(Node n : grapht.getNodes()){
+						//Si la intersección donde se ha de hacer el giro no permitido existe
+						if(n.getId().equals(prohibition.getString("intersectionId"))){
+							//Si existe el edge origen
+							Edge source = n.getSegmentById(prohibition.getString("input"));
+							if(source != null){
+								//Se eliminan todos los giros no permitidos
+								JSONArray outputs = prohibition.getJSONArray("outputs");
+								for(int i = 0; i < outputs.length(); i++){
+									n.getAllowedSegments(source).remove(n.getSegmentById((String)outputs.get(i)));
+								}
+							}
+						}
+					}
+					prohibitionLine = prohibitionsReader.readLine();
+				}
 				
 				this.start = this.intersections.get(0);
 

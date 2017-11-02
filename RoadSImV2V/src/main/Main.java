@@ -169,10 +169,9 @@ public class Main {
 		//Load the map
 		try {
 			// The map load the segmentsTest that create the SegmentAgent
-			map = new Map("staticFiles/map/pruebasDijkstra", segmentContainer,
+			map = new Map("staticFiles/map/sombrero", segmentContainer,
 					      useLog, loggingDirectory, drawGUI, startingTick);
 		} catch (IOException e) {
-
 			System.out.println("Error reading the maps file.");
 			e.printStackTrace();
 		}

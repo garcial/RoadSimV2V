@@ -1,0 +1,16 @@
+{"twins":["S1-A7-T"],"density":"0","origin":"I1-A7","destination":"I2-A7","length":"2","id":"S1-A7","maxSpeed":"120","numberTracks":"2","pkstart":"0","roadCode":"A7","capacity":"2200","direction":"up"}
+{"twins":["S1-A7"],"density":"0","origin":"I2-A7","destination":"I1-A7","length":"2","id":"S1-A7-T","maxSpeed":"120","numberTracks":"2","pkstart":"2.0","roadCode":"A7","capacity":"2200","direction":"down"}
+{"twins":["S2-A7-T"],"density":"0","origin":"I2-A7","destination":"I3-A7","length":"3","id":"S2-A7","maxSpeed":"120","numberTracks":"2","pkstart":"2","roadCode":"A7","capacity":"2200","direction":"up"}
+{"twins":["S2-A7"],"density":"0","origin":"I3-A7","destination":"I2-A7","length":"3","id":"S2-A7-T","maxSpeed":"120","numberTracks":"2","pkstart":"5.0","roadCode":"A7","capacity":"2200","direction":"down"}
+{"twins":["S3-A7-T"],"density":"0","origin":"I3-A7","destination":"I4-A7","length":"5","id":"S3-A7","maxSpeed":"120","numberTracks":"2","pkstart":"5","roadCode":"A7","capacity":"2200","direction":"up"}
+{"twins":["S3-A7"],"density":"0","origin":"I4-A7","destination":"I3-A7","length":"5","id":"S3-A7-T","maxSpeed":"120","numberTracks":"2","pkstart":"10.0","roadCode":"A7","capacity":"2200","direction":"down"}
+{"twins":["S4-A7-T"],"density":"0","origin":"I4-A7","destination":"I5-A7","length":"5","id":"S4-A7","maxSpeed":"120","numberTracks":"2","pkstart":"9","roadCode":"A7","capacity":"2200","direction":"up"}
+{"twins":["S4-A7"],"density":"0","origin":"I5-A7","destination":"I4-A7","length":"5","id":"S4-A7-T","maxSpeed":"120","numberTracks":"2","pkstart":"14.0","roadCode":"A7","capacity":"2200","direction":"down"}
+{"twins":["S5-A7-T"],"density":"0","origin":"I5-A7","destination":"I6-A7","length":"5","id":"S5-A7","maxSpeed":"120","numberTracks":"2","pkstart":"15","roadCode":"A7","capacity":"2200","direction":"up"}
+{"twins":["S5-A7"],"density":"0","origin":"I6-A7","destination":"I5-A7","length":"5","id":"S5-A7-T","maxSpeed":"120","numberTracks":"2","pkstart":"20.0","roadCode":"A7","capacity":"2200","direction":"down"}
+{"twins":["S6-N340-T"],"density":"0","origin":"I2-A7","destination":"I7-N340","length":"3","id":"S6-N340","maxSpeed":"120","numberTracks":"2","pkstart":"2","roadCode":"N340","capacity":"2200","direction":"up"}
+{"twins":["S6-N340"],"density":"0","origin":"I7-N340","destination":"I2-A7","length":"3","id":"S6-N340-T","maxSpeed":"120","numberTracks":"2","pkstart":"5.0","roadCode":"N340","capacity":"2200","direction":"down"}
+{"twins":["S7-N340-T"],"density":"0","origin":"I7-N340","destination":"I8-N340","length":"6","id":"S7-N340","maxSpeed":"120","numberTracks":"2","pkstart":"9","roadCode":"N340","capacity":"2200","direction":"up"}
+{"twins":["S7-N340"],"density":"0","origin":"I8-N340","destination":"I7-N340","length":"6","id":"S7-N340-T","maxSpeed":"120","numberTracks":"2","pkstart":"15.0","roadCode":"N340","capacity":"2200","direction":"down"}
+{"twins":["S8-N340-T"],"density":"0","origin":"I8-N340","destination":"I5-A7","length":"5","id":"S8-N340","maxSpeed":"120","numberTracks":"2","pkstart":"25","roadCode":"N340","capacity":"2200","direction":"up"}
+{"twins":["S8-N340"],"density":"0","origin":"I5-A7","destination":"I8-N340","length":"5","id":"S8-N340-T","maxSpeed":"120","numberTracks":"2","pkstart":"30.0","roadCode":"N340","capacity":"2200","direction":"down"}

@@ -16,9 +16,3 @@
 {"id":"ST-016","idSegment":"S-A1-16","originCoordinates":{"x":560,"y":100},"destinationCoordinates":{"x":660,"y":150}}
 {"id":"ST-017","idSegment":"S-A1-17","originCoordinates":{"x":660,"y":150},"destinationCoordinates":{"x":660,"y":350}}
 {"id":"ST-018","idSegment":"S-A1-18","originCoordinates":{"x":660,"y":350},"destinationCoordinates":{"x":560,"y":400}}
-{"id":"ST-019","idSegment":"S-A1-19","originCoordinates":{"x":560,"y":500},"destinationCoordinates":{"x":460,"y":400}}
-{"id":"ST-020","idSegment":"S-A1-20","originCoordinates":{"x":460,"y":400},"destinationCoordinates":{"x":460,"y":150}}
-{"id":"ST-021","idSegment":"S-A1-21","originCoordinates":{"x":460,"y":150},"destinationCoordinates":{"x":560,"y":50}}
-{"id":"ST-022","idSegment":"S-A1-22","originCoordinates":{"x":560,"y":50},"destinationCoordinates":{"x":460,"y":150}}
-{"id":"ST-023","idSegment":"S-A1-23","originCoordinates":{"x":460,"y":150},"destinationCoordinates":{"x":460,"y":400}}
-{"id":"ST-024","idSegment":"S-A1-24","originCoordinates":{"x":460,"y":400},"destinationCoordinates":{"x":560,"y":500}}
