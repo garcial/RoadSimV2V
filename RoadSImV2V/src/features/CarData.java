@@ -1,4 +1,4 @@
-package vehicles;
+package features;
 
 import org.json.JSONObject;
 
@@ -7,11 +7,10 @@ public class CarData {
 	private float x, y;
 	private float currentSpeed;
 	private int typeOfAlgorithm;
-	private float segmentDistanceCovered;
 	private long currentTick;
-	private float tripDistanceCovered;
 	private int radio;
 	private long initialTick;
+	private int maxSpeed;
 
 	public CarData(String id, float x, float y, float currentSpeed,
 			       int typeOfAlgorithm, float segmentDistanceCovered,
@@ -22,12 +21,14 @@ public class CarData {
 		this.y = y;
 		this.currentSpeed = currentSpeed;
 		this.typeOfAlgorithm = typeOfAlgorithm;
-		this.segmentDistanceCovered = segmentDistanceCovered;
 		this.radio = radio;
 		this.initialTick = initialTick;
 		this.currentTick = currentTick;
-		this.tripDistanceCovered = 0f;
 		
+	}
+
+	public CarData() {
+		// TODO Auto-generated constructor stub
 	}
 
 	public String getId() {
@@ -62,14 +63,6 @@ public class CarData {
 		return typeOfAlgorithm;
 	}
 
-	public float getSegmentDistanceCovered() {
-		return segmentDistanceCovered;
-	}
-
-	public void setSegmentDistanceCovered(float segmentDistanceCovered) {
-		this.segmentDistanceCovered = segmentDistanceCovered;
-	}
-
 	public int getRadio() {
 		return radio;
 	}
@@ -99,26 +92,28 @@ public class CarData {
 		resultado.put("x", getX());
 		resultado.put("y", getY());
 		resultado.put("speed", getCurrentSpeed());
+		resultado.put("maxSpeed", getMaxSpeed());
 		resultado.put("type", getTypeOfAlgorithm());
-		resultado.put("segmentDistanceCovered", getSegmentDistanceCovered());
 		resultado.put("tick", getCurrentTick());
 		resultado.put("radio", getRadio());
 		resultado.put("initialTick", getInitialTick());
-		resultado.put("tripDistanceCovered", getTripDistanceCovered());
 		return resultado;
 	}
 
-	public void incSegmentDistanceCovered(float deltaPk) {
-		segmentDistanceCovered += deltaPk;
-		
+	public int getMaxSpeed() {
+		return maxSpeed;
 	}
 
-	public float getTripDistanceCovered() {
-		return tripDistanceCovered;
+	public void setMaxSpeed(int maxSpeed) {
+		this.maxSpeed = maxSpeed;
 	}
 
-	public void incTripDistanceCovered(float increment) {
-		this.tripDistanceCovered += increment;
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setTypeOfAlgorithm(int typeOfAlgorithm) {
+		this.typeOfAlgorithm = typeOfAlgorithm;
 	}
 
 }

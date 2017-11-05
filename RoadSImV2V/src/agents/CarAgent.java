@@ -11,8 +11,12 @@ import searchAlgorithms.Method;
 import trafficData.TrafficData;
 import trafficData.TrafficDataInStore;
 import trafficData.TrafficDataOutStore;
-import vehicles.CarData;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,17 +25,22 @@ import org.json.JSONObject;
 
 import behaviours.CarBehaviour;
 import behaviours.CarReceivingDataBehaviour;
+import behaviours.CarsAheadBehaviour;
 import environment.Intersection;
 import environment.Map;
 import environment.Path;
 import environment.Segment;
 import environment.Step;
+import features.CarData;
+import features.SimulationData;
+import features.TravelData;
 import graph.*;
 
 /**
  * This code represents a mobile car, it will have an origin an a 
  * destination and will get there using either the shortest, 
- * fastest or smartest path.
+ * fastest or smartest path. This last by sharing traffic data 
+ * with opposite way crossing carAgents.
  *
  */
 public class CarAgent extends Agent {
@@ -40,32 +49,14 @@ public class CarAgent extends Agent {
 	private static final long serialVersionUID = 1L;
 
 	private CarData carData;
-	private float currentPk;
-	private int direction;
-	private int ratio = 10; // El radio es un valor fijo que depender� del hardware
-	private int maxSpeed;
-	private double currentTrafficDensity;
-	private long tini; // For measuring temporal intervals of traffic
+	private TravelData travelData;
+	private SimulationData simulationData;
 	private DFAgentDescription interfaceAgent;
 	private DFAgentDescription logAgent;
-	private boolean drawGUI;
-	private boolean useLog;
 	private Map map;
 	private Path path;
-	private Segment currentSegment;
-	private String initialIntersection, finalIntersection;
 	private boolean smart = false;
-	private int algorithmType;
 	private MultiGraphRoadSim graph;
-	private long currentTick;
-	
-	private List<LogData> logData;
-	private long logInitialTick;
-	private long logEndTick;
-	private String logAlgorithm;
-	//TODO: Update the number of msg send a received
-	private int numMsgRecibido = 0;
-	private int numMsgEnviados = 0;
 
 	// This object stores current traffic sensored data
 	// every time a car goes into a new segment, this object is
@@ -100,93 +91,85 @@ public class CarAgent extends Agent {
 			this.takeDown();
 		}
 		
+		travelData = new TravelData();
+		simulationData = new SimulationData();
+		
 		//Get the map from an argument
 		this.map = (Map) this.getArguments()[0];
 		
-		//Get the jgraph from the map
+		// Get the graph from the map. 
+		// Each car agent should have its own private graph
+		// Make a deep clone of the graph contained into the map object
+
 		try {
-			this.graph = (MultiGraphRoadSim) this.map.getGraph().clone();
-		} catch (CloneNotSupportedException e1) {
-			System.out.println("CarAgent:Constructor");
+			graph = (MultiGraphRoadSim) deepClone(map.getGraph());
+		} catch (Exception e1) {
+			System.out.println("Something has been wrong making a deep copy of the graph");
 			e1.printStackTrace();
+			this.takeDown();
 		}
 		
 		//Get the starting and final points of my trip
-		this.initialIntersection = (String) this.getArguments()[1];
-		this.finalIntersection = (String) this.getArguments()[2];
+		travelData.setInitialIntersection((String) this.getArguments()[1]);
+		travelData.setFinalIntersection((String) this.getArguments()[2]);
+		
+		carData = new CarData();
 		
 		//Get the speeds
-		this.maxSpeed = (int) this.getArguments()[3];
+		carData.setMaxSpeed((int) this.getArguments()[3]);
 		
 		String routeType = (String) this.getArguments()[4];
 		//Is necessary draw the gui
-		this.drawGUI = (boolean) this.getArguments()[5];
+		simulationData.setUseGUI((boolean) this.getArguments()[5]);
 		
 		//Get the initial time tick from eventManager
-		tini = (long) this.getArguments()[6];
+		simulationData.setInitialTick((long) this.getArguments()[6]);
 
 		//Get the ratio of sensoring for this agentCar
-		ratio = (int) this.getArguments()[7];
+		carData.setRadio((int) this.getArguments()[7]);
 		
 		//It is requested to do Logs?
-		useLog = (boolean) this.getArguments()[8];
-		
-		/* Generate the log parameters*/
-		//Asign the type of algorithm
-		this.logAlgorithm = routeType;
-		this.logInitialTick = tini;
+		simulationData.setUseLog((boolean) this.getArguments()[8]);
+
+		//Assign the type of algorithm
 		
 		if (routeType.equals("fastest")){
-			this.algorithmType = Method.FASTEST.value;
+			carData.setTypeOfAlgorithm(Method.FASTEST.value);
 		} else if (routeType.equals("shortest")){
-			this.algorithmType = Method.SHORTEST.value;
+			carData.setTypeOfAlgorithm(Method.SHORTEST.value);
 		} else if (routeType.equals("dynamicSmart")) {
-			this.algorithmType = Method.DYNAMICSMART.value;
+			carData.setTypeOfAlgorithm(Method.DYNAMICSMART.value);
 			this.smart = true;
 		} else {
-			this.algorithmType = Method.STARTSMART.value;
+			carData.setTypeOfAlgorithm(Method.STARTSMART.value);
 			this.smart = true;
 		}
-		
-		try {
-			this.path = getPathOnMethod(initialIntersection, 
-				       finalIntersection);
-		} catch (CloneNotSupportedException e1) {
-			e1.printStackTrace();
-		}
+
+	    this.path = getPathOnMethod(travelData.getInitialIntersection(), 
+				                    travelData.getFinalIntersection());
 
 		Step currentStep = path.getGraphicalPath().get(0);
-	    setCurrentSegment(currentStep.getSegment());
-
-		
+		travelData.setCurrentSegment(currentStep.getSegment());
+		travelData.setCarsAhead(0);
+		travelData.setSegmentDistanceCovered(0);
 
 		//Store data received from other cars in a Map
 		futureTraffic = new TrafficDataInStore();
 
 		//Store data to send to other cars in my route
 		pastTraffic = new TrafficDataOutStore();
-
-		this.logData = new ArrayList<LogData>();
-
+		
 		// Store current trafficData sensored by myself
 		sensorTrafficData = new TrafficData();
-		// Tini for measuring traffic data intervals in twin segmentsTest
-		//tini = elapsedtime;
+		carData.setId(getName().toString());
+		carData.setX(currentStep.getOriginX());
+		carData.setY(currentStep.getOriginY());
+		carData.setCurrentSpeed( 
+				Math.min(carData.getMaxSpeed()/4, // CurrentSpeed at the beginning
+						 travelData.getCurrentSegment().getCurrentAllowedSpeed()));
+		carData.setCurrentTick(carData.getInitialTick());
 		
-		//Create new CarData object
-		carData = new CarData(
-				getName().toString(),  // Id
-				currentStep.getOriginX(),  // X
-				currentStep.getOriginY(),  // Y
-				Math.min(getMaxSpeed()/4, // CurrentSpeed at the beginning
-						getCurrentSegment().getCurrentAllowedSpeed()), 
-				this.algorithmType,
-				0,   // Segment distance covered
-				this.ratio, this.tini, //Ratio and initialTick
-				this.tini // Current tick
-				);
-		
-		if (useLog) {
+		if (simulationData.isUseLog()) {
 			//Find the log agent
 			dfd = new DFAgentDescription();
 			sd = new ServiceDescription();
@@ -210,7 +193,7 @@ public class CarAgent extends Agent {
 			this.logAgent = result[0];
 		}
 		
-		if(this.drawGUI){
+		if(simulationData.isUseGUI()){
 			//Find the interface agent
 			dfd = new DFAgentDescription();
 			sd = new ServiceDescription();
@@ -242,34 +225,26 @@ public class CarAgent extends Agent {
 		}
 		//Register
 	    //Add the tini of the first segment
-	    this.sensorTrafficData.setTini(this.tini);
+	    this.sensorTrafficData.setTini(simulationData.getInitialTick());
 	    
 		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 		msg.setOntology("carToSegmentOntology");
 		msg.setConversationId("register");
 		msg.addReceiver(currentStep.getSegment().getSegmentAgent().getAID());
-/*		JSONObject carDataRegister = new JSONObject();
-		carDataRegister.put("id", getId());
-		carDataRegister.put("x", getX());
-		carDataRegister.put("y", getY());
-		carDataRegister.put("specialColor", getSpecialColor());
-		carDataRegister.put("radio", getRatio());
-		carDataRegister.put("tickInitial", this.sensorTrafficData.getTini());
-		carDataRegister.put("tickFinal", 1001001);*/
 		
 		msg.setContent(carData.toJSON().toString());
 		
 		send(msg);
-		// Receive the current traffic density from the current 
-		//    segment
+		// Receive the current traffic density from the current segment
 		msg = blockingReceive(MessageTemplate.
 				             MatchOntology("trafficDensityOntology"));
 		JSONObject densityData = new JSONObject(msg.getContent());
-		setCurrentTrafficDensity(densityData.getDouble("density"));
+		travelData.setCurrentTrafficDensity(densityData.getDouble("density"));
 		
 		//Runs the agent
-		addBehaviour(new CarBehaviour(this, 50, this.drawGUI));
+		addBehaviour(new CarBehaviour(this, 50, simulationData.isUseGUI()));
 		addBehaviour(new CarReceivingDataBehaviour(this));
+		//addBehaviour(new CarsAheadBehaviour(this));
 
 	}
 	
@@ -278,22 +253,37 @@ public class CarAgent extends Agent {
 	 *     if we are smart.
 	 * 
 	 * @param origin ID of the intersection where the car is
-	 * @throws CloneNotSupportedException 
 	 */
-	public void recalculate(String origin) throws CloneNotSupportedException {
-		
-		//TODO: A JGraph envision structure must be obteined from jgraphsT 
-		//     received by other cars in the twin segment of the 
-		//     current segment where the car is going.
-		this.path = getPathOnMethod(origin, finalIntersection);
+	public void recalculate(String origin) {
+//TODO: Modify weights on edges by futureTraffic estimations received from other carAgents		
+		this.path = getPathOnMethod(origin,travelData.getFinalIntersection());
 		System.out.println(this.getFutureTraffic().getData().toString());
 		System.out.println(this.path.getSegmentPath().toString());
 	}
+	
+	/**
+	 * Make a deep copy of the object received as a parameter
+	 *   by its serialization and its deserialization into a new 
+	 *   Object
+	 * @param obj to be deep copied
+	 * @return the deep copy of obj
+	 * @throws IOException when some element of the object is not
+	 *         serializable
+	 * @throws ClassNotFoundException when something went wrong reading 
+	 *         the serialized object back again.
+	 */
+	public static Object deepClone(Object obj) 
+			throws IOException, ClassNotFoundException {
+
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(baos);
+			oos.writeObject(obj);
+			ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+			ObjectInputStream ois = new ObjectInputStream(bais);
+			return ois.readObject();
+	}
 
 	//Setters and getters
-	public int getDirection() {
-		return direction;
-	}
 
 	public CarData getCarData() {
 		return carData;
@@ -303,24 +293,20 @@ public class CarAgent extends Agent {
 		this.carData = carData;
 	}
 	
-	public float getCurrentPk() {
-		return currentPk;
+	public SimulationData getSimulationData() {
+		return simulationData;
 	}
 
-	public void setCurrentPk(float currentPk) {
-		this.currentPk = currentPk;
+	public void setSimulationData(SimulationData simulationData) {
+		this.simulationData = simulationData;
+	}
+	
+	public TravelData getTravelData() {
+		return travelData;
 	}
 
-	public void setDirection(int direction) {
-		this.direction = direction;
-	}
-
-	public int getMaxSpeed() {
-		return maxSpeed;
-	}
-
-	public void setMaxSpeed(int maxSpeed) {
-		this.maxSpeed = maxSpeed;
+	public void setTravelData(TravelData travelData) {
+		this.travelData = travelData;
 	}
 
 	public DFAgentDescription getInterfaceAgent() {
@@ -334,22 +320,6 @@ public class CarAgent extends Agent {
 	public Path getPath() {
 		return path;
 	}
-
-	public Segment getCurrentSegment() {
-		return currentSegment;
-	}
-
-	public void setCurrentSegment(Segment previousSegment) {
-		this.currentSegment = previousSegment;
-	}
-
-	public String getInitialIntersection() {
-		return initialIntersection;
-	}
-
-	public String getFinalIntersection() {
-		return finalIntersection;
-	}
 	
 	public MultiGraphRoadSim getGraph() {
 		return graph;
@@ -362,38 +332,6 @@ public class CarAgent extends Agent {
 	public boolean isSmart() {
 		
 		return this.smart;
-	}
-
-	public int getAlgorithmType() {
-		return algorithmType;
-	}	
-	
-	public int getRatio() {
-		return ratio;
-	}
-
-	public void setRatio(int ratio) {
-		this.ratio = ratio;
-	}
-	
-	public double getCurrentTrafficDensity() {
-		return currentTrafficDensity;
-	}
-
-	public void setCurrentTrafficDensity(double currentTD) {
-		this.currentTrafficDensity = currentTD;
-	}
-
-	public long getTini() {
-		return tini;
-	}
-
-	public void setTini(long tini) {
-		this.tini = tini;
-	}
-	
-	public boolean getUseLog(){
-		return useLog;
 	}
 
 	public TrafficData getSensorTrafficData() {
@@ -419,14 +357,6 @@ public class CarAgent extends Agent {
 	public void setFutureTraffic(TrafficDataInStore futureTraffic) {
 		this.futureTraffic = futureTraffic;
 	}
-	
-	public long getCurrentTick() {
-		return currentTick;
-	}
-
-	public void setCurrentTick(long currentTick) {
-		this.currentTick = currentTick;
-	}
 
 	public DFAgentDescription getLogAgent() {
 		return logAgent;
@@ -435,86 +365,21 @@ public class CarAgent extends Agent {
 	public void setLogAgent(DFAgentDescription logAgent) {
 		this.logAgent = logAgent;
 	}
+
 	
-	public List<LogData> getLogData() {
-		return logData;
-	}
-
-	public void setLogData(List<LogData> logData) {
-		this.logData = logData;
-	}
-
-	public long getLogInitialTick() {
-		return logInitialTick;
-	}
-
-	public void setLogInitialTick(long logInitialTick) {
-		this.logInitialTick = logInitialTick;
-	}
-
-	public long getLogEndTick() {
-		return logEndTick;
-	}
-
-	public void setLogEndTick(long logEndTick) {
-		this.logEndTick = logEndTick;
-	}
-
-	public String getLogAlgorithm() {
-		return logAlgorithm;
-	}
-
-	public void setLogAlgorithm(String logAlgorithm) {
-		this.logAlgorithm = logAlgorithm;
-	}
-	
-	public int getNumMsgRecibido() {
-		return numMsgRecibido;
-	}
-
-	public void setNumMsgRecibido(int numMsgRecibido) {
-		this.numMsgRecibido = numMsgRecibido;
-	}
-
-	public int getNumMsgEnviados() {
-		return numMsgEnviados;
-	}
-
-	public void setNumMsgEnviados(int numMsgEnviados) {
-		this.numMsgEnviados = numMsgEnviados;
-	}
-
-	public void addLogData(String idSegment, int numMsgRecibido, int numMsgEnviados, float distSegment, float velMedia){
-		this.logData.add(new LogData(idSegment,numMsgRecibido,numMsgEnviados,distSegment,velMedia));
-	}
-	
-	public Path getPathOnMethod(String initialInterseccion, String finalIntersection) throws CloneNotSupportedException {
+	public Path getPathOnMethod(String initialInterseccion, String finalIntersection) {
         LinkedList<Node> pathGrapht = null;
-		if (algorithmType == Method.DYNAMICSMART.value || algorithmType == Method.STARTSMART.value) {
-			System.out.println(graph.getEdges().toString());
-			DijkstraGirosPermitidos dijkstra = new DijkstraGirosPermitidos(graph); 
-			dijkstra.execute(graph.getNodeById(initialInterseccion), graph.getNodeById(finalIntersection));
-			pathGrapht = dijkstra.getPath();
-		} else if (algorithmType == Method.SHORTEST.value) {
-			MultiGraphRoadSim jgraphtClone = (MultiGraphRoadSim) graph.clone();
-			putWeightsAsDistancesOnGraph(jgraphtClone);
-			DijkstraGirosPermitidos dijkstra = new DijkstraGirosPermitidos(jgraphtClone); 
-			dijkstra.execute(graph.getNodeById(initialInterseccion), graph.getNodeById(finalIntersection));
-			pathGrapht = dijkstra.getPath();
-		} else if (algorithmType == Method.FASTEST.value) {
-			MultiGraphRoadSim jgraphtClone = (MultiGraphRoadSim) graph.clone();
-			putWeightAsTripMaxSpeedOnGraph(jgraphtClone);
-			DijkstraGirosPermitidos dijkstra = new DijkstraGirosPermitidos(jgraphtClone); 
-			dijkstra.execute(graph.getNodeById(initialInterseccion), graph.getNodeById(finalIntersection));
-			pathGrapht = dijkstra.getPath();
+        if (carData.getTypeOfAlgorithm() == Method.SHORTEST.value) {
+			putWeightsAsDistancesOnGraph(graph);
+		} else if (carData.getTypeOfAlgorithm() == Method.FASTEST.value) {
+			putWeightsAsSegmentsMaxSpeedsOnGraph(graph);
 		}
 		
-		/*System.out.println("//////////////////// PATH /////////////////");
-		System.out.println(pathGrapht.toString());
-		System.out.println(pathGrapht);	
-		System.out.println("//////////////////// END PATH /////////////////");*/
-
-
+		DijkstraGirosPermitidos dijkstra = new DijkstraGirosPermitidos(graph); 
+		dijkstra.execute(graph.getNodeById(initialInterseccion), 
+				         graph.getNodeById(finalIntersection));
+		pathGrapht = dijkstra.getPath();
+		
 		List<Step> steps = new ArrayList<Step>();
 		List<Segment> segments = new ArrayList<Segment>();
 		List<Intersection> intersections = new ArrayList<Intersection>();
@@ -522,7 +387,7 @@ public class CarAgent extends Agent {
 		for(Node n: pathGrapht){
 			String[] interEdge = n.getId().split("¿");
 			intersections.add(map.getIntersectionByID(interEdge[0]));
-			if(interEdge.length > 1){// Is not source
+			if(interEdge.length > 1){// Is not source // TODO: Or destiny????
 				steps.addAll(map.getSegmentByID(interEdge[1]).getSteps());
 				segments.add(map.getSegmentByID(interEdge[1]));
 			}
@@ -532,40 +397,17 @@ public class CarAgent extends Agent {
 	}
 
 	//Used with the shortest method. The road speed is not important
-	private void putWeightsAsDistancesOnGraph( MultiGraphRoadSim jgrapht2) {
-		for(Edge e: jgrapht2.getEdges()) {
+	private void putWeightsAsDistancesOnGraph( MultiGraphRoadSim graph) {
+		for(Edge e: graph.getEdges()) {
 			e.setWeight(e.getWeight());
 		}
 	}
 	
 	//Used with the fastest method. The fast method depends of the distance and the speed
-	private void putWeightAsTripMaxSpeedOnGraph(MultiGraphRoadSim graphClone) {
-		for(Edge e: graphClone.getEdges()) {
+	private void putWeightsAsSegmentsMaxSpeedsOnGraph(MultiGraphRoadSim graph) {
+		for(Edge e: graph.getEdges()) {
 			e.setWeight(e.getWeight()/map.getSegmentByID(e.getIdSegment()).getMaxSpeed());
 		}
-	}
-
-	private class LogData{
-		private String idSegment;
-		private int numMsgRecibido;
-		private int numMsgEnviados;
-		private float distSegment;
-		private float velMedia;
-		
-		public LogData(String idSegment, int numMsgRecibido, int numMsgEnviados, float distSegment, float velMedia) {
-			super();
-			this.idSegment = idSegment;
-			this.numMsgRecibido = numMsgRecibido;
-			this.numMsgEnviados = numMsgEnviados;
-			this.distSegment = distSegment;
-			this.velMedia = velMedia;
-		}
-
-		@Override
-		public String toString() {
-			return idSegment + "," + numMsgRecibido + ","+ numMsgEnviados + "," + distSegment + "," + velMedia;
-		}
-		
 	}
 
 }

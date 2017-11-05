@@ -10,13 +10,13 @@ import behaviours.SegmentListenBehaviour;
 import behaviours.SegmentRadarBehaviour;
 import behaviours.SegmentSendToDrawBehaviour;
 import environment.Segment;
+import features.CarData;
 import graph.MultiGraphRoadSim;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
-import vehicles.CarData;
 
 /**
  * This agent will keep track of the cars that are inside between two
@@ -177,8 +177,6 @@ public class SegmentAgent extends Agent {
 		aux.setX((float) car.getDouble("x"));
 		aux.setY((float) car.getDouble("y"));
 		aux.setCurrentSpeed((float) car.getDouble("speed"));
-		aux.setSegmentDistanceCovered(
-				(float) car.getDouble("segmentDistanceCovered"));
 		aux.setRadio((int) car.getInt("radio"));
 		aux.setInitialTick((long) car.getLong("initialTick"));
 		aux.setCurrentTick(car.getLong("tick"));

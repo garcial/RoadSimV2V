@@ -8,10 +8,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import agents.SegmentAgent;
+import features.CarData;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import vehicles.CarData;
 
 /**
  * Gestiona la comunicación entre agentes coches

@@ -4,12 +4,12 @@ import org.json.JSONObject;
 
 import agents.SegmentAgent;
 import environment.Segment;
+import features.CarData;
 import graph.Edge;
 import jade.core.AID;
 import jade.core.behaviours.Behaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import vehicles.CarData;
 
 /**
  * This behaviour is used by the SegmentAgent and listens to messages
@@ -91,16 +91,27 @@ public class SegmentListenBehaviour extends Behaviour {
 					} else 
 						currentSL = 5; // 'F';
 					
+					// Tell all cars into this segment how many cars each one
+					//   has ahead of its current position
 					ACLMessage msg2 = new ACLMessage(ACLMessage.INFORM);
-					msg2.setOntology("trafficDensityOntology");
-					
+					msg2.setOntology("trafficCarsAheadOntology");
+
 					JSONObject densityData = new JSONObject();
-					densityData.put("density", density);
-					msg2.setContent(densityData.toString());
-					
-					for (String id:agent.getCars().keySet()) {
-						msg2.addReceiver(new AID(id, true));;			
+					if (msg.getConversationId().equals("register")) {
+						
+						densityData.put("type", "register");
+						densityData.put("cars", agent.getCars().size());
+						msg2.addReceiver(msg.getSender());
+					} else { //Inform all other cars there is one less car 
+						     //   running into this segment
+						densityData.put("type", "deregister");
+						densityData.put("cars", -1);
+						for (String id:agent.getCars().keySet()) {
+							msg2.addReceiver(new AID(id, true));;			
+						}
 					}
+
+					msg2.setContent(densityData.toString());
 					agent.send(msg2);	
 					
 					//TODO: Añadir una variable de nivel de servicio anterior y así guardamos el tickfinal
