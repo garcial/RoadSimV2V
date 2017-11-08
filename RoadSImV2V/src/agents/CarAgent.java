@@ -104,7 +104,7 @@ public class CarAgent extends Agent {
 		try {
 			graph = (MultiGraphRoadSim) deepClone(map.getGraph());
 		} catch (Exception e1) {
-			System.out.println("Something has been wrong making a deep copy of the graph");
+			System.out.println("Something went wrong making a graph deep copy");
 			e1.printStackTrace();
 			this.takeDown();
 		}
@@ -165,9 +165,27 @@ public class CarAgent extends Agent {
 		carData.setX(currentStep.getOriginX());
 		carData.setY(currentStep.getOriginY());
 		carData.setCurrentSpeed( 
-				Math.min(carData.getMaxSpeed()/4, // CurrentSpeed at the beginning
-						 travelData.getCurrentSegment().getCurrentAllowedSpeed()));
+			Math.min(carData.getMaxSpeed()/4, // CurrentSpeed at the beginning
+					 travelData.getCurrentSegment().getCurrentAllowedSpeed()));
 		carData.setCurrentTick(carData.getInitialTick());
+		
+		//Register
+	    //Add the tini of the first segment
+	    sensorTrafficData.setTini(simulationData.getInitialTick());
+	    
+		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+		msg.setOntology("carToSegmentOntology");
+		msg.setConversationId("register");
+		msg.addReceiver(currentStep.getSegment().getSegmentAgent().getAID());
+		
+		msg.setContent(carData.toJSON().toString());
+		
+		send(msg);
+		// Receive the current traffic density from the current segment
+		msg = blockingReceive(MessageTemplate.
+				             MatchOntology("trafficCarsAheadOntology"));
+		JSONObject densityData = new JSONObject(msg.getContent());
+		travelData.setCarsAhead(densityData.getInt("cars"));
 		
 		if (simulationData.isUseLog()) {
 			//Find the log agent
@@ -217,29 +235,13 @@ public class CarAgent extends Agent {
 			this.interfaceAgent = result[0];
 		
 			//We notify the interface about the new car
-			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+			msg = new ACLMessage(ACLMessage.INFORM);
 			msg.addReceiver(interfaceAgent.getName());
 			msg.setContent(this.carData.toJSON().toString());
 			msg.setOntology("newCarOntology");
 			send(msg);
 		}
-		//Register
-	    //Add the tini of the first segment
-	    this.sensorTrafficData.setTini(simulationData.getInitialTick());
-	    
-		ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
-		msg.setOntology("carToSegmentOntology");
-		msg.setConversationId("register");
-		msg.addReceiver(currentStep.getSegment().getSegmentAgent().getAID());
-		
-		msg.setContent(carData.toJSON().toString());
-		
-		send(msg);
-		// Receive the current traffic density from the current segment
-		msg = blockingReceive(MessageTemplate.
-				             MatchOntology("trafficDensityOntology"));
-		JSONObject densityData = new JSONObject(msg.getContent());
-		travelData.setCurrentTrafficDensity(densityData.getDouble("density"));
+
 		
 		//Runs the agent
 		addBehaviour(new CarBehaviour(this, 50, simulationData.isUseGUI()));
@@ -255,7 +257,8 @@ public class CarAgent extends Agent {
 	 * @param origin ID of the intersection where the car is
 	 */
 	public void recalculate(String origin) {
-//TODO: Modify weights on edges by futureTraffic estimations received from other carAgents		
+//TODO: Modify weights on edges by futureTraffic estimations received from 
+//      other carAgents		
 		this.path = getPathOnMethod(origin,travelData.getFinalIntersection());
 		System.out.println(this.getFutureTraffic().getData().toString());
 		System.out.println(this.path.getSegmentPath().toString());
@@ -367,7 +370,7 @@ public class CarAgent extends Agent {
 	}
 
 	
-	public Path getPathOnMethod(String initialInterseccion, String finalIntersection) {
+	public Path getPathOnMethod(String startInt, String endInt){
         LinkedList<Node> pathGrapht = null;
         if (carData.getTypeOfAlgorithm() == Method.SHORTEST.value) {
 			putWeightsAsDistancesOnGraph(graph);
@@ -376,8 +379,8 @@ public class CarAgent extends Agent {
 		}
 		
 		DijkstraGirosPermitidos dijkstra = new DijkstraGirosPermitidos(graph); 
-		dijkstra.execute(graph.getNodeById(initialInterseccion), 
-				         graph.getNodeById(finalIntersection));
+		dijkstra.execute(graph.getNodeById(startInt), 
+				         graph.getNodeById(endInt));
 		pathGrapht = dijkstra.getPath();
 		
 		List<Step> steps = new ArrayList<Step>();
@@ -403,10 +406,12 @@ public class CarAgent extends Agent {
 		}
 	}
 	
-	//Used with the fastest method. The fast method depends of the distance and the speed
+	//Used with the fastest method. The fast method depends of the distance 
+	//  and the speed
 	private void putWeightsAsSegmentsMaxSpeedsOnGraph(MultiGraphRoadSim graph) {
 		for(Edge e: graph.getEdges()) {
-			e.setWeight(e.getWeight()/map.getSegmentByID(e.getIdSegment()).getMaxSpeed());
+			e.setWeight(e.getWeight() /
+			            map.getSegmentByID(e.getIdSegment()).getMaxSpeed());
 		}
 	}
 

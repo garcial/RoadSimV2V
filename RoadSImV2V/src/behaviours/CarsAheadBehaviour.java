@@ -25,7 +25,8 @@ public class CarsAheadBehaviour extends CyclicBehaviour {
 		if (msg!= null) {
 			JSONObject densityData = new JSONObject(msg.getContent());
 			if (densityData.get("key").equals("register")) 
-				myCarAgent.getTravelData().setCarsAhead(densityData.getInt("cars"));
+				myCarAgent.getTravelData().
+				           setCarsAhead(densityData.getInt("cars"));
 			else myCarAgent.getTravelData().decreaseCarsAhead();
 		} else block();
 	}

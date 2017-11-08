@@ -52,7 +52,8 @@ public class SegmentAgent extends Agent {
 		this.useLog = (boolean) this.getArguments()[3];
 		this.setTini((long) this.getArguments()[4]);
 		this.segment.setSegmentAgent(this);
-		// X is a service level inexistent to obligate to log the first service level
+		// X is a service level inexistent to obligate to log the 
+		//    first service level
 		this.serviceLevelPast = 'X';
 
 		this.cars = new HashMap<String, CarData>();
@@ -276,7 +277,8 @@ public class SegmentAgent extends Agent {
 			return true;
 			
 		} else if (!interactingCars.get(otherCar).contains(idCar)) {
-			// Una vez ha habido una nueva interacci�n, esta deja de ser nueva por lo que se le a�ade a la lista de interacciones
+			// Una vez ha habido una nueva interacci�n, esta deja de ser nueva
+			//     por lo que se le a�ade a la lista de interacciones
 			interactingCars.get(otherCar).add(idCar);
 			return true;
 		}

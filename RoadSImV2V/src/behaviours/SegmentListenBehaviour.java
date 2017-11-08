@@ -100,7 +100,7 @@ public class SegmentListenBehaviour extends Behaviour {
 					if (msg.getConversationId().equals("register")) {
 						
 						densityData.put("type", "register");
-						densityData.put("cars", agent.getCars().size());
+						densityData.put("cars", agent.getCars().size() - 1);
 						msg2.addReceiver(msg.getSender());
 					} else { //Inform all other cars there is one less car 
 						     //   running into this segment
@@ -114,23 +114,31 @@ public class SegmentListenBehaviour extends Behaviour {
 					msg2.setContent(densityData.toString());
 					agent.send(msg2);	
 					
-					//TODO: Añadir una variable de nivel de servicio anterior y así guardamos el tickfinal
-					// Hay que ver donde se recoge el tick
-					if(segment.getCurrentServiceLevel() != this.agent.getServiceLevelPast() && !msg.getConversationId().equals("register")){
+					//TODO: Añadir una variable de nivel de servicio anterior
+					//  y así guardamos el tickfinal. 
+					//  Hay que ver donde se recoge el tick
+					if(segment.getCurrentServiceLevel() != 
+					   this.agent.getServiceLevelPast() && 
+					   !msg.getConversationId().equals("register")) {
 						ACLMessage msgLog = new ACLMessage(ACLMessage.INFORM);
 						msgLog.setOntology("logSegmentOntology");
 						msgLog.addReceiver(this.agent.getLogAgent().getName());
-						msgLog.setContent(segment.getId() + "," + segment.getCurrentServiceLevel() + "," + car.getLong("initialTick") + "," +car.getLong("tick"));
+						msgLog.setContent(segment.getId() + "," + 
+						                  segment.getCurrentServiceLevel() + 
+						                  "," + car.getLong("initialTick") + 
+						                  "," +car.getLong("tick"));
 						myAgent.send(msgLog);
 						
-						this.agent.setServiceLevelPast(segment.getCurrentServiceLevel());
+						this.agent.setServiceLevelPast(
+								segment.getCurrentServiceLevel());
 					}
 					
 					if (currentSL != previousServiceLevel) {
 						//Store current data of the edge in the list of 
 						// previous data
 						
-						// Cuando se cambia el nivel de servicio se cambia el grafo
+						// Cuando se cambia el nivel de servicio => 
+						//    se cambia el grafo
 						Edge myEdge = agent.getSegment().getMyEdge();
 						
 						//Start computing the average speed
@@ -140,7 +148,13 @@ public class SegmentListenBehaviour extends Behaviour {
 						}
 						averageSpeed = averageSpeed / numCars;
 						//Update the weight in the jgraph of the map
-						myEdge.updateEdge(myEdge.getIdSegment(), currentSL, segment.getLength() / averageSpeed, agent.getSegment().getMaxSpeed() ,agent.getTini(), car.getLong("tick"));
+						myEdge.updateEdge(myEdge.getIdSegment(), 
+								          currentSL, 
+								          segment.getLength() / 
+								                averageSpeed, 
+								          agent.getSegment().getMaxSpeed() ,
+								          agent.getTini(), 
+								          car.getLong("tick"));
 						
 						agent.setTini(car.getLong("tick"));
 

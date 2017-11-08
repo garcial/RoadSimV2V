@@ -84,8 +84,8 @@ public class CarBehaviour extends CyclicBehaviour {
 						carAgent.getCarData().getMaxSpeed(),
 					    (currentTrafficDensity >= 43f)? 
 					     5:
-					     carAgent.getTravelData().getCurrentSegment().getMaxSpeed() *
-		                    (1-currentTrafficDensity/43f));
+					     carAgent.getTravelData().getCurrentSegment().getMaxSpeed()
+					        * (1-currentTrafficDensity/43f));
 
 				carAgent.getCarData().setCurrentSpeed(currentSpeed);
 
@@ -118,7 +118,8 @@ public class CarBehaviour extends CyclicBehaviour {
 					if (this.carAgent.getPath().getGraphicalPath().size()> 1) {
 						//Remove the already run path
 						this.carAgent.getPath().getGraphicalPath().remove(0);
-						currentStep = this.carAgent.getPath().getGraphicalPath().get(0);
+						currentStep = this.carAgent.getPath().
+								           getGraphicalPath().get(0);
 						currentX = currentStep.getOriginX();
 						currentY = currentStep.getOriginY();				
 					} else {
@@ -130,34 +131,46 @@ public class CarBehaviour extends CyclicBehaviour {
 				if (!this.done) {
 										
 					//Update the current pk when update the x and y
-					if("up".compareTo(carAgent.getTravelData().getCurrentSegment().getDirection()) == 0){
-						carAgent.getTravelData().setCurrentPK(currentPk + stepDistanceCovered);
+					if("up".compareTo(carAgent.getTravelData().
+							          getCurrentSegment().getDirection())
+							== 0) {
+						carAgent.getTravelData().
+						         setCurrentPK(currentPk + stepDistanceCovered);
 					} else {
-						carAgent.getTravelData().setCurrentPK(currentPk - stepDistanceCovered);
+						carAgent.getTravelData().
+						         setCurrentPK(currentPk - stepDistanceCovered);
 					}
 					
 					// Compute the next graphical position
-					float proportion = graphCovered / currentStep.getStepGraphicalLength() ;
+					float proportion = graphCovered / 
+							           currentStep.getStepGraphicalLength();
 
-					this.carAgent.getCarData().setX(currentX + proportion * 
-							(currentStep.getDestinationX() - currentStep.getOriginX()));
+					this.carAgent.getCarData().setX(
+							currentX + proportion * (currentStep.getDestinationX()
+									                 - currentStep.getOriginX()));
 					this.carAgent.getCarData().setY(currentY + proportion * 
-							(currentStep.getDestinationY() - currentStep.getOriginY()));
+							(currentStep.getDestinationY() - 
+							 currentStep.getOriginY()));
 
 					//If I am in a new segment
-					if (!carAgent.getTravelData().getCurrentSegment().equals(currentStep.getSegment())) {
+					if (!carAgent.getTravelData().getCurrentSegment().
+							equals(currentStep.getSegment())) {
 						long tfin = Long.parseLong(msg.getContent());
 
 						//delete the surplus of km added to the previous segment 
-						this.carAgent.getTravelData().increaseSegmentDistanceCovered(-stepDistanceCovered);
+						this.carAgent.getTravelData().
+						     increaseSegmentDistanceCovered(-stepDistanceCovered);
 
 						//Deregister from previous segment
-						this.informSegment(carAgent.getTravelData().getCurrentSegment(),"deregister");
+						this.informSegment(carAgent.getTravelData().
+								           getCurrentSegment(),"deregister");
 						
 						//Set the new previous segment
-						this.carAgent.getTravelData().setCurrentSegment(currentStep.getSegment());
+						this.carAgent.getTravelData().
+						     setCurrentSegment(currentStep.getSegment());
 						
-						this.carAgent.getTravelData().setSegmentDistanceCovered(stepDistanceCovered);
+						this.carAgent.getTravelData().
+						     setSegmentDistanceCovered(stepDistanceCovered);
 
 						//Register in the new segment
 						this.informSegment(currentStep.getSegment(),"register");
@@ -171,22 +184,30 @@ public class CarBehaviour extends CyclicBehaviour {
 						//  accordingly.
 						// TODO: futureTrafficStore analysis
 
-						carAgent.getTravelData().setCurrentPK(currentStep.getSegment().getPkIni());
-						if("up".compareTo(carAgent.getTravelData().getCurrentSegment().getDirection()) == 0){
-							carAgent.getTravelData().setCurrentPK(currentPk + stepDistanceCovered);
+						carAgent.getTravelData().
+						         setCurrentPK(currentStep.getSegment().getPkIni());
+						if("up".compareTo(carAgent.getTravelData().
+								          getCurrentSegment().getDirection()) 
+								== 0) {
+							carAgent.getTravelData().
+							         setCurrentPK(currentPk + stepDistanceCovered);
 						} else {
-							carAgent.getTravelData().setCurrentPK(currentPk - stepDistanceCovered);
+							carAgent.getTravelData().
+							         setCurrentPK(currentPk - stepDistanceCovered);
 						}
 						
 						if (this.carAgent.isSmart()) {
 								this.carAgent.recalculate(carAgent.getTravelData().
-										                  getCurrentSegment().getOrigin().getId());
+										                  getCurrentSegment().
+										                  getOrigin().getId());
 						}
 						
 						// Once rerouted, Delete data from future 
 						//     Traffic related to this new segment
-						carAgent.getFutureTraffic().delete(currentStep.getSegment().getId());
-						//agent.getPastTraffic().put(previousSegmentId,agent.getSensorTrafficData());
+						carAgent.getFutureTraffic().
+						         delete(currentStep.getSegment().getId());
+						//agent.getPastTraffic().
+						//    put(previousSegmentId,agent.getSensorTrafficData());
 					}
 
 					this.informSegment(currentStep.getSegment(), "update");
@@ -223,7 +244,8 @@ public class CarBehaviour extends CyclicBehaviour {
 		msg.setOntology("carToSegmentOntology");
 		msg.setConversationId(type);
 		
-		//TODO Ahora se va a desregistrar del segmento. En este momento hay que reconfigurar los
+		//TODO Ahora se va a desregistrar del segmento. En este momento hay que
+		//     reconfigurar los
 		//TrafficData y poner el grafo como toca.
 		if ("deregister".compareTo(type) == 0) {
 			// Introducir el Tfin en TrafficData
@@ -233,20 +255,26 @@ public class CarBehaviour extends CyclicBehaviour {
 			        setNumCars(carAgent.getSensorTrafficData().
 			        	    	getCarsPositions().size());
 			
-			//System.out.println("CB Pasamos de sensor a past en " + segment.getId() + " de " + this.agent.getName() + " - " + this.agent.getSensorTrafficData() );
-			this.carAgent.getPastTraffic().put(segment.getId(), this.carAgent.getSensorTrafficData());
+			//System.out.println("CB Pasamos de sensor a past en " + 
+			//      segment.getId() + " de " + this.agent.getName() + " - " + 
+			//      this.agent.getSensorTrafficData() );
+			this.carAgent.getPastTraffic().
+			     put(segment.getId(), this.carAgent.getSensorTrafficData());
 			
 			//Cambiar el graph
-			//System.out.println("Cambiar el grafo de futuro en " + segment.getId());
+			//System.out.println("Cambiar el grafo futuro en "+segment.getId());
 			for(String seg: this.carAgent.getFutureTraffic().getData().keySet()){
 				Edge edge =  this.carAgent.getGraph().getEdgeById(seg);
 				long tiniAux = edge.getTini();
 				long tfinAux = edge.getTfin();
 				TrafficData dataAux = null;
-				for(TrafficData t : this.carAgent.getFutureTraffic().getData().get(seg)){
-					// TODO Voy a utilizar que el tini haya empezado antes y en el caso de que sean igual el que 
-					// tfin sea más grande pasa
-					if((t.getTfin() > tfinAux) || (t.getTfin() == tfinAux && t.getTini() < tiniAux) ){
+				for(TrafficData t : 
+					this.carAgent.getFutureTraffic().getData().get(seg)) {
+					// TODO Voy a utilizar que el tini haya empezado antes  
+					//   y en el caso de que sean igual el que tfin sea más 
+					//   grande pasa
+					if((t.getTfin() > tfinAux) || 
+					   (t.getTfin() == tfinAux && t.getTini() < tiniAux) ) {
 						tiniAux = t.getTini();
 						tfinAux = t.getTfin();
 						dataAux = t;
@@ -254,30 +282,43 @@ public class CarBehaviour extends CyclicBehaviour {
 				}
 				
 				if(dataAux != null){
-					int serviceLevel = calculateServiceLevel(dataAux.getNumCars(), 
-							                                 carAgent.getTravelData().getCurrentSegment().getLength());
-					// TODO: Aqui el nivel de servicio no se cual poner. Que calculo con el número de coches he de hacer
+					int serviceLevel = calculateServiceLevel(
+							            dataAux.getNumCars(), 
+							            carAgent.getTravelData().
+							                     getCurrentSegment().getLength());
+					// TODO: Aqui el nivel de servicio no se cual poner. 
+					//       Que calculo con el número de coches he de hacer
 					
 					edge.updateEdge(seg,serviceLevel, 
-							carAgent.getTravelData().getCurrentSegment().getLength() /
-							carAgent.getTravelData().getCurrentSegment().getCurrentAllowedSpeed() ,
-							carAgent.getTravelData().getCurrentSegment().getMaxSpeed(), 
-							dataAux.getTini(), dataAux.getTfin());
+						  carAgent.getTravelData().getCurrentSegment().
+						           getLength() / carAgent.getTravelData().
+							       getCurrentSegment().getCurrentAllowedSpeed() ,
+						  carAgent.getTravelData().getCurrentSegment().
+						                           getMaxSpeed() , 
+						  dataAux.getTini(), dataAux.getTfin());
 				}
 				
 			}
 			//System.out.println(this.agent.getJgrapht().getEdges());
 			/*System.out.println("PAST TRAFFIC de " + this.agent.getId());
-			for (String key : this.agent.getPastTraffic().getData().keySet()){
-				System.out.println("CBinfSeg: " + key + " - " +this.agent.getPastTraffic().getData().get(key));
+			for (String key : this.agent.getPastTraffic().getData().keySet()) {
+				System.out.println("CBinfSeg: " + key + " - " +
+				             this.agent.getPastTraffic().getData().get(key));
 			}
-			System.out.println("Distancia: " + (float) segment.getLength() * 1000);
-			System.out.println("Distancia real: " + (float) this.currentSegmentCovered);
-			System.out.println("Tiempo: " + this.agent.getSensorTrafficData().getTfin() + " - " + this.agent.getSensorTrafficData().getTini() );*/
-			//TODO: Revise this formula is 3600 multiplying up or down the division?
+			System.out.println("Distancia: " + (float)segment.getLength()*1000);
+			System.out.println("Distancia real: " + 
+			                   (float) this.currentSegmentCovered);
+			System.out.println("Tiempo: " + this.agent.getSensorTrafficData().
+			                    getTfin() + " - " + this.agent.
+			                    getSensorTrafficData().getTini() );*/
+			//TODO: Revise this formula is 3600 multiplying up or down 
+			//      the division?
 			float vel = ( carAgent.getTravelData().getSegmentDistanceCovered() / 
-					(carAgent.getSensorTrafficData().getTfin() - this.carAgent.getSensorTrafficData().getTini()) * 3600);
-			//this.carAgent.addLogData(segment.getId(), this.carAgent.getNumMsgRecibido(), this.carAgent.getNumMsgEnviados(), (float) this.currentSegmentCovered, vel);
+					(carAgent.getSensorTrafficData().getTfin() - 
+					 this.carAgent.getSensorTrafficData().getTini()) * 3600);
+			//this.carAgent.addLogData(segment.getId(), this.carAgent.
+			//     getNumMsgRecibido(), this.carAgent.getNumMsgEnviados(), 
+			//     (float) this.currentSegmentCovered, vel);
 			//We reinicializate the number og messages
 			//this.carAgent.setNumMsgEnviados(0);
 			//this.carAgent.setNumMsgRecibido(0);
@@ -303,13 +344,17 @@ public class CarBehaviour extends CyclicBehaviour {
 		carDataRegister.put("id", this.carAgent.getCarData().getId());
 		carDataRegister.put("x", this.carAgent.getCarData().getX());
 		carDataRegister.put("y", this.carAgent.getCarData().getY());
-		carDataRegister.put("speed", this.carAgent.getCarData().getCurrentSpeed());
-		carDataRegister.put("type", this.carAgent.getCarData().getTypeOfAlgorithm());
+		carDataRegister.put("speed", 
+				            this.carAgent.getCarData().getCurrentSpeed());
+		carDataRegister.put("type", 
+				            this.carAgent.getCarData().getTypeOfAlgorithm());
 		carDataRegister.put("segmentDistanceCovered", this.stepDistanceCovered);
 		carDataRegister.put("tick", this.currentTick);
 		carDataRegister.put("radio", this.carAgent.getCarData().getRadio());
-		carDataRegister.put("initialTick", this.carAgent.getCarData().getInitialTick());
-		carDataRegister.put("tripDistanceCovered", this.carAgent.getTravelData().getTripDistanceCovered());
+		carDataRegister.put("initialTick", 
+				            this.carAgent.getCarData().getInitialTick());
+		carDataRegister.put("tripDistanceCovered", 
+				        this.carAgent.getTravelData().getTripDistanceCovered());
 		
 		msg.setContent(carDataRegister.toString());
 		myAgent.send(msg);
@@ -333,7 +378,8 @@ public class CarBehaviour extends CyclicBehaviour {
 			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 			msg.setOntology("deleteCarOntology");
 			msg.addReceiver(this.carAgent.getInterfaceAgent().getName());
-			msg.setContent(ToJSON.toJSon("id",this.carAgent.getCarData().getId()));
+			msg.setContent(ToJSON.toJSon("id",
+					                     this.carAgent.getCarData().getId()));
 
 			myAgent.send(msg);
 		}
