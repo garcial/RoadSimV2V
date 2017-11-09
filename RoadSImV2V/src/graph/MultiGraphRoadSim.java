@@ -13,19 +13,19 @@ public class MultiGraphRoadSim implements Cloneable {
 		this.edges = new ArrayList<Edge>();
 	}
 
-	/** Añade un nuevo nodo a la lista*/
+	/** Anyade un nuevo nodo a la lista*/
 	public void addNode(Node n){
 		this.nodes.add(n);
 	}
 
-	/** Añade un nuevo Edge a la lista*/
+	/** Anyade un nuevo Edge a la lista*/
 	public void addEdge(Edge e){
 		this.edges.add(e);
 	}
 
 	/** Método para consegur el Node a partir de un String (id)
 	 * @param n id del nodo que se quiere conseguir
-	 * @return El Node que encage con el id o null */
+	 * @return El Node que encaje con el id o null */
 	public Node getNodeById(String n){
 		for(Node node:nodes){
 			if(node.getId().compareTo(n) == 0){
@@ -35,7 +35,7 @@ public class MultiGraphRoadSim implements Cloneable {
 		return null;
 	}
 
-	/** Método para consegur el Edge a partir de un String (id)
+	/** Metodo para consegur el Edge a partir de un String (id)
 	 * @param n id del segmento que se quiere conseguir
 	 * @return El Edge que encage con el id o null */
 	public Edge getEdgeById(String n){
@@ -71,7 +71,8 @@ public class MultiGraphRoadSim implements Cloneable {
 
 	@Override
 	public String toString() {
-		return "MultiGraphRoadSim [nodes=" + nodes.toString() + ", edges=" + edges.toString() + "]";
+		return "MultiGraphRoadSim [nodes=" + nodes.toString() + 
+				", edges=" + edges.toString() + "]";
 	}
 
 	/** Metodo para clonar el multigrafo*/

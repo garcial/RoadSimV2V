@@ -65,7 +65,7 @@ public class CarBehaviour extends CyclicBehaviour {
 		if (msg != null) {
 			
 			this.currentTick = Long.parseLong(msg.getContent());
-			this.carAgent.getCarData().setCurrentTick(currentTick);
+			this.carAgent.getSimulationData().setCurrentTick(currentTick);
 
 			//If I still have to move somewhere
 			if(this.carAgent.getPath().getGraphicalPath().size() > 0) {
@@ -175,7 +175,7 @@ public class CarBehaviour extends CyclicBehaviour {
 						//Register in the new segment
 						this.informSegment(currentStep.getSegment(),"register");
 						
-						carAgent.getCarData().setInitialTick(tfin);
+						carAgent.getSimulationData().setInitialTick(tfin);
 						
 						// TODO:If we are using the smart algorithm, 
 						//  recalculate all the traffic states on the 
@@ -352,7 +352,7 @@ public class CarBehaviour extends CyclicBehaviour {
 		carDataRegister.put("tick", this.currentTick);
 		carDataRegister.put("radio", this.carAgent.getCarData().getRadio());
 		carDataRegister.put("initialTick", 
-				            this.carAgent.getCarData().getInitialTick());
+				            this.carAgent.getSimulationData().getInitialTick());
 		carDataRegister.put("tripDistanceCovered", 
 				        this.carAgent.getTravelData().getTripDistanceCovered());
 		

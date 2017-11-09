@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Node {
-	// Nodo del grafo. Este nodo es la intersección y
+	// Nodo del grafo. Este nodo es la interseccion y
 	// la lista de segmentos a los que puede ir
 	private String id;
 	private List<Edge> segmentIn;

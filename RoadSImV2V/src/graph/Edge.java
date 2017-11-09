@@ -136,8 +136,10 @@ public class Edge extends DefaultWeightedEdge {
 
 	@Override
 	public String toString() {
-		return "Edge [idSegment=" + idSegment + ", weight=" + weight + ", serviceLevel=" + serviceLevel
-				+ ", edgeDataList=" + pastEdgeData.toString() + ", initialNode=" + initialNode + ", finalNode=" + finalNode + "]";
+		return "Edge [idSegment=" + idSegment + ", weight=" + weight +
+				", serviceLevel=" + serviceLevel + ", edgeDataList=" + 
+				pastEdgeData.toString() + ", initialNode=" + initialNode +
+				", finalNode=" + finalNode + "]";
 	}
 
 }

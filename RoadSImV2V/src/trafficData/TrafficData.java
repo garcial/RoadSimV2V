@@ -113,8 +113,10 @@ public class TrafficData {
 		json.put("tini", getTini());
 		json.put("tfin", getTfin());
 		json.put("numCars", getNumCars());
-		json.put("positions", new JSONArray(getCarsPositions().toArray(new Double[0])));
-		json.put("speeds", new JSONArray(getCarsSpeeds().toArray(new Double[0])));
+		json.put("positions", new JSONArray(
+				                  getCarsPositions().toArray(new Double[0])));
+		json.put("speeds", new JSONArray(
+				                  getCarsSpeeds().toArray(new Double[0])));
 		json.put("ids", new JSONArray(getIds().toArray(new String[0])));
 		return json;
 	}

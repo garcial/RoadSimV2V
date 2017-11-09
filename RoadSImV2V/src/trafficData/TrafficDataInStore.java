@@ -21,7 +21,7 @@ public class TrafficDataInStore {
 		return data;
 	}
 
-	public void setData(HashMap<String, ArrayList<TrafficData>> data){
+	public void setData(HashMap<String, ArrayList<TrafficData>> data) {
 		this.data = data;
 	}
 	

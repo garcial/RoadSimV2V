@@ -73,8 +73,9 @@ public class Map implements Serializable {
 		this.drawGUI = drawGUI;
 
 		//Get all files from the given folder
-		String url = Map.class.getClassLoader().getResource(folder).
-				                                getPath().replaceAll("(!|file:/)", "");
+		String url = Map.class.getClassLoader().
+				               getResource(folder).
+				               getPath().replaceAll("(!|file:/)", "");
 		
 		File[] files = new File(url).listFiles();
 
@@ -149,7 +150,8 @@ public class Map implements Serializable {
 							             intersection);
 					//GRAPH - Add Vertex
 					Node n = new Node(intersection.getId());
-					//System.out.println("Añadimos interseccion: " + intersection + " - Añadimos node: " + n);
+					//System.out.println("Añadimos interseccion: " + 
+					//                  intersection + " - Añadimos node: " + n);
 					this.grapht.addNode(n);
 					
 					line = intersectionsReader.readLine();
@@ -182,8 +184,10 @@ public class Map implements Serializable {
 					//Destination
 					if(!seg.getString("destination").equals("null")) {
 
-						destination = intersectionsAux.get(seg.getString("destination"));
-						destinationNode = this.grapht.getNodeById(destination.getId());
+						destination = intersectionsAux.get(
+								                  seg.getString("destination"));
+						destinationNode = this.grapht.getNodeById(
+								                  destination.getId());
 					}
 
 					//Populate the map
@@ -194,8 +198,10 @@ public class Map implements Serializable {
 					}
 					
 					//Make the segment
-					Segment segment = new Segment(this.grapht, seg.getString("id"), 
-									          origin, destination, seg.getDouble("length"),
+					Segment segment = new Segment(this.grapht, 
+							                  seg.getString("id"), 
+									          origin, destination, 
+									          seg.getDouble("length"),
 									          seg.getInt("maxSpeed"), 
 									          seg.getInt("capacity"),
 									          seg.getInt("density"), 
@@ -203,10 +209,18 @@ public class Map implements Serializable {
 									          this.mainContainer, this.useLog, 
 									          this.loggingDirectory, this.drawGUI,
 									          seg.getString("direction"),
-									          seg.getDouble("pkstart"), segTwinsList,
+									          seg.getDouble("pkstart"), 
+									          segTwinsList,
 									          seg.getString("roadCode"),tick, 0);
 					
-					Edge edgeSegment = new Edge(originNode, destinationNode,seg.getString("id"), seg.getDouble("length") / seg.getInt("maxSpeed"), 2, seg.getInt("maxSpeed"), tick, tick);
+					Edge edgeSegment = new Edge(originNode, destinationNode,
+							                    seg.getString("id"), 
+							                    seg.getDouble("length") / 
+							                        seg.getInt("maxSpeed"), 
+							                    2, 
+							                    seg.getInt("maxSpeed"), 
+							                    tick, 
+							                    tick);
 
 					if(origin != null){
 						Node norigin = this.grapht.getNodeById(origin.getId());
@@ -215,7 +229,8 @@ public class Map implements Serializable {
 					}
 
 					if(destination != null){
-						Node ndestination = this.grapht.getNodeById(destination.getId());
+						Node ndestination = this.grapht.getNodeById(
+								                 destination.getId());
 						ndestination.addSegmentIn(edgeSegment);
 						destination.addInSegment(segment);
 					}
@@ -226,9 +241,11 @@ public class Map implements Serializable {
 						//System.out.println("A�adido Edge: " + edgeSegment);
 						this.grapht.addEdge(edgeSegment);
 						/* The weight is hours in double (0.xx) */
-						// This modification of the weight of the edge is because the service level is 2 when we haven't
+						// This modification of the weight of the edge is because
+						//    the service level is 2 when we haven't
 						// any communication about the segment from other agent
-						edgeSegment.setWeight(seg.getDouble("length")/ (seg.getInt("maxSpeed") * 0.8f));
+						edgeSegment.setWeight(seg.getDouble("length") / 
+								             (seg.getInt("maxSpeed") * 0.8f));
 						segment.setMyEdge(edgeSegment);
 						this.edgesAux.put(segment.getId(), edgeSegment);
 					}
@@ -245,7 +262,9 @@ public class Map implements Serializable {
 				for(Node n : grapht.getNodes()){
 					for(Edge in: n.getSegmentIn()){
 						for(Edge out: n.getSegmentOut()){
-							//System.out.println("Camino permitido en " + n.getId() + " de " + in.getIdSegment() + " a " + out.getIdSegment());
+							//System.out.println("Camino permitido en " + 
+							//      n.getId() + " de " + in.getIdSegment() + 
+							//      " a " + out.getIdSegment());
 							n.addAllowedWay(in.getIdSegment(), out.getIdSegment());
 						}
 					}

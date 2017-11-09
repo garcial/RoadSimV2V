@@ -150,7 +150,6 @@ public class CarAgent extends Agent {
 
 		Step currentStep = path.getGraphicalPath().get(0);
 		travelData.setCurrentSegment(currentStep.getSegment());
-		travelData.setCarsAhead(0);
 		travelData.setSegmentDistanceCovered(0);
 
 		//Store data received from other cars in a Map
@@ -167,7 +166,6 @@ public class CarAgent extends Agent {
 		carData.setCurrentSpeed( 
 			Math.min(carData.getMaxSpeed()/4, // CurrentSpeed at the beginning
 					 travelData.getCurrentSegment().getCurrentAllowedSpeed()));
-		carData.setCurrentTick(carData.getInitialTick());
 		
 		//Register
 	    //Add the tini of the first segment
@@ -246,7 +244,7 @@ public class CarAgent extends Agent {
 		//Runs the agent
 		addBehaviour(new CarBehaviour(this, 50, simulationData.isUseGUI()));
 		addBehaviour(new CarReceivingDataBehaviour(this));
-		//addBehaviour(new CarsAheadBehaviour(this));
+		addBehaviour(new CarsAheadBehaviour(this));
 
 	}
 	
@@ -260,8 +258,8 @@ public class CarAgent extends Agent {
 //TODO: Modify weights on edges by futureTraffic estimations received from 
 //      other carAgents		
 		this.path = getPathOnMethod(origin,travelData.getFinalIntersection());
-		System.out.println(this.getFutureTraffic().getData().toString());
-		System.out.println(this.path.getSegmentPath().toString());
+		//System.out.println(this.getFutureTraffic().getData().toString());
+		//System.out.println(this.path.getSegmentPath().toString());
 	}
 	
 	/**
@@ -281,7 +279,8 @@ public class CarAgent extends Agent {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			ObjectOutputStream oos = new ObjectOutputStream(baos);
 			oos.writeObject(obj);
-			ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+			ByteArrayInputStream bais = 
+					             new ByteArrayInputStream(baos.toByteArray());
 			ObjectInputStream ois = new ObjectInputStream(bais);
 			return ois.readObject();
 	}

@@ -7,14 +7,12 @@ public class CarData {
 	private float x, y;
 	private float currentSpeed;
 	private int typeOfAlgorithm;
-	private long currentTick;
 	private int radio;
-	private long initialTick;
 	private int maxSpeed;
 
 	public CarData(String id, float x, float y, float currentSpeed,
 			       int typeOfAlgorithm, float segmentDistanceCovered,
-			       int radio, long initialTick, long currentTick) {
+			       int radio) {
 		super();
 		this.id = id;
 		this.x = x;
@@ -22,9 +20,6 @@ public class CarData {
 		this.currentSpeed = currentSpeed;
 		this.typeOfAlgorithm = typeOfAlgorithm;
 		this.radio = radio;
-		this.initialTick = initialTick;
-		this.currentTick = currentTick;
-		
 	}
 
 	public CarData() {
@@ -71,21 +66,6 @@ public class CarData {
 		this.radio = radio;
 	}
 
-	public long getInitialTick() {
-		return initialTick;
-	}
-
-	public void setInitialTick(long initialTick) {
-		this.initialTick = initialTick;
-	}
-
-	public long getCurrentTick() {
-		return currentTick;
-	}
-
-	public void setCurrentTick(long currentTick) {
-		this.currentTick = currentTick;
-	}
 	public JSONObject toJSON() {
 		JSONObject resultado =  new JSONObject();
 		resultado.put("id", getId());
@@ -94,9 +74,7 @@ public class CarData {
 		resultado.put("speed", getCurrentSpeed());
 		resultado.put("maxSpeed", getMaxSpeed());
 		resultado.put("type", getTypeOfAlgorithm());
-		resultado.put("tick", getCurrentTick());
 		resultado.put("radio", getRadio());
-		resultado.put("initialTick", getInitialTick());
 		return resultado;
 	}
 
