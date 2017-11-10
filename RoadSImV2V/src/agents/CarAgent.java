@@ -27,7 +27,7 @@ import behaviours.CarBehaviour;
 import behaviours.CarReceivingDataBehaviour;
 import behaviours.CarsAheadBehaviour;
 import environment.Intersection;
-import environment.Map;
+import environment.TrafficMap;
 import environment.Path;
 import environment.Segment;
 import environment.Step;
@@ -53,7 +53,7 @@ public class CarAgent extends Agent {
 	private SimulationData simulationData;
 	private DFAgentDescription interfaceAgent;
 	private DFAgentDescription logAgent;
-	private Map map;
+	private TrafficMap map;
 	private Path path;
 	private boolean smart = false;
 	private MultiGraphRoadSim graph;
@@ -95,7 +95,7 @@ public class CarAgent extends Agent {
 		simulationData = new SimulationData();
 		
 		//Get the map from an argument
-		this.map = (Map) this.getArguments()[0];
+		this.map = (TrafficMap) this.getArguments()[0];
 		
 		// Get the graph from the map. 
 		// Each car agent should have its own private graph
@@ -122,9 +122,12 @@ public class CarAgent extends Agent {
 		//Is necessary draw the gui
 		simulationData.setUseGUI((boolean) this.getArguments()[5]);
 		
-		//Get the initial time tick from eventManager
-		simulationData.setInitialTick((long) this.getArguments()[6]);
-
+		//Get the initial time whole travel tick from eventManager
+		simulationData.setStartTick((long) this.getArguments()[6]);
+		
+		//Get the initial tick for the current segment
+		simulationData.setInitialTick(simulationData.getStartTick());
+		
 		//Get the ratio of sensoring for this agentCar
 		carData.setRadio((int) this.getArguments()[7]);
 		
@@ -315,7 +318,7 @@ public class CarAgent extends Agent {
 		return interfaceAgent;
 	}
 
-	public Map getMap() {
+	public TrafficMap getMap() {
 		return map;
 	}
 

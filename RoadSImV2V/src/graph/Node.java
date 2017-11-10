@@ -4,44 +4,58 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+/*
+ * Esta clase representa a una interseccion de una carretera
+ */
 public class Node {
-	// Nodo del grafo. Este nodo es la interseccion y
-	// la lista de segmentos a los que puede ir
+	
+	// El id de la interseccion asociada univocamente a este nodo.
 	private String id;
-	private List<Edge> segmentIn;
-	private List<Edge> segmentOut;
+	// Los ids de los arcos de entrada a la interseccion.
+	// Cada id es el id del segmento asociado a ese arco.
+	private List<String> segmentIn;
+	// Los ids de los arcos de salida de la interseccion.
+	// Cada id es el id del segmento asociado a ese arco.
+	private List<String> segmentOut;
+	// La lista de caminos (por ids de arcos) permitidos desde cada 
+	//    entrada a cada salida
 	private Map<String, ArrayList<String>> allowedWays;
 	
 	public Node(String id){
 		this.id = id;
-		this.segmentIn = new ArrayList<Edge>();
-		this.segmentOut = new ArrayList<Edge>();
+		this.segmentIn = new ArrayList<String>();
+		this.segmentOut = new ArrayList<String>();
 		this.allowedWays = new HashMap<String, ArrayList<String>>();
 	}
 	
-	public Node(String id, List<Edge> segmentIn, List<Edge> segmentOut) {
+	public Node(String id, List<String> segmentIn, List<String> segmentOut) {
 		this.id = id;
 		this.segmentIn = segmentIn;
 		this.segmentOut = segmentOut;
 		this.allowedWays = new HashMap<String, ArrayList<String>>();
 	}
 	
-	public void addSegmentIn(Edge s){
+	public void addInSegment(String s){
 		this.segmentIn.add(s);
 	}
 	
-	public void addSegmentOut(Edge s){
+	public void addOutSegment(String s){
 		this.segmentOut.add(s);
 	}
 
-	/** Añade un camino permitido . En el caso de que no tenga
-	 * caminos permitidos crea la lista y añade el camino. En
-	 * el caso de que el nodo si que tenga caminos permitidos
-	 * pues añade a los actuales caminos uno nuevo.
-	 * @param source Origen del camino
-	 * @param target Destino del camino*/
+	
+	/**
+	 * Anyadir a un camino de entrada/salida valido a este nodo en el 
+	 * atributo allowedWays.
+	 * @param source id del arco de entrada a este nodo.
+	 * @param target id del arco de salida de este nodo.
+	 */
 	public void addAllowedWay(String source, String target){
+		if (!segmentIn.contains(source) || !segmentOut.contains(target)) {
+			System.out.println("Error: source: " + source + " or target: " + 
+		                       target + " wrong in Node: " + id);
+			System.exit(0);
+		}
 		if(!this.allowedWays.containsKey(source)){
 			ArrayList<String> aux = new ArrayList<String>();
 			aux.add(target);
@@ -52,21 +66,17 @@ public class Node {
 	}
 
 	/**
-	 * @param source El segmento del que partes para
-	 *               conseguir los permitidos
-	 * @return la lista de Segmentos permitidos
-	 * */
-	public List<Edge> getAllowedSegments(Edge source){
-		ArrayList<Edge> res = new ArrayList<Edge>();
-		List<String> segments = new ArrayList<String>();
-		if(this.allowedWays.get(source.getIdSegment()) != null){
-			segments = this.allowedWays.get(source.getIdSegment()); 
+	 * Compute the list of the output edge's ids
+	 * @param source source edge id
+	 * @return A list with the allowed edge's ids
+	 * 
+	 */
+	public List<String> getAllowedSegments(String source){
+		List<String> edges = new ArrayList<String>();
+		if(this.allowedWays.get(source) != null){
+			edges = this.allowedWays.get(source); 
 		}
-		for(String s: segments){
-			res.add(this.getSegmentById(s));
-		}
-
-		return res;
+		return edges;
 	}
 
 	/** Getters y Setters de los atributos */
@@ -79,19 +89,19 @@ public class Node {
 		this.id = id;
 	}
 
-	public List<Edge> getSegmentIn() {
+	public List<String> getSegmentIn() {
 		return segmentIn;
 	}
 
-	public void setSegmentIn(List<Edge> segmentIn) {
+	public void setSegmentIn(List<String> segmentIn) {
 		this.segmentIn = segmentIn;
 	}
 
-	public List<Edge> getSegmentOut() {
+	public List<String> getSegmentOut() {
 		return segmentOut;
 	}
 
-	public void setSegmentOut(List<Edge> segmentOut) {
+	public void setSegmentOut(List<String> segmentOut) {
 		this.segmentOut = segmentOut;
 	}
 
@@ -103,26 +113,9 @@ public class Node {
 		this.allowedWays = allowedWays;
 	}
 
-	/**
-	 * @param id String del id del Segment
-	 * @return Devuelve un Edge a partir del id */
-	public Edge getSegmentById(String id){
-		for(Edge s: this.segmentOut){
-			if(s.getIdSegment().compareTo(id)==0){
-				return s;
-			}
-		}
-		for(Edge s: this.segmentIn){
-			if(s.getIdSegment().compareTo(id)==0){
-				return s;
-			}
-		}
-		return null;
-	}
-
 	@Override
 	public String toString() {
-		return "(Inte=" + id +  ")";
+		return "(Node = " + id +  ")";
 	}
 	
 	

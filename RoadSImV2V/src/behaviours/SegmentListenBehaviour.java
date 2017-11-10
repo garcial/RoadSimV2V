@@ -139,7 +139,8 @@ public class SegmentListenBehaviour extends Behaviour {
 						
 						// Cuando se cambia el nivel de servicio => 
 						//    se cambia el grafo
-						Edge myEdge = agent.getSegment().getMyEdge();
+						Edge myEdge = agent.getGraph().getEdgeById(
+								                       agent.getSegment().getId());
 						
 						//Start computing the average speed
 						double averageSpeed = 0.0;
@@ -152,7 +153,6 @@ public class SegmentListenBehaviour extends Behaviour {
 								          currentSL, 
 								          segment.getLength() / 
 								                averageSpeed, 
-								          agent.getSegment().getMaxSpeed() ,
 								          agent.getTini(), 
 								          car.getLong("tick"));
 						

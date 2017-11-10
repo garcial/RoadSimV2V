@@ -1,8 +1,7 @@
 package features;
 
-import java.util.List;
-
 public class SimulationData {
+	long startTick = 0;
 	long initialTick = 0;
 	long currentTick = 0;
 	boolean useLog = true;
@@ -12,6 +11,12 @@ public class SimulationData {
 	int numMsgsReceived = 0;
 	int numMsgsSent = 0;
 	
+	public long getStartTick() {
+		return startTick;
+	}
+	public void setStartTick(long startTick) {
+		this.startTick = startTick;
+	}
 	public long getInitialTick() {
 		return initialTick;
 	}

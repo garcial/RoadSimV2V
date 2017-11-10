@@ -2,7 +2,7 @@ package main;
 
 import java.io.IOException;
 
-import environment.Map;
+import environment.TrafficMap;
 import jade.core.Profile;
 import jade.core.ProfileImpl;
 import jade.wrapper.AgentController;
@@ -44,7 +44,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		Map map = null;
+		TrafficMap map = null;
 
 		//Get a hold on JADE runtime
 		jade.core.Runtime rt = jade.core.Runtime.instance();
@@ -169,7 +169,7 @@ public class Main {
 		//Load the map
 		try {
 			// The map load the segmentsTest that create the SegmentAgent
-			map = new Map("staticFiles/map/pruebasDijkstra", segmentContainer,
+			map = new TrafficMap("staticFiles/map/pruebasDijkstra", segmentContainer,
 					      useLog, loggingDirectory, drawGUI, startingTick);
 		} catch (IOException e) {
 

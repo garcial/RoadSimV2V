@@ -13,7 +13,7 @@ import org.json.JSONObject;
 
 import behaviours.InterfaceAddCarBehaviour;
 import behaviours.InterfaceDrawBehaviour;
-import environment.Map;
+import environment.TrafficMap;
 import view.CanvasWorld;
 
 
@@ -69,7 +69,7 @@ public class InterfaceAgent extends Agent{
 		if (drawGUI) {
 
 			//Get the map from an argument
-			Map graphicalMap = (Map) this.getArguments()[0];
+			TrafficMap graphicalMap = (TrafficMap) this.getArguments()[0];
 			
 			InterfaceAgent me = this;
 

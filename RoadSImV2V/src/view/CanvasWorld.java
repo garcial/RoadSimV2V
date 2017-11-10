@@ -37,7 +37,7 @@ import org.json.JSONObject;
 
 import agents.InterfaceAgent;
 import environment.Intersection;
-import environment.Map;
+import environment.TrafficMap;
 import environment.Segment;
 import environment.Step;
 import searchAlgorithms.Method;
@@ -55,7 +55,7 @@ public class CanvasWorld extends JFrame
 	private final int FPS = 40;
 
 	private MapPanel contentPane;
-	private Map map = null;
+	private TrafficMap map = null;
 
 	private JLabel time, numberOfCars;
 	private JTextArea logPanel;
@@ -74,7 +74,7 @@ public class CanvasWorld extends JFrame
 	 * @param map
 	 */
 	public CanvasWorld(InterfaceAgent interfaceAgent, int maxX, 
-			           int maxY, Map map) {
+			           int maxY, TrafficMap map) {
 
 		super();
 

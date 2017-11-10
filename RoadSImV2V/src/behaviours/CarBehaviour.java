@@ -293,9 +293,7 @@ public class CarBehaviour extends CyclicBehaviour {
 						  carAgent.getTravelData().getCurrentSegment().
 						           getLength() / carAgent.getTravelData().
 							       getCurrentSegment().getCurrentAllowedSpeed() ,
-						  carAgent.getTravelData().getCurrentSegment().
-						                           getMaxSpeed() , 
-						  dataAux.getTini(), dataAux.getTfin());
+							       dataAux.getTini(), dataAux.getTfin());
 				}
 				
 			}

@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import behaviours.EventManagerBehaviour;
-import environment.Map;
+import environment.TrafficMap;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -38,7 +38,7 @@ public class EventManagerAgent extends Agent {
 	private jade.wrapper.AgentContainer carContainer;
 	private jade.wrapper.AgentContainer segmentContainer;
 	
-	private Map map;
+	private TrafficMap map;
 
 	private DFAgentDescription interfaceAgent;
 	
@@ -52,7 +52,7 @@ public class EventManagerAgent extends Agent {
 		this.aux = new ArrayList<String>();
 
 		//Get the map
-		this.map = (Map) this.getArguments()[0];
+		this.map = (TrafficMap) this.getArguments()[0];
 
 		//Get the containers
 		this.carContainer = (jade.wrapper.AgentContainer) 
@@ -102,7 +102,7 @@ public class EventManagerAgent extends Agent {
 
 		//Read from file
 		//Get all files from the given folder
-		String url = Map.class.getClassLoader().getResource(folder).
+		String url = TrafficMap.class.getClassLoader().getResource(folder).
 				                                getPath();
 		File[] files = new File(url).listFiles();
 
@@ -189,7 +189,7 @@ public class EventManagerAgent extends Agent {
 		return segmentContainer;
 	}
 
-	public Map getMap() {
+	public TrafficMap getMap() {
 
 		return this.map;
 	}

@@ -5,11 +5,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -18,32 +18,27 @@ import graph.MultiGraphRoadSim;
 import graph.Node;
 
 /**
- * Class that holds the representation of a map.
+ * Class that holds the representation of a traffic map.
  * 
- * It also has al the logic to read the map files and creates the 
+ * It also has al the logic to read the traffic map files and creates the 
  * {@link SegmentAgent}.
  *
  */
-public class Map implements Serializable {
+public class TrafficMap implements Serializable {
 
 	private static final long serialVersionUID = 6521810168990354805L;
 
-	@SuppressWarnings("unused")
-	private Intersection start;
 	private Integer intersectionCount;
 	private Integer segmentCount;
-	private List<Intersection> intersections;
-	// GRAPHT
-	private MultiGraphRoadSim grapht;
+	private MultiGraphRoadSim graph;// MultiGraph storaging dynamically measures
 
 	//The container where the segment agents will be created
 	private transient jade.wrapper.AgentContainer mainContainer;
 	
-	//Parameters for the segmentsTest
 	private boolean useLog;
 	private String loggingDirectory;
-	HashMap<String, Segment> segmentsAux;
-	HashMap<String, Edge> edgesAux;
+	Map<String, Intersection> intersectionsMap;
+	Map<String, Segment> segmentsMap;
 	
 	// Draw the GUI
 	private boolean drawGUI;
@@ -53,18 +48,17 @@ public class Map implements Serializable {
 	 * 
 	 * @param folder Folder where the files are stored.
 	 */
-	public Map(String folder, 
+	public TrafficMap(String folder, 
 			   jade.wrapper.AgentContainer mainContainer,
 			   boolean useLog, String loggingDirectory, 
 			   boolean drawGUI, long tick) 
-		   throws IOException{
+		   throws IOException {
 
 		//For the agents
 		this.mainContainer = mainContainer;		
 		this.useLog = useLog;
 		this.loggingDirectory = loggingDirectory;
-		// Create JGRAPHT - Multigrapht directed
-		this.grapht = new MultiGraphRoadSim();
+		this.graph = new MultiGraphRoadSim();
 
 		//Read the files
 		this.intersectionCount = 0;
@@ -73,30 +67,16 @@ public class Map implements Serializable {
 		this.drawGUI = drawGUI;
 
 		//Get all files from the given folder
-		String url = Map.class.getClassLoader().
-				               getResource(folder).
-				               getPath().replaceAll("(!|file:/)", "");
+		String url = TrafficMap.class.getClassLoader().getResource(folder).
+				                                       getPath();
 		
 		File[] files = new File(url).listFiles();
 
-		//Check correct files
 		BufferedReader intersectionsReader = null, 
 				       segmentsReader = null, 
 				       stepsReader = null;
-		
-		System.out.println("/***************************/");
-		System.out.println("MapJava: Constructor");
-		System.out.println("folder: " + folder);
-		System.out.println("URL: " + url);
-		System.out.println("useLog: " + useLog);
-		System.out.println("loggingDirectory: " + loggingDirectory);
-		System.out.println("drawGUI: " + drawGUI);
-		System.out.println("tick: " + tick);
-		System.out.println("Files Length: " + files.length);
-		System.out.println("Files: " + files.toString());
-		System.out.println("/***************************/");
 
-		for(int i=0; i < files.length; i++){
+		for(int i=0; i < files.length; i++) {
 			
 			if(files[i].getName().equals("intersections")){
 
@@ -122,18 +102,9 @@ public class Map implements Serializable {
 			throw new IOException("Couldn't find the files.");
 		} else {
 			try {
-				//This will be used later to append the segmentsTest in an
-				//     efficient way
-				HashMap<String, Intersection> intersectionsAux = new 
-						              HashMap<String, Intersection>();
+				intersectionsMap = new HashMap<String, Intersection>();
 
 				String line = intersectionsReader.readLine();
-
-				//Auxiliar structure
-				this.intersections = new ArrayList<Intersection>();
-				//Leemos los nodos
-				//System.out.println("(Map.java) LEEMOS NODOS");
-				//Read  all the Intersections
 				while(line != null){
 
 					JSONObject inter = new JSONObject(line);
@@ -145,52 +116,39 @@ public class Map implements Serializable {
 								inter.getJSONObject("coordinates").
 								      getInt("y"));
 
-					this.intersections.add(intersection);
-					intersectionsAux.put(inter.getString("id"),
+					intersectionsMap.put(inter.getString("id"),
 							             intersection);
-					//GRAPH - Add Vertex
 					Node n = new Node(intersection.getId());
-					//System.out.println("Añadimos interseccion: " + 
-					//                  intersection + " - Añadimos node: " + n);
-					this.grapht.addNode(n);
+					this.graph.addNode(n);
 					
 					line = intersectionsReader.readLine();
 					this.intersectionCount++;
 				}
 
+				segmentsMap = new HashMap<String, Segment>();
+
 				line = segmentsReader.readLine();
-
-				//This will be used to add the stepsTest later
-				segmentsAux = new HashMap<String, Segment>();
-				edgesAux = new HashMap<String, Edge>();
-
-				//Read all the segmentsTest
 				while(line != null){
 
 					JSONObject seg = new JSONObject(line);
 
 					Intersection origin = null;
 					Intersection destination = null;
-					Node destinationNode = null;
-					Node originNode = null;
 
 					//Origin
 					if(!seg.getString("origin").equals("null")) {
 
-						origin = intersectionsAux.get(seg.getString("origin"));
-						originNode = this.grapht.getNodeById(origin.getId());
+						origin = intersectionsMap.get(seg.getString("origin"));
 					}
 
 					//Destination
 					if(!seg.getString("destination").equals("null")) {
 
-						destination = intersectionsAux.get(
+						destination = intersectionsMap.get(
 								                  seg.getString("destination"));
-						destinationNode = this.grapht.getNodeById(
-								                  destination.getId());
 					}
 
-					//Populate the map
+					// Retrieve the twin segment from the current one
 					JSONArray segTwinsJSON = seg.getJSONArray("twins");
 					LinkedList<String> segTwinsList = new LinkedList<String>();
 					for (int i = 0; i < segTwinsJSON.length(); i++){
@@ -198,7 +156,7 @@ public class Map implements Serializable {
 					}
 					
 					//Make the segment
-					Segment segment = new Segment(this.grapht, 
+					Segment segment = new Segment(this.graph, 
 							                  seg.getString("id"), 
 									          origin, destination, 
 									          seg.getDouble("length"),
@@ -213,65 +171,57 @@ public class Map implements Serializable {
 									          segTwinsList,
 									          seg.getString("roadCode"),tick, 0);
 					
-					Edge edgeSegment = new Edge(originNode, destinationNode,
-							                    seg.getString("id"), 
+					Edge edgeSegment = new Edge(seg.getString("id"), 
 							                    seg.getDouble("length") / 
 							                        seg.getInt("maxSpeed"), 
 							                    2, 
-							                    seg.getInt("maxSpeed"), 
 							                    tick, 
 							                    tick);
 
 					if(origin != null){
-						Node norigin = this.grapht.getNodeById(origin.getId());
-						norigin.addSegmentOut(edgeSegment);
+						Node norigin = this.graph.getNodeById(origin.getId());
+						norigin.addOutSegment(edgeSegment.getIdSegment());
 						origin.addOutSegment(segment);
 					}
 
 					if(destination != null){
-						Node ndestination = this.grapht.getNodeById(
+						Node ndestination = this.graph.getNodeById(
 								                 destination.getId());
-						ndestination.addSegmentIn(edgeSegment);
+						ndestination.addInSegment(edgeSegment.getIdSegment());
 						destination.addInSegment(segment);
 					}
 										
 					
-					//Add an Edge to the Jgraph
+					//Add an Edge to the Multigraph
 					if(origin != null && destination != null){	
-						//System.out.println("A�adido Edge: " + edgeSegment);
-						this.grapht.addEdge(edgeSegment);
+						this.graph.addEdge(edgeSegment);
 						/* The weight is hours in double (0.xx) */
+						//TODO: Explain this, please!!!
 						// This modification of the weight of the edge is because
 						//    the service level is 2 when we haven't
 						// any communication about the segment from other agent
 						edgeSegment.setWeight(seg.getDouble("length") / 
 								             (seg.getInt("maxSpeed") * 0.8f));
-						segment.setMyEdge(edgeSegment);
-						this.edgesAux.put(segment.getId(), edgeSegment);
 					}
 
-					segmentsAux.put(segment.getId(), segment);
+					segmentsMap.put(segment.getId(), segment);
 
 					line = segmentsReader.readLine();
 					this.segmentCount++;
 				}
-				//Est�n los segmentos cargados as� que podemos a�adir los
-				//caminos permitidos
+
 				//TODO: PUT ALLOWED WAYS IN THIS CASE ALL THE WAYS ARE ALLOWED
 				//Esto es como si fueran todo rotondas
-				for(Node n : grapht.getNodes()){
-					for(Edge in: n.getSegmentIn()){
-						for(Edge out: n.getSegmentOut()){
+				for(Node n : graph.getNodes()){
+					for(String in: n.getSegmentIn()){
+						for(String out: n.getSegmentOut()){
 							//System.out.println("Camino permitido en " + 
 							//      n.getId() + " de " + in.getIdSegment() + 
 							//      " a " + out.getIdSegment());
-							n.addAllowedWay(in.getIdSegment(), out.getIdSegment());
+							n.addAllowedWay(in, out);
 						}
 					}
 				}
-				
-				
-				this.start = this.intersections.get(0);
 
 				//Read all the stepsTest
 				line = stepsReader.readLine();
@@ -286,26 +236,26 @@ public class Map implements Serializable {
 
 					//Create the step
 					Step s = new Step(step.getString("id"), 
-						segmentsAux.get(idSegment), 
+						segmentsMap.get(idSegment), 
 						step.getJSONObject("originCoordinates").getInt("x"),
 						step.getJSONObject("originCoordinates").getInt("y"),
 						step.getJSONObject("destinationCoordinates").getInt("x"),
 						step.getJSONObject("destinationCoordinates").getInt("y"));
 
 					//Add the stepsTest to the segment
-					segmentsAux.get(idSegment).addStep(s);				
+					segmentsMap.get(idSegment).addStep(s);				
 
 					line = stepsReader.readLine();
 				}
 				
 				//Move the segmentsTest
-				for (String string : segmentsAux.keySet()) {
-					this.move(segmentsAux.get(string), 4);
+				for (String string : segmentsMap.keySet()) {
+					this.move(segmentsMap.get(string), 4);
 				}
 				
 				//Compute the length of the step according to the
 				//   length of the segment
-				for(Segment segment:segmentsAux.values()) {
+				for(Segment segment:segmentsMap.values()) {
 					double length = 0.0;
 					for(Step step:segment.getSteps()) {
 						length += step.getStepGraphicalLength(); 
@@ -334,34 +284,14 @@ public class Map implements Serializable {
 	 * @return
 	 */
 	public Intersection getIntersectionByID(String id){
-		Intersection ret = null;
-		for(Intersection intersection: this.intersections){
-			if(intersection.getId().equals(id)){
-				ret = intersection;
-				break;
-			}
-		}
-		return ret;
-	}
-
-	/**
-	 * Returns a random valid intersection id
-	 * 
-	 * @return
-	 */
-	public String getRandomIntersection(){
-
-		Random rand = new Random();
-		int randomNum = rand.nextInt(this.intersectionCount);
-
-		return this.intersections.get(randomNum).getId();
+		return intersectionsMap.get(id);
 	}
 	
 	/**
-	 * Returns the jgraph with the structure of the map
+	 * Returns the Multigraph with the structure of the map
 	 * */
 	public MultiGraphRoadSim getGraph() {
-		return grapht;
+		return graph;
 	}
 
 	/**
@@ -369,9 +299,9 @@ public class Map implements Serializable {
 	 * 
 	 * @return The Intersection list
 	 */
-	public List<Intersection> getIntersections(){
+	public Collection<Intersection> getIntersections(){
 
-		return this.intersections;
+		return this.intersectionsMap.values();
 	}
 
 	/**
@@ -462,15 +392,11 @@ public class Map implements Serializable {
 	}
 	
 	public Segment getSegmentByID(String id) {
-		return segmentsAux.get(id);
-	}
-	
-	public Edge getEdgeBySegmentID(String id) {
-		return edgesAux.get(id);
+		return segmentsMap.get(id);
 	}
 
-	public HashMap<String, Segment> getSegmentsAux() {
-		return segmentsAux;
+	public Map<String, Segment> getSegmentsAux() {
+		return segmentsMap;
 	}
 	
 }

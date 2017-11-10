@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import agents.SegmentAgent;
-import graph.Edge;
 import graph.MultiGraphRoadSim;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
@@ -64,9 +63,6 @@ public class Segment implements Serializable{
 	
 	//Road Code
 	private String roadCode;
-	
-	//My edge of the jgrapht
-	Edge myEdge;
 
 	//Segment agent
 	private SegmentAgent segmentAgent;
@@ -286,14 +282,6 @@ public class Segment implements Serializable{
 
 	public void setRoadCode(String roadCode) {
 		this.roadCode = roadCode;
-	}
-	
-	public void setMyEdge(Edge e) {
-		myEdge = e;		
-	}
-	
-	public Edge getMyEdge() {
-		return myEdge;
 	}
 
 	@Override

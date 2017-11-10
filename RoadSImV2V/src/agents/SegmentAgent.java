@@ -36,7 +36,7 @@ public class SegmentAgent extends Agent {
 
 	//The cars that are currently on this segment
 	private HashMap<String, CarData> cars;
-	private MultiGraphRoadSim jgrapht;
+	private MultiGraphRoadSim graph;
 	private HashMap<String, ArrayList<String>> interactingCars;
 	//TODO: Gestionar lo que se guarda en el log
 	private int serviceLevelPast;
@@ -48,7 +48,7 @@ public class SegmentAgent extends Agent {
 		//Get the segment from parameter
 		this.segment = (Segment) this.getArguments()[0];
 		this.drawGUI = (boolean) this.getArguments()[1];
-		this.jgrapht = (MultiGraphRoadSim) this.getArguments()[2];
+		this.graph = (MultiGraphRoadSim) this.getArguments()[2];
 		this.useLog = (boolean) this.getArguments()[3];
 		this.setTini((long) this.getArguments()[4]);
 		this.segment.setSegmentAgent(this);
@@ -253,12 +253,12 @@ public class SegmentAgent extends Agent {
 		this.useLog = useLog;
 	}
 
-	public MultiGraphRoadSim getJgrapht() {
-		return jgrapht;
+	public MultiGraphRoadSim getGraph() {
+		return graph;
 	}
 
-	public void setJgrapht(MultiGraphRoadSim jgrapht) {
-		this.jgrapht = jgrapht;
+	public void setGraph(MultiGraphRoadSim grapht) {
+		this.graph = grapht;
 	}
 
 	public long getTini() {
