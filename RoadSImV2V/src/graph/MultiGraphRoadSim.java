@@ -1,8 +1,9 @@
 package graph;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MultiGraphRoadSim implements Serializable {
@@ -10,10 +11,12 @@ public class MultiGraphRoadSim implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Map<String, Node> nodesMap;
 	private Map<String, Edge> edgesMap;
+	private List<Node> virtualNodes;
 	
 	public MultiGraphRoadSim(){
 		this.nodesMap = new HashMap<String, Node>();
 		this.edgesMap = new HashMap<String, Edge>();
+		this.virtualNodes = new ArrayList<Node>();
 	}
 
 	/** Anyade un nuevo nodo a la lista*/
@@ -24,6 +27,8 @@ public class MultiGraphRoadSim implements Serializable {
 	/** Anyade un nuevo Edge a la lista*/
 	public void addEdge(Edge e){
 		this.edgesMap.put(e.getIdSegment(), e);
+		Node v = new Node()
+		virtualNodes.add(new Node(e.getIdSegment()))
 	}
 
 	/** Metodo para conseguir el Node a partir de un String (id)
@@ -40,12 +45,12 @@ public class MultiGraphRoadSim implements Serializable {
 		return edgesMap.get(n);
 	}
 
-	public Collection<Edge> getEdges() {
-		return edgesMap.values();
+	public List<Edge> getEdges() {
+		return new ArrayList<Edge>(edgesMap.values());
 	}
 	
-	public Collection<Node> getNodes() {
-		return nodesMap.values();
+	public List<Node> getNodes() {
+		return new ArrayList<Node>(nodesMap.values());
 	}
 
 	@Override
