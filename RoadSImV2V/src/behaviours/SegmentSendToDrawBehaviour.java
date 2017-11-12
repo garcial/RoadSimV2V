@@ -20,13 +20,13 @@ public class SegmentSendToDrawBehaviour extends CyclicBehaviour {
 
 	private static final long serialVersionUID =-6962886464372429902L;
 
-	private SegmentAgent agent;
+	private SegmentAgent mySegmentAgent;
 	private DFAgentDescription interfaceAgent;
 	private AID topic;
 
 	public SegmentSendToDrawBehaviour(SegmentAgent agent) {
 
-		this.agent = agent;
+		this.mySegmentAgent = agent;
 
 		//Find the interface agent
 		DFAgentDescription dfd = new DFAgentDescription();
@@ -38,7 +38,7 @@ public class SegmentSendToDrawBehaviour extends CyclicBehaviour {
 
 		try {
 			result = DFService.searchUntilFound(
-					this.agent, this.agent.getDefaultDF(), 
+					this.mySegmentAgent, this.mySegmentAgent.getDefaultDF(), 
 					dfd, null, 5000L);
 		} catch (FIPAException e) { e.printStackTrace(); }
 
@@ -48,7 +48,7 @@ public class SegmentSendToDrawBehaviour extends CyclicBehaviour {
 		
 		try {
 			TopicManagementHelper topicHelper = 
-					(TopicManagementHelper) this.agent.
+					(TopicManagementHelper) this.mySegmentAgent.
 					    getHelper(TopicManagementHelper.SERVICE_NAME);
 			topic = topicHelper.createTopic("tick");
 			topicHelper.register(topic);
@@ -68,13 +68,13 @@ public class SegmentSendToDrawBehaviour extends CyclicBehaviour {
 
 		if (msg != null) {
 			
-			if (this.agent.carsSize() > 0) {
+			if (this.mySegmentAgent.carsSize() > 0) {
 
 				//Send the data to the InterfaceAgent
 				msg = new ACLMessage(ACLMessage.INFORM);
 				msg.setOntology("drawOntology");
 				msg.addReceiver(this.interfaceAgent.getName());
-				msg.setContent(this.agent.getDrawingInformation());
+				msg.setContent(this.mySegmentAgent.getDrawingInformation());
 
 				myAgent.send(msg);
 			}

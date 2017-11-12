@@ -11,7 +11,6 @@ import behaviours.SegmentRadarBehaviour;
 import behaviours.SegmentSendToDrawBehaviour;
 import environment.Segment;
 import features.CarData;
-import graph.MultiGraphRoadSim;
 import jade.core.Agent;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
@@ -36,7 +35,6 @@ public class SegmentAgent extends Agent {
 
 	//The cars that are currently on this segment
 	private HashMap<String, CarData> cars;
-	private MultiGraphRoadSim graph;
 	private HashMap<String, ArrayList<String>> interactingCars;
 	//TODO: Gestionar lo que se guarda en el log
 	private int serviceLevelPast;
@@ -48,9 +46,8 @@ public class SegmentAgent extends Agent {
 		//Get the segment from parameter
 		this.segment = (Segment) this.getArguments()[0];
 		this.drawGUI = (boolean) this.getArguments()[1];
-		this.graph = (MultiGraphRoadSim) this.getArguments()[2];
-		this.useLog = (boolean) this.getArguments()[3];
-		this.setTini((long) this.getArguments()[4]);
+		this.useLog = (boolean) this.getArguments()[2];
+		this.setTini((long) this.getArguments()[3]);
 		this.segment.setSegmentAgent(this);
 		// X is a service level inexistent to obligate to log the 
 		//    first service level
@@ -251,14 +248,6 @@ public class SegmentAgent extends Agent {
 
 	public void setUseLog(boolean useLog) {
 		this.useLog = useLog;
-	}
-
-	public MultiGraphRoadSim getGraph() {
-		return graph;
-	}
-
-	public void setGraph(MultiGraphRoadSim grapht) {
-		this.graph = grapht;
 	}
 
 	public long getTini() {

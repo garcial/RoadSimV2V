@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -12,10 +13,6 @@ import java.util.List;
 import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import graph.Edge;
-import graph.MultiGraphRoadSim;
-import graph.Node;
 
 /**
  * Class that holds the representation of a traffic map.
@@ -30,7 +27,6 @@ public class TrafficMap implements Serializable {
 
 	private Integer intersectionCount;
 	private Integer segmentCount;
-	private MultiGraphRoadSim graph;// MultiGraph storaging dynamically measures
 
 	//The container where the segment agents will be created
 	private transient jade.wrapper.AgentContainer mainContainer;
@@ -39,8 +35,8 @@ public class TrafficMap implements Serializable {
 	private String loggingDirectory;
 	Map<String, Intersection> intersectionsMap;
 	Map<String, Segment> segmentsMap;
-	
-	// Draw the GUI
+	// A list with virtualNodes to compute the shortest path is need here.
+	List<String> virtualNodes;
 	private boolean drawGUI;
 
 	/**
@@ -58,7 +54,6 @@ public class TrafficMap implements Serializable {
 		this.mainContainer = mainContainer;		
 		this.useLog = useLog;
 		this.loggingDirectory = loggingDirectory;
-		this.graph = new MultiGraphRoadSim();
 
 		//Read the files
 		this.intersectionCount = 0;
@@ -118,13 +113,12 @@ public class TrafficMap implements Serializable {
 
 					intersectionsMap.put(inter.getString("id"),
 							             intersection);
-					Node n = new Node(intersection.getId());
-					this.graph.addNode(n);
 					
 					line = intersectionsReader.readLine();
 					this.intersectionCount++;
 				}
 
+				virtualNodes = new ArrayList<String>();
 				segmentsMap = new HashMap<String, Segment>();
 
 				line = segmentsReader.readLine();
@@ -156,8 +150,7 @@ public class TrafficMap implements Serializable {
 					}
 					
 					//Make the segment
-					Segment segment = new Segment(this.graph, 
-							                  seg.getString("id"), 
+					Segment segment = new Segment(seg.getString("id"), 
 									          origin, destination, 
 									          seg.getDouble("length"),
 									          seg.getInt("maxSpeed"), 
@@ -170,39 +163,28 @@ public class TrafficMap implements Serializable {
 									          seg.getDouble("pkstart"), 
 									          segTwinsList,
 									          seg.getString("roadCode"),tick, 0);
-					
-					Edge edgeSegment = new Edge(seg.getString("id"), 
-							                    seg.getDouble("length") / 
-							                        seg.getInt("maxSpeed"), 
-							                    2, 
-							                    tick, 
-							                    tick);
 
 					if(origin != null){
-						Node norigin = this.graph.getNodeById(origin.getId());
-						norigin.addOutSegment(edgeSegment.getIdSegment());
 						origin.addOutSegment(segment);
+						virtualNodes.add(segment.getId() + "#" + 
+						                 segment.getDestination().getId());
 					}
 
 					if(destination != null){
-						Node ndestination = this.graph.getNodeById(
-								                 destination.getId());
-						ndestination.addInSegment(edgeSegment.getIdSegment());
 						destination.addInSegment(segment);
 					}
-										
-					
+															
 					//Add an Edge to the Multigraph
-					if(origin != null && destination != null){	
-						this.graph.addEdge(edgeSegment);
-						/* The weight is hours in double (0.xx) */
-						//TODO: Explain this, please!!!
-						// This modification of the weight of the edge is because
-						//    the service level is 2 when we haven't
-						// any communication about the segment from other agent
-						edgeSegment.setWeight(seg.getDouble("length") / 
-								             (seg.getInt("maxSpeed") * 0.8f));
-					}
+//					if(origin != null && destination != null){	
+//						this.graph.addEdge(edgeSegment);
+//						/* The weight is hours in double (0.xx) */
+//						//TODO: Explain this, please!!!
+//						// This modification of the weight of the edge is because
+//						//    the service level is 2 when we haven't
+//						// any communication about the segment from other agent
+//						edgeSegment.setWeight(seg.getDouble("length") / 
+//								             (seg.getInt("maxSpeed") * 0.8f));
+//					}
 
 					segmentsMap.put(segment.getId(), segment);
 
@@ -210,19 +192,16 @@ public class TrafficMap implements Serializable {
 					this.segmentCount++;
 				}
 
-				//TODO: PUT ALLOWED WAYS IN THIS CASE ALL THE WAYS ARE ALLOWED
-				//Esto es como si fueran todo rotondas
-				for(Node n : graph.getNodes()){
-					for(String in: n.getSegmentIn()){
-						for(String out: n.getSegmentOut()){
-							//System.out.println("Camino permitido en " + 
-							//      n.getId() + " de " + in.getIdSegment() + 
-							//      " a " + out.getIdSegment());
-							n.addAllowedWay(in, out);
+				//TODO: PUT ALLOWED WAYS. IN THIS CASE ALL THE WAYS ARE ALLOWED
+				//Esto es como si todas las intersecciones fueran rotondas
+				for(Intersection intersection : intersectionsMap.values()){
+					for(Segment in: intersection.getInSegments()){
+						for(Segment out: intersection.getOutSegments()){
+							intersection.addAllowedWay(in.getId(), out.getId());
 						}
 					}
 				}
-
+				
 				//Read all the stepsTest
 				line = stepsReader.readLine();
 
@@ -285,13 +264,6 @@ public class TrafficMap implements Serializable {
 	 */
 	public Intersection getIntersectionByID(String id){
 		return intersectionsMap.get(id);
-	}
-	
-	/**
-	 * Returns the Multigraph with the structure of the map
-	 * */
-	public MultiGraphRoadSim getGraph() {
-		return graph;
 	}
 
 	/**
@@ -399,4 +371,62 @@ public class TrafficMap implements Serializable {
 		return segmentsMap;
 	}
 	
+	private List<String> getNewVirtualNodes() {
+		return new ArrayList<String>(virtualNodes);
+	}
+	
+	//TODO: Is right to stop when first time a Node ending in destinationID is 
+	//      reached or maybe it is better to finish when all the ways to the 
+	//      destinationID are reached?
+	/**
+	 * Implementation of the ShortestPath method by Dijkstra.
+	 * @param segmentID The segmentID by which I reach the originID intersection
+	 * @param originID The intersectionID representing the departure node
+	 * @param destinationID The intersectionID of the destination node
+	 * @return An String made up of sequential chunks SegmentID#IntersectionID
+	 *         representing the intersections traversed and the segments that 
+	 *         connect them.
+	 */
+	public String DijkstraShortestPath(String segmentID, String originID, 
+			                           String destinationID) {
+		String initialNode = segmentID + "#" + originID;
+		List<String> notYetVisitedNodes = getNewVirtualNodes();
+		Map<String, String> previousNode = new HashMap<String, String>();
+		Map<String, Double> distanceMin = new HashMap<String, Double>();
+		for(String node:notYetVisitedNodes) {
+			distanceMin.put(node, Double.MAX_VALUE);
+		}
+		distanceMin.put(initialNode, 0.0);
+		String chosenNode = null;
+		while (!notYetVisitedNodes.isEmpty()) {
+			// Compute the node with the minimal distance
+			int posMin = 0;
+			for(int i = 1; i<notYetVisitedNodes.size(); i++)
+				if (distanceMin.get(notYetVisitedNodes.get(i)) <
+						distanceMin.get(notYetVisitedNodes.get(posMin)))
+					posMin = i;
+			chosenNode = notYetVisitedNodes.get(posMin);
+			String chosenInt = chosenNode.split("#")[1];
+			// If the destinationID is reached shortestPath finishes
+			if (chosenInt.equals(destinationID)) break;
+			for(Segment s:getIntersectionByID(chosenInt).getOutSegments()) {
+				String nextNode = s.getId() + "#" + 
+			                             s.getDestination().getId();
+				if (distanceMin.get(chosenNode) + s.getWeight() < 
+					distanceMin.get(nextNode)) {
+					distanceMin.put(nextNode, 
+							        distanceMin.get(chosenNode) + s.getWeight());
+					previousNode.put(nextNode, chosenNode);
+				}
+			}
+			notYetVisitedNodes.remove(posMin);
+		}
+		//TODO: What would happen if there is not a way to destinationID?
+		String pathString = chosenNode;
+		while (!previousNode.get(chosenNode).equals(initialNode)) {
+			pathString = previousNode.get(chosenNode) + "#" + pathString;
+			chosenNode = previousNode.get(chosenNode);
+		}
+		return pathString;
+	}
 }

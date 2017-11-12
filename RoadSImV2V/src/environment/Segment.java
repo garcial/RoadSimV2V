@@ -6,7 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import agents.SegmentAgent;
-import graph.MultiGraphRoadSim;
 import jade.wrapper.AgentController;
 import jade.wrapper.StaleProxyException;
 
@@ -81,6 +80,8 @@ public class Segment implements Serializable{
 	private boolean segmentLogging;
 	
 	private String loggingDirectory;
+	
+	private double weight;
 
 	/**
 	 * Default constructor. 
@@ -105,6 +106,7 @@ public class Segment implements Serializable{
 		this.twinSegments = new LinkedList<String>();
 		this.drawGUI = true;
 		this.roadCode = "";
+		this.weight = 0.0;
 	}
 
 	/**
@@ -114,12 +116,12 @@ public class Segment implements Serializable{
 	 * @param  destination {@link Intersection} where this {@link Segment} ends.
 	 * @param  length The length of this {@link Segment} in Km.
 	 */
-	public Segment(MultiGraphRoadSim jgrapht, String id, Intersection origin, 
+	public Segment(String id, Intersection origin, 
 			Intersection destination, double length, int maxSpeed, int capacity,
 			int density, int numberTracks, jade.wrapper.AgentContainer mainContainer, 
 	        boolean segmentLogging, String loggingDirectory, boolean drawGUI,
 	        String direction, double pkstart, LinkedList<String> segTwinsList, 
-	        String roadCode, long tick, int serviceLevel){
+	        String roadCode, long tick, int serviceLevel) {
 
 		this.id = id;
 		this.origin = origin;
@@ -142,6 +144,9 @@ public class Segment implements Serializable{
 		this.pkIni = (float) pkstart;
 		this.twinSegments = segTwinsList;
 		this.roadCode = roadCode;
+		// The weight of the segment is, by defect, the time to traverse it
+		//   at maximum speed.
+		this.weight = length / maxSpeed;
 		
 		//Put the service levels
 		this.serviceLevels.put(0, 1.00f);
@@ -157,7 +162,7 @@ public class Segment implements Serializable{
 			//Agent Controller to segmentsTest with Interface
 			AgentController agent = mainContainer.createNewAgent(
 					this.id, "agents.SegmentAgent", new Object[]{this, this.drawGUI,
-							 jgrapht, this.segmentLogging, tick});
+							 this.segmentLogging, tick});
 
 			agent.start();
 			
@@ -284,11 +289,17 @@ public class Segment implements Serializable{
 		this.roadCode = roadCode;
 	}
 
+	public double getWeight() {
+		return weight;
+	}
+
+	public void setWeight(double weight) {
+		this.weight = weight;
+	}
+
 	@Override
 	public String toString() {
 		return "Segment [id=" + id + "]";
 	}
-	
-	
-	
+		
 }

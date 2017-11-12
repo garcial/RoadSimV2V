@@ -25,7 +25,7 @@ public class Intersection implements Serializable{
 	private ArrayList<Segment> out;
 	
 	//Every way has a number of ways to exit
-	private Map<Segment, List<Segment>> allowedRoads = new HashMap<Segment, List<Segment>>();
+	private Map<String, List<String>> allowedWays = new HashMap<String, List<String>>();
 	
 	//Coordinates
 	private int x, y;
@@ -39,7 +39,7 @@ public class Intersection implements Serializable{
 		this.out = new ArrayList<Segment>();
 		this.x = 0;
 		this.y = 0;
-		this.allowedRoads = new HashMap<Segment, List<Segment>>();
+		this.allowedWays = new HashMap<String, List<String>>();
 	}
 	
 	/**
@@ -51,19 +51,19 @@ public class Intersection implements Serializable{
 	 *              intersection.
 	 * @param coordinates A array with the coordinates.
 	 */
-	public Intersection(String id, ArrayList<Segment> in, 
-			            ArrayList<Segment> out, int x, int y) {
-		
-		this.id = id;
-		this.in = in;
-		this.out = out;
-		this.x = x;
-		this.y = y;
-		for(Segment s: in){
-			//Now we use all the ways in every entry
-			this.allowedRoads.put(s, out);
-		}
-	}
+//	public Intersection(String id, ArrayList<Segment> in, 
+//			            ArrayList<Segment> out, int x, int y) {
+//		
+//		this.id = id;
+//		this.in = in;
+//		this.out = out;
+//		this.x = x;
+//		this.y = y;
+//		for(Segment s: in){
+//			//Now we use all the ways in every entry
+//			this.allowedRoads.put(s, out);
+//		}
+//	}
 	
 	/**
 	 * Constructor. 
@@ -128,7 +128,37 @@ public class Intersection implements Serializable{
 	public int getY() {
 		return y;
 	}
+/**
+ * Add a right way from an input segmentID to an output segmentID 
+ * into the allowedEWays dictionary of this Intersection
+ * @param source The input segmentID
+ * @param target The output segmentID
+ */
+	public void addAllowedWay(String source, String target){
 
+		if(!this.allowedWays.containsKey(source)){
+			ArrayList<String> aux = new ArrayList<String>();
+			aux.add(target);
+			this.allowedWays.put(source, aux);
+		} else {
+			this.allowedWays.get(source).add(target);
+		}
+	}
+	
+	/**
+	 * Compute the list of the output segment's ids
+	 * @param source source segment id
+	 * @return The list with the allowed segment's ids
+	 * 
+	 */
+	public List<String> getAllowedSegments(String source){
+		List<String> segments = new ArrayList<String>();
+		if(this.allowedWays.get(source) != null){
+			segments = this.allowedWays.get(source); 
+		}
+		return segments;
+	}
+	
 	@Override
 	public String toString() {
 		return "Intersection [id=" + id + ", in=" + in + ", out=" + out + ", x=" + x + ", y=" + y + "]";
