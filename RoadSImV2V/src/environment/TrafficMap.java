@@ -406,24 +406,29 @@ public class TrafficMap implements Serializable {
 	 */
 	public String[] DijkstraShortestPath(String segmentID, String originID, 
 			                           String destinationID) {
-		String initialNode = segmentID + "#" + originID;
+
 		List<String> notYetVisitedNodes = getNewVirtualNodes();
 		Map<String, String> previousNode = new HashMap<String, String>();
 		Map<String, Double> distanceMin = new HashMap<String, Double>();
+		
+		String initialNode;
+		if (segmentID == null) {
+			initialNode = "noSegment#" + originID;
+			notYetVisitedNodes.add(initialNode);
+		} else initialNode = segmentID + "#" + originID;
+
 		for(String node:notYetVisitedNodes) {
 			distanceMin.put(node, Double.MAX_VALUE);
 		}
+        distanceMin.put(initialNode, 0.0);
+        
 		// Store all the final virtual nodes related to destinationID
 		List<String> finalVirtualNodes = new ArrayList<String>();
 		for(Segment s: getIntersectionByID(destinationID).getInSegments())
 			finalVirtualNodes.add(s.getId()+ "#" + destinationID);
 		int howManyFinaVirtuallNodes = finalVirtualNodes.size();
 		int finalVirtualNodesReached = 0;
-			// If originID is the beginning of the route
-		if (segmentID == null) 
-			for (Segment s : getIntersectionByID(originID).getOutSegments()) 
-				distanceMin.put(s.getId() + "#" + originID, s.getWeight());
-		else distanceMin.put(initialNode, 0.0);
+        
 		String chosenNode = null;
 		while (!notYetVisitedNodes.isEmpty()) {
 			// Compute the node with the minimal distance
