@@ -4,7 +4,6 @@ import org.json.ToJSON;
 import agents.CarAgent;
 import environment.Segment;
 import environment.Step;
-import graph.Edge;
 import jade.core.AID;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.messaging.TopicManagementHelper;
@@ -162,8 +161,8 @@ public class CarBehaviour extends CyclicBehaviour {
 						     increaseSegmentDistanceCovered(-stepDistanceCovered);
 
 						//Deregister from previous segment
-						this.informSegment(carAgent.getTravelData().
-								           getCurrentSegment(),"deregister");
+						Segment previousSegment = carAgent.getTravelData().getCurrentSegment();
+						this.informSegment(previousSegment,"deregister");
 						
 						//Set the new previous segment
 						this.carAgent.getTravelData().
@@ -197,9 +196,10 @@ public class CarBehaviour extends CyclicBehaviour {
 						}
 						
 						if (this.carAgent.isSmart()) {
-								this.carAgent.recalculate(carAgent.getTravelData().
-										                  getCurrentSegment().
-										                  getOrigin().getId());
+								this.carAgent.recalculate(previousSegment.getId(),
+										                 carAgent.getTravelData().
+										                      getCurrentSegment().
+										                     getOrigin().getId());
 						}
 						
 						// Once rerouted, Delete data from future 

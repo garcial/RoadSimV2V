@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -34,7 +33,6 @@ import environment.Step;
 import features.CarData;
 import features.SimulationData;
 import features.TravelData;
-import graph.*;
 
 /**
  * This code represents a mobile car, it will have an origin an a 
@@ -53,10 +51,9 @@ public class CarAgent extends Agent {
 	private SimulationData simulationData;
 	private DFAgentDescription interfaceAgent;
 	private DFAgentDescription logAgent;
-	private TrafficMap map;
+	private TrafficMap trafficMap;
 	private Path path;
 	private boolean smart = false;
-	private MultiGraphRoadSim graph;
 
 	// This object stores current traffic sensored data
 	// every time a car goes into a new segment, this object is
@@ -95,16 +92,16 @@ public class CarAgent extends Agent {
 		simulationData = new SimulationData();
 		
 		//Get the map from an argument
-		this.map = (TrafficMap) this.getArguments()[0];
+		this.trafficMap = (TrafficMap) this.getArguments()[0];
 		
 		// Get the graph from the map. 
 		// Each car agent should have its own private graph
 		// Make a deep clone of the graph contained into the map object
 
 		try {
-			graph = (MultiGraphRoadSim) deepClone(map.getGraph());
+			trafficMap = (TrafficMap) deepClone(trafficMap);
 		} catch (Exception e1) {
-			System.out.println("Something went wrong making a graph deep copy");
+			System.out.println("Something wrong making a trafficMap deep copy");
 			e1.printStackTrace();
 			this.takeDown();
 		}
@@ -148,7 +145,8 @@ public class CarAgent extends Agent {
 			this.smart = true;
 		}
 
-	    this.path = getPathOnMethod(travelData.getInitialIntersection(), 
+		//Initial path
+	    this.path = getPathOnMethod(null, travelData.getInitialIntersection(), 
 				                    travelData.getFinalIntersection());
 
 		Step currentStep = path.getGraphicalPath().get(0);
@@ -257,10 +255,12 @@ public class CarAgent extends Agent {
 	 * 
 	 * @param origin ID of the intersection where the car is
 	 */
-	public void recalculate(String origin) {
+	public void recalculate(String segmentID, String origin) {
 //TODO: Modify weights on edges by futureTraffic estimations received from 
 //      other carAgents		
-		this.path = getPathOnMethod(origin,travelData.getFinalIntersection());
+		this.path = getPathOnMethod(segmentID, 
+				                    origin,
+				                    travelData.getFinalIntersection());
 		//System.out.println(this.getFutureTraffic().getData().toString());
 		//System.out.println(this.path.getSegmentPath().toString());
 	}
@@ -319,19 +319,11 @@ public class CarAgent extends Agent {
 	}
 
 	public TrafficMap getMap() {
-		return map;
+		return trafficMap;
 	}
 
 	public Path getPath() {
 		return path;
-	}
-	
-	public MultiGraphRoadSim getGraph() {
-		return graph;
-	}
-
-	public void setjgrapht(MultiGraphRoadSim graph){
-		this.graph = graph;
 	}
 	
 	public boolean isSmart() {
@@ -372,48 +364,32 @@ public class CarAgent extends Agent {
 	}
 
 	
-	public Path getPathOnMethod(String startInt, String endInt){
-        LinkedList<Node> pathGrapht = null;
+	public Path getPathOnMethod(String segmentID, String originID, String endID) {
+        
         if (carData.getTypeOfAlgorithm() == Method.SHORTEST.value) {
-			putWeightsAsDistancesOnGraph(graph);
-		} else if (carData.getTypeOfAlgorithm() == Method.FASTEST.value) {
-			putWeightsAsSegmentsMaxSpeedsOnGraph(graph);
-		}
-		
-		DijkstraGirosPermitidos dijkstra = new DijkstraGirosPermitidos(graph); 
-		dijkstra.execute(graph.getNodeById(startInt), 
-				         graph.getNodeById(endInt));
-		pathGrapht = dijkstra.getPath();
+			putWeightsAsDistancesOnSegments();
+		} 
+
+		String[] pathIDs = 
+				trafficMap.DijkstraShortestPath(segmentID, originID, endID);
 		
 		List<Step> steps = new ArrayList<Step>();
 		List<Segment> segments = new ArrayList<Segment>();
 		List<Intersection> intersections = new ArrayList<Intersection>();
 		
-		for(Node n: pathGrapht){
-			String[] interEdge = n.getId().split("¿");
-			intersections.add(map.getIntersectionByID(interEdge[0]));
-			if(interEdge.length > 1){// Is not source // TODO: Or destiny????
-				steps.addAll(map.getSegmentByID(interEdge[1]).getSteps());
-				segments.add(map.getSegmentByID(interEdge[1]));
-			}
+		for(int i = 0; i<pathIDs.length; i+=2) {
+			steps.addAll(trafficMap.getSegmentByID(pathIDs[i]).getSteps());
+			segments.add(trafficMap.getSegmentByID(pathIDs[i]));			
+			intersections.add(trafficMap.getIntersectionByID(pathIDs[i+1]));
 		}
 		
 		return new Path(intersections,steps, segments);
 	}
 
 	//Used with the shortest method. The road speed is not important
-	private void putWeightsAsDistancesOnGraph( MultiGraphRoadSim graph) {
-		for(Edge e: graph.getEdges()) {
-			e.setWeight(e.getWeight());
-		}
-	}
-	
-	//Used with the fastest method. The fast method depends of the distance 
-	//  and the speed
-	private void putWeightsAsSegmentsMaxSpeedsOnGraph(MultiGraphRoadSim graph) {
-		for(Edge e: graph.getEdges()) {
-			e.setWeight(e.getWeight() /
-			            map.getSegmentByID(e.getIdSegment()).getMaxSpeed());
+	private void putWeightsAsDistancesOnSegments() {
+		for(Segment s: trafficMap.getSegments()) {
+			s.setWeight(s.getLength());
 		}
 	}
 

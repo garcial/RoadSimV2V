@@ -134,7 +134,7 @@ public class Intersection implements Serializable{
  * @param source The input segmentID
  * @param target The output segmentID
  */
-	public void addAllowedWay(String source, String target){
+	public void addAllowedWay(String source, String target) {
 
 		if(!this.allowedWays.containsKey(source)){
 			ArrayList<String> aux = new ArrayList<String>();
@@ -143,6 +143,10 @@ public class Intersection implements Serializable{
 		} else {
 			this.allowedWays.get(source).add(target);
 		}
+	}
+	
+	public void removeAllowedWay(String source, String target) {
+		this.allowedWays.get(source).remove(target);
 	}
 	
 	/**

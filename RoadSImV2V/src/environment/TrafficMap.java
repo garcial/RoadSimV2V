@@ -6,7 +6,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +19,7 @@ import org.json.JSONObject;
 /**
  * Class that holds the representation of a traffic map.
  * 
- * It also has al the logic to read the traffic map files and creates the 
+ * It also has all the logic to read the traffic map files and creates the 
  * {@link SegmentAgent}.
  *
  */
@@ -69,7 +71,8 @@ public class TrafficMap implements Serializable {
 
 		BufferedReader intersectionsReader = null, 
 				       segmentsReader = null, 
-				       stepsReader = null;
+				       stepsReader = null,
+				       prohibitionsReader = null;
 
 		for(int i=0; i < files.length; i++) {
 			
@@ -79,14 +82,19 @@ public class TrafficMap implements Serializable {
 						BufferedReader(
 						new FileReader(files[i].getAbsolutePath()));
 
-			}else if(files[i].getName().equals("segments")){
+			} else if(files[i].getName().equals("segments")){
 
 				segmentsReader = new BufferedReader(
 						new FileReader(files[i].getAbsolutePath()));
 
-			}else if(files[i].getName().equals("steps")){
+			} else if(files[i].getName().equals("steps")){
 
 				stepsReader = new BufferedReader(
+						new FileReader(files[i].getAbsolutePath()));
+				
+			} else if(files[i].getName().equals("prohibitios.json")) {
+				
+				prohibitionsReader = new BufferedReader(
 						new FileReader(files[i].getAbsolutePath()));
 			}
 		}
@@ -173,18 +181,6 @@ public class TrafficMap implements Serializable {
 					if(destination != null){
 						destination.addInSegment(segment);
 					}
-															
-					//Add an Edge to the Multigraph
-//					if(origin != null && destination != null){	
-//						this.graph.addEdge(edgeSegment);
-//						/* The weight is hours in double (0.xx) */
-//						//TODO: Explain this, please!!!
-//						// This modification of the weight of the edge is because
-//						//    the service level is 2 when we haven't
-//						// any communication about the segment from other agent
-//						edgeSegment.setWeight(seg.getDouble("length") / 
-//								             (seg.getInt("maxSpeed") * 0.8f));
-//					}
 
 					segmentsMap.put(segment.getId(), segment);
 
@@ -192,8 +188,8 @@ public class TrafficMap implements Serializable {
 					this.segmentCount++;
 				}
 
-				//TODO: PUT ALLOWED WAYS. IN THIS CASE ALL THE WAYS ARE ALLOWED
-				//Esto es como si todas las intersecciones fueran rotondas
+
+				//By defect all intersections are like roundabout
 				for(Intersection intersection : intersectionsMap.values()){
 					for(Segment in: intersection.getInSegments()){
 						for(Segment out: intersection.getOutSegments()){
@@ -202,6 +198,30 @@ public class TrafficMap implements Serializable {
 					}
 				}
 				
+				String prohibitionLine = prohibitionsReader.readLine();
+
+				while(prohibitionLine != null){
+					JSONObject prohibition = new JSONObject(prohibitionLine);
+
+					for(Intersection inter : intersectionsMap.values()) {
+						if(inter.getId().equals(
+								prohibition.getString("intersectionId"))) {
+							Segment inputSegment = 
+								getSegmentByID(prohibition.getString("input"));
+							if(inter.getInSegments().contains(
+									inputSegment)) {
+								//All the turns not authorized are drawn
+								JSONArray outputs = prohibition.
+										getJSONArray("outputs");
+								for(int i = 0; i < outputs.length(); i++)
+									inter.removeAllowedWay(inputSegment.getId(), 
+											            (String) outputs.get(i));
+
+							}
+						}
+					}
+					prohibitionLine = prohibitionsReader.readLine();
+				}
 				//Read all the stepsTest
 				line = stepsReader.readLine();
 
@@ -367,17 +387,14 @@ public class TrafficMap implements Serializable {
 		return segmentsMap.get(id);
 	}
 
-	public Map<String, Segment> getSegmentsAux() {
-		return segmentsMap;
+	public List<Segment> getSegments() {
+		return (List<Segment>) segmentsMap.values();
 	}
 	
 	private List<String> getNewVirtualNodes() {
 		return new ArrayList<String>(virtualNodes);
 	}
 	
-	//TODO: Is right to stop when first time a Node ending in destinationID is 
-	//      reached or maybe it is better to finish when all the ways to the 
-	//      destinationID are reached?
 	/**
 	 * Implementation of the ShortestPath method by Dijkstra.
 	 * @param segmentID The segmentID by which I reach the originID intersection
@@ -387,7 +404,7 @@ public class TrafficMap implements Serializable {
 	 *         representing the intersections traversed and the segments that 
 	 *         connect them.
 	 */
-	public String DijkstraShortestPath(String segmentID, String originID, 
+	public String[] DijkstraShortestPath(String segmentID, String originID, 
 			                           String destinationID) {
 		String initialNode = segmentID + "#" + originID;
 		List<String> notYetVisitedNodes = getNewVirtualNodes();
@@ -396,19 +413,29 @@ public class TrafficMap implements Serializable {
 		for(String node:notYetVisitedNodes) {
 			distanceMin.put(node, Double.MAX_VALUE);
 		}
-		distanceMin.put(initialNode, 0.0);
+		// Store all the final virtual nodes related to destinationID
+		List<String> finalVirtualNodes = new ArrayList<String>();
+		for(Segment s: getIntersectionByID(destinationID).getInSegments())
+			finalVirtualNodes.add(s.getId()+ "#" + destinationID);
+		int howManyFinaVirtuallNodes = finalVirtualNodes.size();
+		int finalVirtualNodesReached = 0;
+			// If originID is the beginning of the route
+		if (segmentID == null) 
+			for (Segment s : getIntersectionByID(originID).getOutSegments()) 
+				distanceMin.put(s.getId() + "#" + originID, s.getWeight());
+		else distanceMin.put(initialNode, 0.0);
 		String chosenNode = null;
 		while (!notYetVisitedNodes.isEmpty()) {
 			// Compute the node with the minimal distance
-			int posMin = 0;
-			for(int i = 1; i<notYetVisitedNodes.size(); i++)
-				if (distanceMin.get(notYetVisitedNodes.get(i)) <
-						distanceMin.get(notYetVisitedNodes.get(posMin)))
-					posMin = i;
+			int posMin = computeMinPosition(notYetVisitedNodes, distanceMin);
 			chosenNode = notYetVisitedNodes.get(posMin);
 			String chosenInt = chosenNode.split("#")[1];
-			// If the destinationID is reached shortestPath finishes
-			if (chosenInt.equals(destinationID)) break;
+			// If the destinationID is reached one way to reach destinationID has
+			//   been reached. If all ways are computed while loop must finish.
+			if (chosenInt.equals(destinationID)) {
+				finalVirtualNodesReached++;
+				if (finalVirtualNodesReached == howManyFinaVirtuallNodes) break;
+			}
 			for(Segment s:getIntersectionByID(chosenInt).getOutSegments()) {
 				String nextNode = s.getId() + "#" + 
 			                             s.getDestination().getId();
@@ -422,11 +449,26 @@ public class TrafficMap implements Serializable {
 			notYetVisitedNodes.remove(posMin);
 		}
 		//TODO: What would happen if there is not a way to destinationID?
-		String pathString = chosenNode;
+		int posMin = computeMinPosition(finalVirtualNodes, distanceMin);
+		chosenNode = finalVirtualNodes.get(posMin);
+		StringBuilder pathString = new StringBuilder(chosenNode);
 		while (!previousNode.get(chosenNode).equals(initialNode)) {
-			pathString = previousNode.get(chosenNode) + "#" + pathString;
+			pathString.append('#');
+			pathString.append(previousNode.get(chosenNode));
 			chosenNode = previousNode.get(chosenNode);
 		}
-		return pathString;
+		String[] pathStringArray = pathString.toString().split("#");
+		List<String> list = Arrays.asList(pathStringArray);
+		Collections.reverse(list);
+		return (String[]) list.toArray();
+	}
+	
+	private int computeMinPosition(List<String> list, Map<String, Double> distances) {
+		int posMin = 0;
+		for(int i = 1; i<list.size(); i++)
+			if (distances.get(list.get(i)) <
+					distances.get(list.get(posMin)))
+				posMin = i;
+		return posMin;
 	}
 }
