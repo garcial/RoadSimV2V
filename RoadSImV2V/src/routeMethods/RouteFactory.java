@@ -2,7 +2,7 @@ package routeMethods;
 
 public class RouteFactory {
 
-	public Route getRoute(Method myMethod) {
+	public static Route getRoute(Method myMethod) {
 
 		if (myMethod == Method.FASTBLIND)
 			return new FastBlindRoute();

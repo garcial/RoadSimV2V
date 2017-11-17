@@ -6,7 +6,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import environment.Intersection;
+import environment.Path;
 import environment.Segment;
+import environment.Step;
 import environment.TrafficMap;
 import trafficData.TrafficDataInStore;
 
@@ -26,7 +30,7 @@ public abstract class Route {
 	 *         representing the intersections traversed and the segments that 
 	 *         connect them.
 	 */
-	public String[] DijkstraShortestPath(TrafficMap tMap, String segmentID,
+	public Path DijkstraShortestPath(TrafficMap tMap, String segmentID,
 										 String originID, String destinationID,
 										 int maxSpeed,
 										 TrafficDataInStore futureTraffic) {
@@ -36,6 +40,7 @@ public abstract class Route {
 		Map<String, String> previousNode = new HashMap<String, String>();
 		Map<String, Double> distanceMin = new HashMap<String, Double>();
 		
+		// Each Node is a string composed of two parts: "SegmentIn#Intersection"
 		String initialNode;
 		if (segmentID == null) {
 			initialNode = "noSegment#" + originID;
@@ -80,16 +85,29 @@ public abstract class Route {
 		//TODO: What would happen if there is not a way to destinationID?
 		int posMin = computeMinPosition(finalVirtualNodes, distanceMin);
 		chosenNode = finalVirtualNodes.get(posMin);
+		// Compute the IDs 
 		StringBuilder pathString = new StringBuilder(chosenNode);
 		while (!previousNode.get(chosenNode).equals(initialNode)) {
 			pathString.append('#');
 			pathString.append(previousNode.get(chosenNode));
 			chosenNode = previousNode.get(chosenNode);
 		}
-		String[] pathStringArray = pathString.toString().split("#");
-		List<String> list = Arrays.asList(pathStringArray);
-		Collections.reverse(list);
-		return (String[]) list.toArray();
+		String[] pathIDs = pathString.toString().split("#");
+
+		List<Step> steps = new ArrayList<Step>();
+		List<Segment> segments = new ArrayList<Segment>();
+		List<Intersection> intersections = new ArrayList<Intersection>();
+		
+		// The pathIDs are in reverse order: first element is the destination
+		//   intersection and last element is the segment origin. So it must 
+		//   be traverse from final to begin.
+		for(int i = pathIDs.length - 2; i >= 0 ; i -= 2) {
+			steps.addAll(tMap.getSegmentByID(pathIDs[i]).getSteps());
+			segments.add(tMap.getSegmentByID(pathIDs[i]));			
+			intersections.add(tMap.getIntersectionByID(pathIDs[i+1]));
+		}
+		
+		return new Path(intersections,steps, segments);	
 	}
 	
 	private int computeMinPosition(List<String> list, Map<String, Double> distances) {

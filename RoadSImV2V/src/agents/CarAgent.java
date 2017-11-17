@@ -8,27 +8,22 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
 import routeMethods.Method;
+import routeMethods.Route;
+import routeMethods.RouteFactory;
 import trafficData.TrafficData;
 import trafficData.TrafficDataInStore;
 import trafficData.TrafficDataOutStore;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.json.JSONObject;
-
 import behaviours.CarBehaviour;
 import behaviours.CarReceivingDataBehaviour;
 import behaviours.CarsAheadBehaviour;
-import environment.Intersection;
 import environment.TrafficMap;
 import environment.Path;
-import environment.Segment;
 import environment.Step;
 import features.CarData;
 import features.SimulationData;
@@ -52,6 +47,7 @@ public class CarAgent extends Agent {
 	private DFAgentDescription interfaceAgent;
 	private DFAgentDescription logAgent;
 	private TrafficMap trafficMap;
+	private Route route;
 	private Path path;
 	private boolean smart = false;
 
@@ -131,36 +127,33 @@ public class CarAgent extends Agent {
 		//It is requested to do Logs?
 		simulationData.setUseLog((boolean) this.getArguments()[8]);
 
-		//Assign the type of algorithm
+		//Assign the type of route
 		
-		if (routeType.equals("fastest")){
-			carData.setTypeOfAlgorithm(Method.FASTEST.value);
-		} else if (routeType.equals("shortest")){
-			carData.setTypeOfAlgorithm(Method.SHORTEST.value);
-		} else if (routeType.equals("dynamicSmart")) {
-			carData.setTypeOfAlgorithm(Method.DYNAMICSMART.value);
-			this.smart = true;
-		} else {
-			carData.setTypeOfAlgorithm(Method.STARTSMART.value);
-			this.smart = true;
-		}
-
-		//Initial path
-	    this.path = getPathOnMethod(null, travelData.getInitialIntersection(), 
-				                    travelData.getFinalIntersection());
-
-		Step currentStep = path.getGraphicalPath().get(0);
-		travelData.setCurrentSegment(currentStep.getSegment());
-		travelData.setSegmentDistanceCovered(0);
-
+		this.route = RouteFactory.getRoute(Method.valueOf(routeType));
+		carData.setTypeOfAlgorithm(Method.valueOf(routeType).value);
+		
+		if (carData.getTypeOfAlgorithm() >= 2) smart = true;
+		
 		//Store data received from other cars in a Map
 		futureTraffic = new TrafficDataInStore();
 
 		//Store data to send to other cars in my route
 		pastTraffic = new TrafficDataOutStore();
-		
+
 		// Store current trafficData sensored by myself
 		sensorTrafficData = new TrafficData();
+		
+		//Initial path
+	    this.path = route.DijkstraShortestPath(trafficMap, null, 
+	    		                               travelData.getInitialIntersection(), 
+	    		                               travelData.getFinalIntersection(), 
+	    		                               carData.getMaxSpeed(), 
+	    		                               futureTraffic);
+
+		Step currentStep = path.getGraphicalPath().get(0);
+		travelData.setCurrentSegment(currentStep.getSegment());
+		travelData.setSegmentDistanceCovered(0);
+		
 		carData.setId(getName().toString());
 		carData.setX(currentStep.getOriginX());
 		carData.setY(currentStep.getOriginY());
@@ -256,13 +249,11 @@ public class CarAgent extends Agent {
 	 * @param origin ID of the intersection where the car is
 	 */
 	public void recalculate(String segmentID, String origin) {
-//TODO: Modify weights on edges by futureTraffic estimations received from 
-//      other carAgents		
-		this.path = getPathOnMethod(segmentID, 
-				                    origin,
-				                    travelData.getFinalIntersection());
-		//System.out.println(this.getFutureTraffic().getData().toString());
-		//System.out.println(this.path.getSegmentPath().toString());
+	
+		this.path = route.DijkstraShortestPath(trafficMap, segmentID, origin, 
+				                               travelData.getFinalIntersection(), 
+				                               carData.getMaxSpeed(), 
+				                               futureTraffic);
 	}
 	
 	/**
@@ -361,36 +352,6 @@ public class CarAgent extends Agent {
 
 	public void setLogAgent(DFAgentDescription logAgent) {
 		this.logAgent = logAgent;
-	}
-
-	
-	public Path getPathOnMethod(String segmentID, String originID, String endID) {
-        
-        if (carData.getTypeOfAlgorithm() == Method.SHORTEST.value) {
-			putWeightsAsDistancesOnSegments();
-		} 
-
-		String[] pathIDs = 
-				trafficMap.DijkstraShortestPath(segmentID, originID, endID);
-		
-		List<Step> steps = new ArrayList<Step>();
-		List<Segment> segments = new ArrayList<Segment>();
-		List<Intersection> intersections = new ArrayList<Intersection>();
-		
-		for(int i = 0; i<pathIDs.length; i+=2) {
-			steps.addAll(trafficMap.getSegmentByID(pathIDs[i]).getSteps());
-			segments.add(trafficMap.getSegmentByID(pathIDs[i]));			
-			intersections.add(trafficMap.getIntersectionByID(pathIDs[i+1]));
-		}
-		
-		return new Path(intersections,steps, segments);
-	}
-
-	//Used with the shortest method. The road speed is not important
-	private void putWeightsAsDistancesOnSegments() {
-		for(Segment s: trafficMap.getSegments()) {
-			s.setWeight(s.getLength());
-		}
 	}
 
 }

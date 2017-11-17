@@ -441,14 +441,8 @@ public class CanvasWorld extends JFrame
 				float x = m.getX();
 				float y = m.getY();
 
-				if (m.getAlgorithmType() == Method.SHORTEST.value) {
-					c = Color.WHITE;
-				} else if (m.getAlgorithmType() == Method.FASTEST.value) {
-					c = Color.CYAN;
-				} else if (m.getAlgorithmType() == Method.DYNAMICSMART.value) {
-					c = Color.PINK;
-				} else if (m.getAlgorithmType() == Method.STARTSMART.value) 
-					c = Color.ORANGE;
+				c = (Method.values()[m.getAlgorithmType()]).color;
+
 				g.setStroke(new BasicStroke(1));
 
 				//Windows 

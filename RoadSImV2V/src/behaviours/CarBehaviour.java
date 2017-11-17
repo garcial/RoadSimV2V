@@ -92,7 +92,6 @@ public class CarBehaviour extends CyclicBehaviour {
 				//   between previousTick and currentTick
 				//   We transform km/h to k/s if divide it by 3600
 				
-				float currentPk = this.carAgent.getTravelData().getCurrentPK();
 				float deltaTime = (currentTick - previousTick) / 3600f;
 				float deltaPk = (float) currentSpeed * deltaTime;
 				
@@ -128,17 +127,6 @@ public class CarBehaviour extends CyclicBehaviour {
 				}
 
 				if (!this.done) {
-										
-					//Update the current pk when update the x and y
-					if("up".compareTo(carAgent.getTravelData().
-							          getCurrentSegment().getDirection())
-							== 0) {
-						carAgent.getTravelData().
-						         setCurrentPK(currentPk + stepDistanceCovered);
-					} else {
-						carAgent.getTravelData().
-						         setCurrentPK(currentPk - stepDistanceCovered);
-					}
 					
 					// Compute the next graphical position
 					float proportion = graphCovered / 
@@ -155,14 +143,21 @@ public class CarBehaviour extends CyclicBehaviour {
 					if (!carAgent.getTravelData().getCurrentSegment().
 							equals(currentStep.getSegment())) {
 						long tfin = Long.parseLong(msg.getContent());
-
+						Segment prevSegment = carAgent.getTravelData().
+								                           getCurrentSegment();
 						//delete the surplus of km added to the previous segment 
 						this.carAgent.getTravelData().
 						     increaseSegmentDistanceCovered(-stepDistanceCovered);
-
+						// Store the sensorized data of the finished segment into
+						//   the pastTraffic. Reset the sensorized data for the 
+						//   twin traffic of the new segment (whatever will be)
+						this.carAgent.getSensorTrafficData().setTfin(tfin);
+						this.carAgent.getPastTraffic().put(prevSegment.getId(),
+								                 carAgent.getSensorTrafficData());
+						this.carAgent.setSensorTrafficData(new TrafficData());
 						//Deregister from previous segment
-						Segment previousSegment = carAgent.getTravelData().getCurrentSegment();
-						this.informSegment(previousSegment,"deregister");
+						
+						this.informSegment(prevSegment,"deregister");
 						
 						//Set the new previous segment
 						this.carAgent.getTravelData().
@@ -176,27 +171,8 @@ public class CarBehaviour extends CyclicBehaviour {
 						
 						carAgent.getSimulationData().setInitialTick(tfin);
 						
-						// TODO:If we are using the smart algorithm, 
-						//  recalculate all the traffic states on the 
-						//  map with the information provided from 
-						//  othercarAgents, and then rerouting 
-						//  accordingly.
-						// TODO: futureTrafficStore analysis
-
-						carAgent.getTravelData().
-						         setCurrentPK(currentStep.getSegment().getPkIni());
-						if("up".compareTo(carAgent.getTravelData().
-								          getCurrentSegment().getDirection()) 
-								== 0) {
-							carAgent.getTravelData().
-							         setCurrentPK(currentPk + stepDistanceCovered);
-						} else {
-							carAgent.getTravelData().
-							         setCurrentPK(currentPk - stepDistanceCovered);
-						}
-						
 						if (this.carAgent.isSmart()) {
-								this.carAgent.recalculate(previousSegment.getId(),
+								this.carAgent.recalculate(prevSegment.getId(),
 										                 carAgent.getTravelData().
 										                      getCurrentSegment().
 										                     getOrigin().getId());
@@ -206,8 +182,6 @@ public class CarBehaviour extends CyclicBehaviour {
 						//     Traffic related to this new segment
 						carAgent.getFutureTraffic().
 						         delete(currentStep.getSegment().getId());
-						//agent.getPastTraffic().
-						//    put(previousSegmentId,agent.getSensorTrafficData());
 					}
 
 					this.informSegment(currentStep.getSegment(), "update");
@@ -244,59 +218,59 @@ public class CarBehaviour extends CyclicBehaviour {
 		msg.setOntology("carToSegmentOntology");
 		msg.setConversationId(type);
 		
-		//TODO Ahora se va a desregistrar del segmento. En este momento hay que
-		//     reconfigurar los
-		//TrafficData y poner el grafo como toca.
-		if ("deregister".compareTo(type) == 0) {
-			// Introducir el Tfin en TrafficData
-			this.carAgent.getSensorTrafficData().setTfin(this.currentTick);
-			// First give the number of cars detected
-			this.carAgent.getSensorTrafficData().
-			        setNumCars(carAgent.getSensorTrafficData().
-			        	    	getCarsPositions().size());
-			
-			//System.out.println("CB Pasamos de sensor a past en " + 
-			//      segment.getId() + " de " + this.agent.getName() + " - " + 
-			//      this.agent.getSensorTrafficData() );
-			this.carAgent.getPastTraffic().
-			     put(segment.getId(), this.carAgent.getSensorTrafficData());
-			
-			//Cambiar el graph
-			//System.out.println("Cambiar el grafo futuro en "+segment.getId());
-			for(String seg: this.carAgent.getFutureTraffic().getData().keySet()){
-				Edge edge =  this.carAgent.getGraph().getEdgeById(seg);
-				long tiniAux = edge.getTini();
-				long tfinAux = edge.getTfin();
-				TrafficData dataAux = null;
-				for(TrafficData t : 
-					this.carAgent.getFutureTraffic().getData().get(seg)) {
-					// TODO Voy a utilizar que el tini haya empezado antes  
-					//   y en el caso de que sean igual el que tfin sea más 
-					//   grande pasa
-					if((t.getTfin() > tfinAux) || 
-					   (t.getTfin() == tfinAux && t.getTini() < tiniAux) ) {
-						tiniAux = t.getTini();
-						tfinAux = t.getTfin();
-						dataAux = t;
-					}
-				}
-				
-				if(dataAux != null){
-					int serviceLevel = calculateServiceLevel(
-							            dataAux.getNumCars(), 
-							            carAgent.getTravelData().
-							                     getCurrentSegment().getLength());
-					// TODO: Aqui el nivel de servicio no se cual poner. 
-					//       Que calculo con el número de coches he de hacer
-					
-					edge.updateEdge(seg,serviceLevel, 
-						  carAgent.getTravelData().getCurrentSegment().
-						           getLength() / carAgent.getTravelData().
-							       getCurrentSegment().getCurrentAllowedSpeed() ,
-							       dataAux.getTini(), dataAux.getTfin());
-				}
-				
-			}
+//		//TODO Ahora se va a desregistrar del segmento. En este momento hay que
+//		//     reconfigurar los
+//		//TrafficData y poner el grafo como toca.
+//		if ("deregister".compareTo(type) == 0) {
+//			// Introducir el Tfin en TrafficData
+//			this.carAgent.getSensorTrafficData().setTfin(this.currentTick);
+//			// First give the number of cars detected
+//			this.carAgent.getSensorTrafficData().
+//			        setNumCars(carAgent.getSensorTrafficData().
+//			        	    	getCarsPositions().size());
+//			
+//			//System.out.println("CB Pasamos de sensor a past en " + 
+//			//      segment.getId() + " de " + this.agent.getName() + " - " + 
+//			//      this.agent.getSensorTrafficData() );
+//			this.carAgent.getPastTraffic().
+//			     put(segment.getId(), this.carAgent.getSensorTrafficData());
+//			
+//			//Cambiar el graph
+//			//System.out.println("Cambiar el grafo futuro en "+segment.getId());
+//			for(String seg: this.carAgent.getFutureTraffic().getData().keySet()){
+//				Edge edge =  this.carAgent.getGraph().getEdgeById(seg);
+//				long tiniAux = edge.getTini();
+//				long tfinAux = edge.getTfin();
+//				TrafficData dataAux = null;
+//				for(TrafficData t : 
+//					this.carAgent.getFutureTraffic().getData().get(seg)) {
+//					// TODO Voy a utilizar que el tini haya empezado antes  
+//					//   y en el caso de que sean igual el que tfin sea más 
+//					//   grande pasa
+//					if((t.getTfin() > tfinAux) || 
+//					   (t.getTfin() == tfinAux && t.getTini() < tiniAux) ) {
+//						tiniAux = t.getTini();
+//						tfinAux = t.getTfin();
+//						dataAux = t;
+//					}
+//				}
+//				
+//				if(dataAux != null){
+//					int serviceLevel = calculateServiceLevel(
+//							            dataAux.getNumCars(), 
+//							            carAgent.getTravelData().
+//							                     getCurrentSegment().getLength());
+//					// TODO: Aqui el nivel de servicio no se cual poner. 
+//					//       Que calculo con el número de coches he de hacer
+//					
+//					edge.updateEdge(seg,serviceLevel, 
+//						  carAgent.getTravelData().getCurrentSegment().
+//						           getLength() / carAgent.getTravelData().
+//							       getCurrentSegment().getCurrentAllowedSpeed() ,
+//							       dataAux.getTini(), dataAux.getTfin());
+//				}
+//				
+//			}
 			//System.out.println(this.agent.getJgrapht().getEdges());
 			/*System.out.println("PAST TRAFFIC de " + this.agent.getId());
 			for (String key : this.agent.getPastTraffic().getData().keySet()) {
@@ -311,31 +285,31 @@ public class CarBehaviour extends CyclicBehaviour {
 			                    getSensorTrafficData().getTini() );*/
 			//TODO: Revise this formula is 3600 multiplying up or down 
 			//      the division?
-			float vel = ( carAgent.getTravelData().getSegmentDistanceCovered() / 
-					(carAgent.getSensorTrafficData().getTfin() - 
-					 this.carAgent.getSensorTrafficData().getTini()) * 3600);
-			//this.carAgent.addLogData(segment.getId(), this.carAgent.
-			//     getNumMsgRecibido(), this.carAgent.getNumMsgEnviados(), 
-			//     (float) this.currentSegmentCovered, vel);
-			//We reinicializate the number og messages
-			//this.carAgent.setNumMsgEnviados(0);
-			//this.carAgent.setNumMsgRecibido(0);
-			
-			//Update the EDGE
-			/*Es decir tenemos que recorrer toda la lista buscando
-			 * el que tenga la diferencia de tiempos mayor y a partir de 
-			 * ahí generar un edge y guardarlo en el jgrapht.*/
-			//Calculate the better way
-		}else if("register".compareTo(type) == 0){
-			//Start a new current trafficData by myself
-			carAgent.getTravelData().setSegmentDistanceCovered(0);
-			//agent.setFutureTraffic(new TrafficDataInStore());
-			carAgent.setSensorTrafficData(new TrafficData());
-			carAgent.getSensorTrafficData().setTini(this.currentTick);
-			//To log the info segment we need the initial tick
-		} else if("update".compareTo(type) == 0){
-			
-		}
+//			float vel = ( carAgent.getTravelData().getSegmentDistanceCovered() / 
+//					(carAgent.getSensorTrafficData().getTfin() - 
+//					 this.carAgent.getSensorTrafficData().getTini()) * 3600);
+//			//this.carAgent.addLogData(segment.getId(), this.carAgent.
+//			//     getNumMsgRecibido(), this.carAgent.getNumMsgEnviados(), 
+//			//     (float) this.currentSegmentCovered, vel);
+//			//We reinicializate the number og messages
+//			//this.carAgent.setNumMsgEnviados(0);
+//			//this.carAgent.setNumMsgRecibido(0);
+//			
+//			//Update the EDGE
+//			/*Es decir tenemos que recorrer toda la lista buscando
+//			 * el que tenga la diferencia de tiempos mayor y a partir de 
+//			 * ahí generar un edge y guardarlo en el jgrapht.*/
+//			//Calculate the better way
+//		}else if("register".compareTo(type) == 0){
+//			//Start a new current trafficData by myself
+//			carAgent.getTravelData().setSegmentDistanceCovered(0);
+//			//agent.setFutureTraffic(new TrafficDataInStore());
+//			carAgent.setSensorTrafficData(new TrafficData());
+//			carAgent.getSensorTrafficData().setTini(this.currentTick);
+//			//To log the info segment we need the initial tick
+//		} else if("update".compareTo(type) == 0){
+//			
+//		}
 		
 		msg.addReceiver(segment.getSegmentAgent().getAID());
 		JSONObject carDataRegister = new JSONObject();
