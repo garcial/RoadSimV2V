@@ -7,7 +7,7 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.MessageTemplate;
-import searchAlgorithms.Method;
+import routeMethods.Method;
 import trafficData.TrafficData;
 import trafficData.TrafficDataInStore;
 import trafficData.TrafficDataOutStore;

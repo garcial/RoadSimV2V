@@ -144,9 +144,9 @@ public class Segment implements Serializable{
 		this.pkIni = (float) pkstart;
 		this.twinSegments = segTwinsList;
 		this.roadCode = roadCode;
-		// The weight of the segment is, by defect, the time to traverse it
-		//   at maximum speed.
-		this.weight = length / maxSpeed;
+		// The weight of the segment is, by defect, the traffic density
+		//   at the beginning as read on the configuration file.
+		this.weight = density;
 		
 		//Put the service levels
 		this.serviceLevels.put(0, 1.00f);

@@ -1,4 +1,4 @@
-package searchAlgorithms;
+package routeMethods;
 
 /**
  * Enumeration for the different types of algorithms
@@ -6,8 +6,7 @@ package searchAlgorithms;
  */
 public enum Method {
 
-	SHORTEST(0), FASTEST(1), STARTSMART(2), DYNAMICSMART(3),
-    A_STAR(4), DIJKSTRA(5), KSHORTEST(6);
+	LESSDISTANCE(0), FASTBLIND(1), SMARTLASTUPDATE(2);
 	
     public final int value;
 

@@ -38,9 +38,9 @@ import org.json.JSONObject;
 import agents.InterfaceAgent;
 import environment.Intersection;
 import environment.TrafficMap;
+import routeMethods.Method;
 import environment.Segment;
 import environment.Step;
-import searchAlgorithms.Method;
 import view.CanvasWorld.MapPanel.Mobile;
 
 /**

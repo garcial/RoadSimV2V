@@ -391,7 +391,7 @@ public class TrafficMap implements Serializable {
 		return (List<Segment>) segmentsMap.values();
 	}
 	
-	private List<String> getNewVirtualNodes() {
+	public List<String> getNewVirtualNodes() {
 		return new ArrayList<String>(virtualNodes);
 	}
 	
@@ -444,10 +444,9 @@ public class TrafficMap implements Serializable {
 			for(Segment s:getIntersectionByID(chosenInt).getOutSegments()) {
 				String nextNode = s.getId() + "#" + 
 			                             s.getDestination().getId();
-				if (distanceMin.get(chosenNode) + s.getWeight() < 
-					distanceMin.get(nextNode)) {
-					distanceMin.put(nextNode, 
-							        distanceMin.get(chosenNode) + s.getWeight());
+				double newDistance = distanceMin.get(chosenNode) + s.getWeight();
+				if (newDistance < distanceMin.get(nextNode)) {
+					distanceMin.put(nextNode, newDistance);
 					previousNode.put(nextNode, chosenNode);
 				}
 			}
