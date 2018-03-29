@@ -146,8 +146,9 @@ public class Main {
 		
 		// Initialization of the main variables
 		if(args.length < 7){
-			System.out.println("The variables startingTick, finishingTick, loggingDirectory, carFile,"
-					+ " segmentFile, useLog and drawLog are created by default. You can pass it like arguments");
+			System.out.println("The variables startingTick, finishingTick, "
+					+ "loggingDirectory, carFile, segmentFile, useLog and drawLog "
+					+ "are created by default. You can pass it like arguments");
 			System.out.println("StartingTick: " + startingTick);
 			System.out.println("FinishingTick: " + finishingTick);
 			System.out.println("loggingDirectory: " + loggingDirectory);
@@ -169,7 +170,8 @@ public class Main {
 		//Load the map
 		try {
 			// The map load the segmentsTest that create the SegmentAgent
-			map = new TrafficMap("staticFiles/map/pruebasDijkstra", segmentContainer,
+			map = new TrafficMap("staticFiles/map/pruebasDijkstra", 
+					      segmentContainer,
 					      useLog, loggingDirectory, drawGUI, startingTick);
 		} catch (IOException e) {
 
@@ -252,7 +254,8 @@ public class Main {
 				AgentController agent = 
 						mainContainer.createNewAgent("logAgent",
 								"agents.LogAgent", 
-								new Object[]{loggingDirectory, carFile, segmentFile});
+								new Object[]
+										{loggingDirectory, carFile, segmentFile});
 				agent.start();
 
 			} catch (StaleProxyException e1) {
@@ -263,7 +266,8 @@ public class Main {
 			}
 		}	
 		
-		//TimeKeeper - Manage the time of the system and send the time to update the roadsim data
+		//TimeKeeper - Manage the time of the system and send the time to update 
+		//   the roadsim data
 		try {
 			AgentController agent = 
 					mainContainer.createNewAgent("timeKeeperAgent",

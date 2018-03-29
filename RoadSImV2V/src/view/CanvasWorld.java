@@ -110,8 +110,8 @@ public class CanvasWorld extends JFrame
 		canvasConstraints.fill = GridBagConstraints.BOTH;
 		canvasConstraints.gridwidth = 1; //How many columns to take
 		canvasConstraints.gridheight = 6; //How many rows to take
-		canvasConstraints.weightx = 0.9; //Percentage of space this will take horizontally
-		canvasConstraints.weighty = 1; //Percentage of space this will take vertically
+		canvasConstraints.weightx = 0.9; //Percentage of space this will take hor.
+		canvasConstraints.weighty = 1; //Percentage of space this will take vert.
 		canvasConstraints.gridx = 0; //Select column
 		canvasConstraints.gridy = 0; //Select row
 
@@ -123,8 +123,8 @@ public class CanvasWorld extends JFrame
 
 		//The time
 		toolbarConstraints.fill = GridBagConstraints.BOTH;
-		toolbarConstraints.weightx = 0.1; //Percentage of space this will take horizontally
-		toolbarConstraints.weighty = 0.1; //Percentage of space this will take vertically
+		toolbarConstraints.weightx = 0.1; //Percentage of space this will take hor.
+		toolbarConstraints.weighty = 0.1; //Percentage of space this will take ver.
 		toolbarConstraints.gridx = 1; //Select column
 		toolbarConstraints.gridy = 0; //Select row
 
@@ -134,8 +134,8 @@ public class CanvasWorld extends JFrame
 
 		//Agents count
 		toolbarConstraints.fill = GridBagConstraints.BOTH;
-		toolbarConstraints.weightx = 0.1; //Percentage of space this will take horizontally
-		toolbarConstraints.weighty = 0.1; //Percentage of space this will take vertically
+		toolbarConstraints.weightx = 0.1; //Percentage of space this will take hor.
+		toolbarConstraints.weighty = 0.1; //Percentage of space this will take ver.
 		toolbarConstraints.gridx = 1; //Select column
 		toolbarConstraints.gridy = 1; //Select row
 
@@ -147,8 +147,8 @@ public class CanvasWorld extends JFrame
 		this.logPanel = new JTextArea(2, 20);
 		this.logPanel.setEditable(false);
 
-		toolbarConstraints.weightx = 0.1; //Percentage of space this will take horizontally
-		toolbarConstraints.weighty = 0.4; //Percentage of space this will take vertically
+		toolbarConstraints.weightx = 0.1; //Percentage of space this will take hor.
+		toolbarConstraints.weighty = 0.4; //Percentage of space this will take ver.
 		toolbarConstraints.gridx = 1; //Select column
 		toolbarConstraints.gridy = 2; //Select row
 
@@ -161,22 +161,25 @@ public class CanvasWorld extends JFrame
 		//Legend
 		BufferedImage legend = null;
 		try {
-			legend = ImageIO.read(new File(CanvasWorld.class.getClassLoader().getResource("staticFiles/images/legend.png").getPath()));
+			legend = ImageIO.read(
+					new File(CanvasWorld.class.getClassLoader().
+							        getResource("staticFiles/images/legend.png").
+							        getPath()));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		JLabel legendLabel = new JLabel(new ImageIcon(legend), JLabel.LEFT);
 
-		toolbarConstraints.weightx = 0.1; //Percentage of space this will take horizontally
-		toolbarConstraints.weighty = 0.2; //Percentage of space this will take vertically
+		toolbarConstraints.weightx = 0.1; //Percentage of space this will take hor.
+		toolbarConstraints.weighty = 0.2; //Percentage of space this will take ver.
 		toolbarConstraints.gridx = 1; //Select column
 		toolbarConstraints.gridy = 3; //Select row
 
 		this.add(legendLabel, toolbarConstraints);
 
 		//Time slider
-		toolbarConstraints.weightx = 0.1; //Percentage of space this will take horizontally
-		toolbarConstraints.weighty = 0.1; //Percentage of space this will take vertically
+		toolbarConstraints.weightx = 0.1; //Percentage of space this will take hor.
+		toolbarConstraints.weighty = 0.1; //Percentage of space this will take ver.
 		toolbarConstraints.gridx = 1; //Select column
 		toolbarConstraints.gridy = 4; //Select row
 
@@ -186,8 +189,8 @@ public class CanvasWorld extends JFrame
 
 		this.add(sliderLabel, toolbarConstraints);
 
-		toolbarConstraints.weightx = 0.1; //Percentage of space this will take horizontally
-		toolbarConstraints.weighty = 0.1; //Percentage of space this will take vertically
+		toolbarConstraints.weightx = 0.1; //Percentage of space this will take hor.
+		toolbarConstraints.weighty = 0.1; //Percentage of space this will take ver.
 		toolbarConstraints.gridx = 1; //Select column
 		toolbarConstraints.gridy = 5; //Select row
 
@@ -223,7 +226,8 @@ public class CanvasWorld extends JFrame
 	public void setTime(String time) {
 		
 		JSONObject inter = new JSONObject(time);
-		this.time.setText("Time: " + inter.getInt("hora") + ":" + inter.getInt("minutos"));
+		this.time.setText("Time: " + inter.getInt("hora") + ":" + 
+		                   inter.getInt("minutos"));
 	}
 
 	/**
@@ -264,7 +268,8 @@ public class CanvasWorld extends JFrame
 	 * @param y
 	 * @param specialColor
 	 */
-	public void addCar(String ag, String id, int algorithmColor, float x, float y, boolean specialColor) {
+	public void addCar(String ag, String id, int algorithmColor, float x, 
+			           float y, boolean specialColor) {
 
 		contentPane.addCar(ag, id, algorithmColor, x, y, specialColor);	
 	}
@@ -309,7 +314,9 @@ public class CanvasWorld extends JFrame
 		private HashMap<String, Mobile> carPositions;
 
 		private Image backGround;
-		private ImageIcon mapImage = new ImageIcon(CanvasWorld.class.getClassLoader().getResource("staticFiles/images/red.png"));
+		private ImageIcon mapImage = new ImageIcon(CanvasWorld.class.
+				                     getClassLoader().
+				                     getResource("staticFiles/images/red.png"));
 
 		/**
 		 * Default constructor.
@@ -333,9 +340,10 @@ public class CanvasWorld extends JFrame
 		 * @param y
 		 * @param specialColor
 		 */
-		public void addCar(String ag, String id, int algorithmType, float x, float y, boolean specialColor) {
+		public void addCar(String ag, String id, int algorithmType, 
+				           float x, float y, boolean specialColor) {
 
-			carPositions.put(id, new Mobile(id, algorithmType, x, y, specialColor));
+			carPositions.put(id, new Mobile(id, algorithmType, x, y,specialColor));
 			repaint();
 		}
 
@@ -418,7 +426,8 @@ public class CanvasWorld extends JFrame
 
 					for(Step st: s.getSteps()){
 
-						line.setLine(st.getOriginX(), st.getOriginY(), st.getDestinationX(), st.getDestinationY());
+						line.setLine(st.getOriginX(), st.getOriginY(), 
+								     st.getDestinationX(), st.getDestinationY());
 						g.draw(line);
 					}
 				}
@@ -480,7 +489,8 @@ public class CanvasWorld extends JFrame
 
 			private boolean specialColor;
 
-			public Mobile(String id, int algorithmType, float x, float y, boolean specialColor) {
+			public Mobile(String id, int algorithmType, 
+					      float x, float y, boolean specialColor) {
 
 				this.setId(id);
 				this.setAlgorithmType(algorithmType);
